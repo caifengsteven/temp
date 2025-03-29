@@ -1,0 +1,11 @@
+2025-03-29 15:17:02,230 - INFO - Starting daily Supertrend scan...
+2025-03-29 15:17:02,231 - INFO - Loaded 2 instruments from instrument.txt
+2025-03-29 15:17:03,167 - INFO - Successfully connected to Bloomberg
+2025-03-29 15:17:03,167 - INFO - Processing 2318 HK Equity
+2025-03-29 15:17:03,610 - INFO - Retrieved 66 days of data for 2318 HK Equity
+2025-03-29 15:17:03,755 - INFO - 2318 HK Equity is in UPTREND. Close: 46.95, Supertrend: 46.60
+2025-03-29 15:17:03,756 - INFO - Processing 5 HK Equity
+2025-03-29 15:17:04,199 - INFO - Retrieved 66 days of data for 5 HK Equity
+2025-03-29 15:17:04,232 - INFO - 5 HK Equity is in DOWNTREND. Close: 89.45, Supertrend: 89.91
+2025-03-29 15:17:04,232 - INFO - Scan completed
+2025-03-29 15:17:04,242 - INFO - Bloomberg connection closed
