@@ -1,0 +1,10 @@
+AAPL US Equity
+MSFT US Equity
+AMZN US Equity
+GOOGL US Equity
+META US Equity
+TSLA US Equity
+JPM US Equity
+V US Equity
+JNJ US Equity
+WMT US Equity
