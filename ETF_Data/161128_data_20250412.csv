@@ -1,0 +1,84 @@
+date,wind_code,sec_name,i_weight,industry,source
+2025-04-11,AAPL.O,苹果(APPLE),,信息技术,index tracking
+2025-04-11,ACN.N,埃森哲(ACCENTURE),,信息技术,index tracking
+2025-04-11,ADBE.O,奥多比(ADOBE),,信息技术,index tracking
+2025-04-11,ADI.O,亚德诺(ANALOG),,信息技术,index tracking
+2025-04-11,ADP.O,自动数据处理,,工业,index tracking
+2025-04-11,ADSK.O,欧特克(AUTODESK),,信息技术,index tracking
+2025-04-11,AKAM.O,阿卡迈(AKAMAI),,信息技术,index tracking
+2025-04-11,AMAT.O,应用材料(APPLIED MATERIAL),,信息技术,index tracking
+2025-04-11,AMD.O,超威半导体(AMD),,信息技术,index tracking
+2025-04-11,AME.N,阿美特克(AMETEK),,工业,index tracking
+2025-04-11,ANET.N,ARISTA网络,,信息技术,index tracking
+2025-04-11,ANSS.O,安西斯(ANSYS),,信息技术,index tracking
+2025-04-11,APH.N,安费诺(AMPHENOL),,信息技术,index tracking
+2025-04-11,AVGO.O,博通(BROADCOM),,信息技术,index tracking
+2025-04-11,BR.N,布罗德里奇(BROADRIDGE),,工业,index tracking
+2025-04-11,CDNS.O,铿腾电子(CADENCE),,信息技术,index tracking
+2025-04-11,CDW.O,CDW,,信息技术,index tracking
+2025-04-11,CPAY.N,CORPAY,,金融,index tracking
+2025-04-11,CRM.N,赛富时(SALESFORCE),,信息技术,index tracking
+2025-04-11,CRWD.O,CROWDSTRIKE,,信息技术,index tracking
+2025-04-11,CSCO.O,思科(CISCO),,信息技术,index tracking
+2025-04-11,CSGP.O,科斯塔(COSTAR),,房地产,index tracking
+2025-04-11,CTSH.O,高知特科技(COGNIZANT),,信息技术,index tracking
+2025-04-11,DAY.N,DAYFORCE,,工业,index tracking
+2025-04-11,DELL!.O,戴尔(退市),,信息技术,index tracking
+2025-04-11,DELL.N,戴尔科技(DELL TECHNOLOGIES),,信息技术,index tracking
+2025-04-11,EPAM.N,EPAM SYSTEMS,,信息技术,index tracking
+2025-04-11,FDS.N,辉盛研究系统(FACTSET),,金融,index tracking
+2025-04-11,FFIV.O,F5,,信息技术,index tracking
+2025-04-11,FI.N,费哲金融服务(FISERV),,金融,index tracking
+2025-04-11,FICO.N,FAIR ISAAC,,信息技术,index tracking
+2025-04-11,FTNT.O,飞塔(FORTINET),,信息技术,index tracking
+2025-04-11,FTV.N,FORTIVE,,工业,index tracking
+2025-04-11,GDDY.N,GODADDY,,信息技术,index tracking
+2025-04-11,GEN.O,GEN DIGITAL,,信息技术,index tracking
+2025-04-11,GLW.N,康宁(CORNING),,信息技术,index tracking
+2025-04-11,GPN.N,环汇(GLOBAL PAYMENTS),,金融,index tracking
+2025-04-11,HPE.N,慧与(HEWLETT PACKARD),,信息技术,index tracking
+2025-04-11,HPQ.N,惠普(HP),,信息技术,index tracking
+2025-04-11,IBM.N,国际商业机器(IBM),,信息技术,index tracking
+2025-04-11,INTC.O,英特尔(INTEL),,信息技术,index tracking
+2025-04-11,INTU.O,财捷(INTUIT),,信息技术,index tracking
+2025-04-11,IT.N,加特纳(GARTNER),,信息技术,index tracking
+2025-04-11,JBL.N,捷普(JABIL),,信息技术,index tracking
+2025-04-11,JKHY.O,杰克亨利(JACK HENRY),,金融,index tracking
+2025-04-11,JNPR.N,瞻博网络(JUNIPER NETWORKS),,信息技术,index tracking
+2025-04-11,KEYS.N,是德科技(KEYSIGHT TECHNOLOGIES),,信息技术,index tracking
+2025-04-11,KLAC.O,科天半导体(KLA),,信息技术,index tracking
+2025-04-11,LDOS.N,LEIDOS,,工业,index tracking
+2025-04-11,LHX.N,L3HARRIS TECHNOLOGIES,,工业,index tracking
+2025-04-11,LRCX.O,拉姆研究(LAM RESEARCH),,信息技术,index tracking
+2025-04-11,MCHP.O,微芯科技(MICROCHIP),,信息技术,index tracking
+2025-04-11,MPWR.O,MONOLITHIC POWER SYSTEMS,,信息技术,index tracking
+2025-04-11,MSFT.O,微软(MICROSOFT),,信息技术,index tracking
+2025-04-11,MSI.N,摩托罗拉解决方案(MOTOROLA SOLUTIONS),,信息技术,index tracking
+2025-04-11,MU.O,美光科技(MICRON TECHNOLOGY),,信息技术,index tracking
+2025-04-11,NOW.N,SERVICENOW,,信息技术,index tracking
+2025-04-11,NTAP.O,美国网存(NETAPP),,信息技术,index tracking
+2025-04-11,NVDA.O,英伟达(NVIDIA),,信息技术,index tracking
+2025-04-11,NXPI.O,恩智浦半导体(NXP SEMICONDUCTORS),,信息技术,index tracking
+2025-04-11,ON.O,安森美半导体(ON SEMICONDUCTOR),,信息技术,index tracking
+2025-04-11,ORCL.N,甲骨文(ORACLE),,信息技术,index tracking
+2025-04-11,PANW.O,PALO ALTO NETWORKS,,信息技术,index tracking
+2025-04-11,PAYC.N,PAYCOM SOFTWARE,,工业,index tracking
+2025-04-11,PAYX.O,沛齐(PAYCHEX),,工业,index tracking
+2025-04-11,PLTR.O,PALANTIR TECHNOLOGIES,,信息技术,index tracking
+2025-04-11,PTC.O,PTC,,信息技术,index tracking
+2025-04-11,PYPL.O,贝宝(PAYPAL),,金融,index tracking
+2025-04-11,QCOM.O,高通(QUALCOMM),,信息技术,index tracking
+2025-04-11,SMCI.O,超微电脑,,信息技术,index tracking
+2025-04-11,SNPS.O,新思科技(SYNOPSYS),,信息技术,index tracking
+2025-04-11,STX.O,希捷科技(SEAGATE),,信息技术,index tracking
+2025-04-11,SWKS.O,思佳讯(SKYWORKS),,信息技术,index tracking
+2025-04-11,TDC.N,天睿(TERADATA),,信息技术,index tracking
+2025-04-11,TEL.N,泰科电子(TE CONNECTIVITY),,信息技术,index tracking
+2025-04-11,TER.O,泰瑞达(TERADYNE),,信息技术,index tracking
+2025-04-11,TRMB.O,TRIMBLE,,信息技术,index tracking
+2025-04-11,TXN.O,德州仪器(TEXAS INSTRUMENTS),,信息技术,index tracking
+2025-04-11,TYL.N,泰勒科技(TYLER TECHNOLOG),,信息技术,index tracking
+2025-04-11,VRSN.O,威瑞信(VERISIGN),,信息技术,index tracking
+2025-04-11,WDAY.O,WORKDAY,,信息技术,index tracking
+2025-04-11,WDC.O,西部数据(WESTERN DIGITAL),,信息技术,index tracking
+2025-04-11,ZBRA.O,斑马技术(ZEBRA),,信息技术,index tracking

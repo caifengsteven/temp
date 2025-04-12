@@ -1,0 +1,21 @@
+date,wind_code,sec_name,i_weight,industry,source
+2025-03-31,0005.HK,汇丰控股,15.374,金融,index tracking
+2025-03-31,0011.HK,恒生银行,5.451,金融,index tracking
+2025-03-31,0440.HK,大新金融,0.407,金融,index tracking
+2025-03-31,0939.HK,建设银行,14.262,金融,index tracking
+2025-03-31,0998.HK,中信银行,5.562,金融,index tracking
+2025-03-31,1288.HK,农业银行,5.586,金融,index tracking
+2025-03-31,1398.HK,工商银行,13.64,金融,index tracking
+2025-03-31,1658.HK,邮储银行,4.187,金融,index tracking
+2025-03-31,1963.HK,重庆银行,0.372,金融,index tracking
+2025-03-31,1988.HK,民生银行,2.042,金融,index tracking
+2025-03-31,2016.HK,浙商银行,0.934,金融,index tracking
+2025-03-31,2356.HK,大新银行集团,0.317,金融,index tracking
+2025-03-31,2388.HK,中银香港,6.281,金融,index tracking
+2025-03-31,3328.HK,交通银行,5.84,金融,index tracking
+2025-03-31,3618.HK,重庆农村商业银行,1.163,金融,index tracking
+2025-03-31,3866.HK,青岛银行,0.258,金融,index tracking
+2025-03-31,3968.HK,招商银行,5.978,金融,index tracking
+2025-03-31,3988.HK,中国银行,11.125,金融,index tracking
+2025-03-31,6196.HK,郑州银行,0.167,金融,index tracking
+2025-03-31,6818.HK,中国光大银行,1.057,金融,index tracking

@@ -1,0 +1,46 @@
+date,wind_code,sec_name,i_weight,industry,source
+2025-04-11,AAPL.O,苹果(APPLE),,信息技术,index tracking
+2025-04-11,ADBE.O,奥多比(ADOBE),,信息技术,index tracking
+2025-04-11,ADI.O,亚德诺(ANALOG),,信息技术,index tracking
+2025-04-11,ADSK.O,欧特克(AUTODESK),,信息技术,index tracking
+2025-04-11,AMAT.O,应用材料(APPLIED MATERIAL),,信息技术,index tracking
+2025-04-11,AMD.O,超威半导体(AMD),,信息技术,index tracking
+2025-04-11,ANSS.O,安西斯(ANSYS),,信息技术,index tracking
+2025-04-11,APP.O,APPLOVIN,,信息技术,index tracking
+2025-04-11,ARM.O,ARM,,信息技术,index tracking
+2025-04-11,ASML.O,阿斯麦,,信息技术,index tracking
+2025-04-11,AVGO.O,博通(BROADCOM),,信息技术,index tracking
+2025-04-11,CDNS.O,铿腾电子(CADENCE),,信息技术,index tracking
+2025-04-11,CDW.O,CDW,,信息技术,index tracking
+2025-04-11,CRWD.O,CROWDSTRIKE,,信息技术,index tracking
+2025-04-11,CTSH.O,高知特科技(COGNIZANT),,信息技术,index tracking
+2025-04-11,DASH.O,DOORDASH,,可选消费,index tracking
+2025-04-11,DDOG.O,DATADOG,,信息技术,index tracking
+2025-04-11,FTNT.O,飞塔(FORTINET),,信息技术,index tracking
+2025-04-11,GFS.O,格芯(GLOBALFOUNDRIES),,信息技术,index tracking
+2025-04-11,GOOG.O,谷歌(ALPHABET)-C,,通讯服务,index tracking
+2025-04-11,GOOGL.O,谷歌(ALPHABET)-A,,通讯服务,index tracking
+2025-04-11,INTC.O,英特尔(INTEL),,信息技术,index tracking
+2025-04-11,INTU.O,财捷(INTUIT),,信息技术,index tracking
+2025-04-11,KLAC.O,科天半导体(KLA),,信息技术,index tracking
+2025-04-11,LRCX.O,拉姆研究(LAM RESEARCH),,信息技术,index tracking
+2025-04-11,MCHP.O,微芯科技(MICROCHIP),,信息技术,index tracking
+2025-04-11,MDB.O,MONGODB,,信息技术,index tracking
+2025-04-11,META.O,脸书(META PLATFORMS),,通讯服务,index tracking
+2025-04-11,MRVL.O,迈威尔科技,,信息技术,index tracking
+2025-04-11,MSFT.O,微软(MICROSOFT),,信息技术,index tracking
+2025-04-11,MSTR.O,微策投资,,信息技术,index tracking
+2025-04-11,MU.O,美光科技(MICRON TECHNOLOGY),,信息技术,index tracking
+2025-04-11,NVDA.O,英伟达(NVIDIA),,信息技术,index tracking
+2025-04-11,NXPI.O,恩智浦半导体(NXP SEMICONDUCTORS),,信息技术,index tracking
+2025-04-11,ON.O,安森美半导体(ON SEMICONDUCTOR),,信息技术,index tracking
+2025-04-11,PANW.O,PALO ALTO NETWORKS,,信息技术,index tracking
+2025-04-11,PDD.O,拼多多,,可选消费,index tracking
+2025-04-11,PLTR.O,PALANTIR TECHNOLOGIES,,信息技术,index tracking
+2025-04-11,QCOM.O,高通(QUALCOMM),,信息技术,index tracking
+2025-04-11,ROP.O,儒博科技(ROPER TECHNOLOGIES),,信息技术,index tracking
+2025-04-11,SNPS.O,新思科技(SYNOPSYS),,信息技术,index tracking
+2025-04-11,TEAM.O,ATLASSIAN,,信息技术,index tracking
+2025-04-11,TXN.CHL,德州仪器(TEXAS INSTRUMENTS),,信息技术,index tracking
+2025-04-11,WDAY.O,WORKDAY,,信息技术,index tracking
+2025-04-11,ZS.O,ZSCALER,,信息技术,index tracking

@@ -1,0 +1,31 @@
+date,wind_code,sec_name,i_weight,industry,source
+2025-04-11,AAPL.O,苹果(APPLE),,信息技术,index tracking
+2025-04-11,AMGN.O,安进(AMGEN),,医疗保健,index tracking
+2025-04-11,AMZN.O,亚马逊(AMAZON),,可选消费,index tracking
+2025-04-11,AXP.N,美国运通(AMERICAN EXPRESS),,金融,index tracking
+2025-04-11,BA.N,波音(BOEING),,工业,index tracking
+2025-04-11,CAT.N,卡特彼勒(CATERPILLAR),,工业,index tracking
+2025-04-11,CRM.N,赛富时(SALESFORCE),,信息技术,index tracking
+2025-04-11,CSCO.O,思科(CISCO),,信息技术,index tracking
+2025-04-11,CVX.N,雪佛龙(CHEVRON),,能源,index tracking
+2025-04-11,DIS.N,迪士尼(WALT DISNEY),,通讯服务,index tracking
+2025-04-11,GS.N,高盛集团(GOLDMAN SACHS),,金融,index tracking
+2025-04-11,HD.N,家得宝(HOME DEPOT),,可选消费,index tracking
+2025-04-11,HON.O,霍尼韦尔国际(HONEYWELL INTERNATIONAL),,工业,index tracking
+2025-04-11,IBM.N,国际商业机器(IBM),,信息技术,index tracking
+2025-04-11,JNJ.N,强生公司(JOHNSON & JOHNSON),,医疗保健,index tracking
+2025-04-11,JPM.N,摩根大通(JPMORGAN CHASE),,金融,index tracking
+2025-04-11,KO.N,可口可乐(COCA COLA),,日常消费,index tracking
+2025-04-11,MCD.N,麦当劳(MCDONALD'S),,可选消费,index tracking
+2025-04-11,MMM.N,3M公司(3M),,工业,index tracking
+2025-04-11,MRK.N,默克(MERCK),,医疗保健,index tracking
+2025-04-11,MSFT.O,微软(MICROSOFT),,信息技术,index tracking
+2025-04-11,NKE.N,耐克(NIKE),,可选消费,index tracking
+2025-04-11,NVDA.O,英伟达(NVIDIA),,信息技术,index tracking
+2025-04-11,PG.N,宝洁公司(PROCTER & GAMBLE),,日常消费,index tracking
+2025-04-11,SHW.N,宣伟(SHERWIN-WILLIAMS),,材料,index tracking
+2025-04-11,TRV.N,旅行者集团(TRAVELERS),,金融,index tracking
+2025-04-11,UNH.N,联合健康集团(UNITEDHEALTH),,医疗保健,index tracking
+2025-04-11,V.N,VISA,,金融,index tracking
+2025-04-11,VZ.N,威瑞森电信(VERIZON),,通讯服务,index tracking
+2025-04-11,WMT.N,沃尔玛(WALMART),,日常消费,index tracking

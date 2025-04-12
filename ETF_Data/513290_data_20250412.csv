@@ -1,0 +1,224 @@
+date,wind_code,sec_name,i_weight,industry,source
+2025-04-11,ABCL.O,ABCELLERA BIOLOGICS,,医疗保健,index tracking
+2025-04-11,ABOS.O,ACUMEN PHARMACEUTICALS,,医疗保健,index tracking
+2025-04-11,ABSI.O,ABSCI,,医疗保健,index tracking
+2025-04-11,ABUS.O,ARBUTUS BIOPHARMA,,医疗保健,index tracking
+2025-04-11,ACAD.O,阿卡迪亚,,医疗保健,index tracking
+2025-04-11,ACET.O,ADICET BIO,,医疗保健,index tracking
+2025-04-11,ACLX.O,ARCELLX,,医疗保健,index tracking
+2025-04-11,ACRS.O,ACLARIS THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,ADAP.O,ADAPTIMMUNE THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,ADMA.O,ADMA BIOLOGICS,,医疗保健,index tracking
+2025-04-11,ADPT.O,ADAPTIVE BIOTECHNOLOGIES,,医疗保健,index tracking
+2025-04-11,AFMD.O,AFFIMED,,医疗保健,index tracking
+2025-04-11,AGIO.O,AGIOS制药,,医疗保健,index tracking
+2025-04-11,AKRO.O,AKERO THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,ALEC.O,ALECTOR,,医疗保健,index tracking
+2025-04-11,ALKS.O,阿尔凯默斯,,医疗保健,index tracking
+2025-04-11,ALLK.O,ALLAKOS,,医疗保健,index tracking
+2025-04-11,ALLO.O,ALLOGENE THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,ALNY.O,阿里拉姆制药(ALNYLAM PHARMACE),,医疗保健,index tracking
+2025-04-11,ALT.O,ALTIMMUNE,,医疗保健,index tracking
+2025-04-11,ALXO.O,ALX ONCOLOGY,,医疗保健,index tracking
+2025-04-11,AMGN.O,安进(AMGEN),,医疗保健,index tracking
+2025-04-11,AMLX.O,AMYLYX PHARMACEUTICALS,,医疗保健,index tracking
+2025-04-11,AMPH.O,AMPHASTAR PHARMACEUTICALS,,医疗保健,index tracking
+2025-04-11,AMRN.O,阿玛琳,,医疗保健,index tracking
+2025-04-11,ANIP.O,阿尼制药,,医疗保健,index tracking
+2025-04-11,ANNX.O,ANNEXON,,医疗保健,index tracking
+2025-04-11,APLS.O,APELLIS PHARMACEUTICALS,,医疗保健,index tracking
+2025-04-11,ARCT.O,ARCTURUS THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,ARDX.O,ARDELYX,,医疗保健,index tracking
+2025-04-11,ARGX.O,ARGENX SE,,医疗保健,index tracking
+2025-04-11,ARQT.O,ARCUTIS BIOTHERAPEUTICS,,医疗保健,index tracking
+2025-04-11,ARVN.O,ARVINAS,,医疗保健,index tracking
+2025-04-11,ARWR.O,ARROWHEAD PHARMACEUTICALS,,医疗保健,index tracking
+2025-04-11,ASND.O,ASCENDIS PHARMA AS,,医疗保健,index tracking
+2025-04-11,ATAI.O,ATAI LIFE SCIENCES,,医疗保健,index tracking
+2025-04-11,ATRA.O,ATARA BIOTHERAPEUTICS,,医疗保健,index tracking
+2025-04-11,AUPH.O,AURINIA PHARMACEUTICALS,,医疗保健,index tracking
+2025-04-11,AVDL.O,AVADEL PHARMACEUTICALS,,医疗保健,index tracking
+2025-04-11,AVIR.O,ATEA PHARMACEUTICALS,,医疗保健,index tracking
+2025-04-11,AVXL.O,ANAVEX LIFE SCIENCES,,医疗保健,index tracking
+2025-04-11,AXSM.O,AXSOME THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,AZN.O,阿斯利康,,医疗保健,index tracking
+2025-04-11,BBIO.O,BRIDGEBIO PHARMA,,医疗保健,index tracking
+2025-04-11,BCAB.O,BIOATLA,,医疗保健,index tracking
+2025-04-11,BCRX.O,BIOCRYST制药,,医疗保健,index tracking
+2025-04-11,BCYC.O,BICYCLE THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,BEAM.O,BEAM THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,BIIB.O,生物基因(BIOGEN),,医疗保健,index tracking
+2025-04-11,BLUE.O,BLUEBIRD BIO,,医疗保健,index tracking
+2025-04-11,BMEA.O,BIOMEA FUSION,,医疗保健,index tracking
+2025-04-11,BMRN.O,拜玛林制药(BIOMARIN PHARMAC),,医疗保健,index tracking
+2025-04-11,BNTX.O,BIONTECH,,医疗保健,index tracking
+2025-04-11,BPMC.O,BLUEPRINT MEDICINES,,医疗保健,index tracking
+2025-04-11,CARA.O,CARA THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,CCCC.O,C4 THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,CDXS.O,CODEXIS,,医疗保健,index tracking
+2025-04-11,CGEM.O,CULLINAN THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,CHRS.O,COHERUS BIOSCIENCES,,医疗保健,index tracking
+2025-04-11,CMPS.O,COMPASS PATHWAYS,,医疗保健,index tracking
+2025-04-11,CNTA.O,CENTESSA PHARMACEUTICALS,,医疗保健,index tracking
+2025-04-11,COGT.O,COGENT BIOSCIENCES,,医疗保健,index tracking
+2025-04-11,COLL.O,COLLEGIUM制药,,医疗保健,index tracking
+2025-04-11,CRBU.O,CARIBOU BIOSCIENCES,,医疗保健,index tracking
+2025-04-11,CRNX.O,CRINETICS PHARMACEUTICALS,,医疗保健,index tracking
+2025-04-11,CRSP.O,CRISPR THERAPEUTICS AG,,医疗保健,index tracking
+2025-04-11,CSTL.O,CASTLE BIOSCIENCES,,医疗保健,index tracking
+2025-04-11,CVAC.O,CUREVAC,,医疗保健,index tracking
+2025-04-11,CYTK.O,CYTOKINETICS,,医疗保健,index tracking
+2025-04-11,DAWN.O,DAY ONE BIOPHARMACEUTICALS,,医疗保健,index tracking
+2025-04-11,DNLI.O,DENALI THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,DSGN.O,DESIGN THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,DYN.O,DYNE THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,EDIT.O,EDITAS MEDICINE,,医疗保健,index tracking
+2025-04-11,ENTA.O,ENANTA PHARMACEUTICALS,,医疗保健,index tracking
+2025-04-11,EOLS.O,EVOLUS,,医疗保健,index tracking
+2025-04-11,ERAS.O,ERASCA,,医疗保健,index tracking
+2025-04-11,ESPR.O,ESPERION THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,ETNB.O,89BIO,,医疗保健,index tracking
+2025-04-11,EWTX.O,EDGEWISE THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,EXEL.O,伊克力西斯(EXELIXIS),,医疗保健,index tracking
+2025-04-11,FATE.O,FATE THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,FDMT.O,4D MOLECULAR THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,FGEN.O,纤维蛋白原,,医疗保健,index tracking
+2025-04-11,FHTX.O,FOGHORN THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,FOLD.O,爱美医疗,,医疗保健,index tracking
+2025-04-11,FULC.O,FULCRUM THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,GBIO.O,GENERATION BIO,,医疗保健,index tracking
+2025-04-11,GERN.O,杰龙公司,,医疗保健,index tracking
+2025-04-11,GH.O,GUARDANT HEALTH,,医疗保健,index tracking
+2025-04-11,GILD.O,吉利德科学(GILEAD SCIENCES),,医疗保健,index tracking
+2025-04-11,GLPG.O,GALAPAGOS,,医疗保健,index tracking
+2025-04-11,GLUE.O,MONTE ROSA THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,GMAB.O,GENMAB,,医疗保健,index tracking
+2025-04-11,GOSS.O,GOSSAMER BIO,,医疗保健,index tracking
+2025-04-11,GRFS.O,基立福,,医疗保健,index tracking
+2025-04-11,HALO.O,奥洛兹美医疗,,医疗保健,index tracking
+2025-04-11,HCM.O,和黄医药,,医疗保健,index tracking
+2025-04-11,HLVX.O,HILLEVAX,,医疗保健,index tracking
+2025-04-11,HRMY.O,HARMONY BIOSCIENCES,,医疗保健,index tracking
+2025-04-11,HROW.O,HARROW,,医疗保健,index tracking
+2025-04-11,HUMA.O,HUMACYTE,,医疗保健,index tracking
+2025-04-11,IBRX.O,IMMUNITYBIO,,医疗保健,index tracking
+2025-04-11,IDYA.O,IDEAYA BIOSCIENCES,,医疗保健,index tracking
+2025-04-11,IGMS.O,IGM BIOSCIENCES,,医疗保健,index tracking
+2025-04-11,ILMN.O,ILLUMINA,,医疗保健,index tracking
+2025-04-11,IMAB.O,天境生物,,医疗保健,index tracking
+2025-04-11,IMCR.O,IMMUNOCORE,,医疗保健,index tracking
+2025-04-11,IMRX.O,IMMUNEERING,,医疗保健,index tracking
+2025-04-11,IMVT.O,IMMUNOVANT,,医疗保健,index tracking
+2025-04-11,INCY.O,因塞特医疗(INCYTE),,医疗保健,index tracking
+2025-04-11,INO.O,INOVIO PHARMACEUTICALS,,医疗保健,index tracking
+2025-04-11,INSM.O,INSMED,,医疗保健,index tracking
+2025-04-11,INVA.O,亚邦丝医疗,,医疗保健,index tracking
+2025-04-11,IONS.O,IONIS PHARMACEUTICALS,,医疗保健,index tracking
+2025-04-11,IOVA.O,IOVANCE BIOTHERAPEUTICS,,医疗保健,index tracking
+2025-04-11,IPSC.O,CENTURY THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,IRWD.O,IRONWOOD医药,,医疗保健,index tracking
+2025-04-11,ITOS.O,ITEOS THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,IVVD.O,INVIVYD,,医疗保健,index tracking
+2025-04-11,JAZZ.O,爵士制药(JAZZ PHARMACEUTICALS PUBLIC),,医疗保健,index tracking
+2025-04-11,KLRS.O,KALARIS THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,KNSA.O,KINIKSA PHARMACEUTICALS INTERNATIONAL,,医疗保健,index tracking
+2025-04-11,KOD.O,KODIAK SCIENCES,,医疗保健,index tracking
+2025-04-11,KPTI.O,KARYOPHARM THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,KROS.O,KEROS THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,KRYS.O,KRYSTAL BIOTECH,,医疗保健,index tracking
+2025-04-11,KURA.O,KURA ONCOLOGY,,医疗保健,index tracking
+2025-04-11,KYMR.O,KYMERA THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,KZR.O,KEZAR LIFE SCIENCES,,医疗保健,index tracking
+2025-04-11,LEGN.O,传奇生物,,医疗保健,index tracking
+2025-04-11,LENZ.O,LENZ THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,LGND.O,LIGAND PHARMACEUTICALS-CL B,,医疗保健,index tracking
+2025-04-11,LXRX.O,莱斯康制药,,医疗保健,index tracking
+2025-04-11,MCRB.O,赛里斯治疗,,医疗保健,index tracking
+2025-04-11,MEDP.O,MEDPACE,,医疗保健,index tracking
+2025-04-11,MGNX.O,MACROGENICS,,医疗保健,index tracking
+2025-04-11,MGTX.O,MEIRAGTX,,医疗保健,index tracking
+2025-04-11,MIRM.O,MIRUM PHARMACEUTICALS,,医疗保健,index tracking
+2025-04-11,MNKD.O,曼恩凯德生物医疗,,医疗保健,index tracking
+2025-04-11,MRNA.O,MODERNA,,医疗保健,index tracking
+2025-04-11,MRSN.O,MERSANA THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,MRUS.O,MERUS,,医疗保健,index tracking
+2025-04-11,MRVI.O,MARAVAI LIFESCIENCES,,医疗保健,index tracking
+2025-04-11,MXCT.O,MAXCYTE,,医疗保健,index tracking
+2025-04-11,MYGN.O,万基遗传,,医疗保健,index tracking
+2025-04-11,NAUT.O,NAUTILUS BIOTECHNOLOGY,,医疗保健,index tracking
+2025-04-11,NBIX.O,神经分泌生物科学(NEUROCRINE BIOSC),,医疗保健,index tracking
+2025-04-11,NKTR.O,内克塔治疗(NEKTAR THERAPEUTICS),,医疗保健,index tracking
+2025-04-11,NKTX.O,NKARTA,,医疗保健,index tracking
+2025-04-11,NRIX.O,NURIX THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,NTLA.O,INTELLIA THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,NUVL.O,NUVALENT,,医疗保健,index tracking
+2025-04-11,NVAX.O,诺瓦瓦克斯医药(NOVAVAX),,医疗保健,index tracking
+2025-04-11,NVCR.O,NOVOCURE,,医疗保健,index tracking
+2025-04-11,OCUL.O,OCULAR THERAPEUTIX,,医疗保健,index tracking
+2025-04-11,OMER.O,奥麦罗制药,,医疗保健,index tracking
+2025-04-11,ONC.O,百济神州,,医疗保健,index tracking
+2025-04-11,OPTN.O,OPTINOSE,,医疗保健,index tracking
+2025-04-11,PACB.O,太平洋生物科学,,医疗保健,index tracking
+2025-04-11,PAHC.O,PHIBRO ANIMAL HEALTH,,医疗保健,index tracking
+2025-04-11,PCRX.O,PACIRA BIOSCIENCES,,医疗保健,index tracking
+2025-04-11,PCVX.O,VAXCYTE,,医疗保健,index tracking
+2025-04-11,PEPG.O,PEPGEN,,医疗保健,index tracking
+2025-04-11,PGEN.O,PRECIGEN,,医疗保健,index tracking
+2025-04-11,PHAT.O,PHATHOM PHARMACEUTICALS,,医疗保健,index tracking
+2025-04-11,PLRX.O,PLIANT THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,PMVP.O,PMV PHARMACEUTICALS,,医疗保健,index tracking
+2025-04-11,PRLD.O,PRELUDE THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,PRTA.O,PROTHENA CORP PUBLIC,,医疗保健,index tracking
+2025-04-11,PTCT.O,PTC THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,PTGX.O,PROTAGONIST THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,QSI.O,QUANTUM-SI,,医疗保健,index tracking
+2025-04-11,QURE.O,UNIQURE,,医疗保健,index tracking
+2025-04-11,RAPT.O,RAPT THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,RARE.O,ULTRAGENYX PHARMACEUTICAL,,医疗保健,index tracking
+2025-04-11,RCKT.O,ROCKET PHARMACEUTICALS,,医疗保健,index tracking
+2025-04-11,REGN.O,再生元制药(REGENERON),,医疗保健,index tracking
+2025-04-11,RLAY.O,RELAY THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,RNA.O,AVIDITY BIOSCIENCES,,医疗保健,index tracking
+2025-04-11,RNAC.O,CARTESIAN THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,ROIV.O,ROIVANT SCIENCES,,医疗保健,index tracking
+2025-04-11,RPRX.O,ROYALTY PHARMA,,医疗保健,index tracking
+2025-04-11,RPTX.O,REPARE THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,RVMD.O,REVOLUTION MEDICINES,,医疗保健,index tracking
+2025-04-11,RXRX.O,RECURSION PHARMACEUTICALS,,医疗保健,index tracking
+2025-04-11,RYTM.O,RHYTHM PHARMACEUTICALS,,医疗保健,index tracking
+2025-04-11,SAGE.O,SAGE THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,SANA.O,SANA BIOTECHNOLOGY,,医疗保健,index tracking
+2025-04-11,SGMO.O,SANGAMO THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,SIGA.O,SIGA TECHNOLOGIES,,医疗保健,index tracking
+2025-04-11,SMMT.O,SUMMIT THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,SNDX.O,SYNDAX PHARMACEUTICALS,,医疗保健,index tracking
+2025-04-11,SNY.O,赛诺菲-安万特,,医疗保健,index tracking
+2025-04-11,SRPT.O,萨雷普塔(SAREPTA THERAPEUTICS),,医疗保健,index tracking
+2025-04-11,SRRK.O,SCHOLAR ROCK,,医疗保健,index tracking
+2025-04-11,STOK.O,STOKE THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,STRO.O,SUTRO BIOPHARMA,,医疗保健,index tracking
+2025-04-11,SUPN.O,SUPERNUS PHARMACEUTICALS,,医疗保健,index tracking
+2025-04-11,SWTX.O,SPRINGWORKS THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,TARS.O,TARSUS PHARMACEUTICALS,,医疗保健,index tracking
+2025-04-11,TBPH.O,THERAVANCE BIOPHARMA,,医疗保健,index tracking
+2025-04-11,TCRT.O,ALAUNOS THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,TERN.O,拓臻生物,,医疗保健,index tracking
+2025-04-11,TIL.O,INSTIL BIO,,医疗保健,index tracking
+2025-04-11,TNGX.O,TANGO THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,TSVT.O,2SEVENTY BIO,,医疗保健,index tracking
+2025-04-11,TVTX.O,TRAVERE THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,TWST.O,TWIST BIOSCIENCE,,医疗保健,index tracking
+2025-04-11,URGN.O,乌龙制药,,医疗保健,index tracking
+2025-04-11,UTHR.O,联合治疗(UNITED THERAPEUTICS),,医疗保健,index tracking
+2025-04-11,VERV.O,VERVE THERAPEUTICS,,医疗保健,index tracking
+2025-04-11,VIR.O,VIR BIOTECHNOLOGY,,医疗保健,index tracking
+2025-04-11,VNDA.O,万达生物制药,,医疗保健,index tracking
+2025-04-11,VRNA.O,维罗纳制药,,医疗保健,index tracking
+2025-04-11,VRTX.O,福泰制药(VERTEX),,医疗保健,index tracking
+2025-04-11,VTRS.O,晖致(VIATRIS),,医疗保健,index tracking
+2025-04-11,VTYX.O,VENTYX BIOSCIENCES,,医疗保健,index tracking
+2025-04-11,WVE.O,WAVE LIFE SCIENCES,,医疗保健,index tracking
+2025-04-11,XENE.O,XENON PHARMACEUTICALS,,医疗保健,index tracking
+2025-04-11,XNCR.O,XENCOR,,医疗保健,index tracking
+2025-04-11,ZLAB.O,再鼎医药,,医疗保健,index tracking
+2025-04-11,ZNTL.O,ZENTALIS PHARMACEUTICALS,,医疗保健,index tracking

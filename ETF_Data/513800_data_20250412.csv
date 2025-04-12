@@ -1,0 +1,1693 @@
+date,wind_code,sec_name,i_weight,industry,source
+2025-01-31,1301.T,KYOKUYO,0.0061,日常消费,index tracking
+2025-01-31,1332.T,日水制药,0.0302,日常消费,index tracking
+2025-01-31,1333.T,MARUHA NICHIRO,0.0156,日常消费,index tracking
+2025-01-31,1375.T,YUKIGUNI FACTORY,0.0035,日常消费,index tracking
+2025-01-31,1376.T,KANEKO SEEDS,0.0014,日常消费,index tracking
+2025-01-31,1377.T,SAKATA SEED,0.016,可选消费,index tracking
+2025-01-31,1379.T,HOKUTO,0.0057,日常消费,index tracking
+2025-01-31,1414.T,SHO-BOND,0.0233,工业,index tracking
+2025-01-31,1417.T,MIRAIT ONE,0.0266,工业,index tracking
+2025-01-31,1419.T,TAMA HOME,0.0073,可选消费,index tracking
+2025-01-31,1435.T,ROBOT HOME,0.0009,房地产,index tracking
+2025-01-31,1514.T,SUMISEKI,0.0036,工业,index tracking
+2025-01-31,1515.T,NITTETSU MINING,0.0067,材料,index tracking
+2025-01-31,1518.T,MITSUI MATSUSHIMA HOLDINGS,0.0074,工业,index tracking
+2025-01-31,1605.T,国际石油开发帝石,0.1991,能源,index tracking
+2025-01-31,1662.T,日本石油勘探,0.0214,能源,index tracking
+2025-01-31,1663.T,K&O ENERGY,0.0053,公用事业,index tracking
+2025-01-31,167A.T,RYOYO RYOSAN,0.0102,工业,index tracking
+2025-01-31,1716.T,DAI-ICHI CUTTER KOGYO K.K.,0.0012,工业,index tracking
+2025-01-31,1719.T,安藤间,0.0237,工业,index tracking
+2025-01-31,1720.T,TOKYU CONSTRUCTION,0.0081,工业,index tracking
+2025-01-31,1721.T,COMSYS,0.0403,工业,index tracking
+2025-01-31,1726.T,BR,0.0018,工业,index tracking
+2025-01-31,1762.T,TAKAMATSU CONSTRUCTION,0.0072,工业,index tracking
+2025-01-31,1766.T,TOKEN,0.0095,可选消费,index tracking
+2025-01-31,1780.T,YAMAURA,0.0022,工业,index tracking
+2025-01-31,1786.T,ORIENTAL SHIRAISHI,0.0052,材料,index tracking
+2025-01-31,1801.T,大成建设,0.1458,工业,index tracking
+2025-01-31,1802.T,大林组,0.17,工业,index tracking
+2025-01-31,1803.T,清水建设,0.0909,工业,index tracking
+2025-01-31,1808.T,HASEKO,0.0462,可选消费,index tracking
+2025-01-31,1810.T,MATSUI CONSTRUCTION,0.002,工业,index tracking
+2025-01-31,1812.T,鹿岛建设,0.1513,工业,index tracking
+2025-01-31,1813.T,FUDO TETRA,0.0034,工业,index tracking
+2025-01-31,1815.T,TEKKEN,0.0041,工业,index tracking
+2025-01-31,1820.T,西松建设,0.0198,工业,index tracking
+2025-01-31,1821.T,SUMITOMO MITSUI CONSTRUCTION,0.0083,工业,index tracking
+2025-01-31,1822.T,DAIHO,0.0023,工业,index tracking
+2025-01-31,1833.T,OKUMURA,0.017,工业,index tracking
+2025-01-31,1835.T,TOTETSU KOGYO,0.0087,工业,index tracking
+2025-01-31,1852.T,ASANUMA,0.0064,工业,index tracking
+2025-01-31,1860.T,户田建设,0.0285,工业,index tracking
+2025-01-31,1861.T,熊谷组,0.0156,工业,index tracking
+2025-01-31,1870.T,YAHAGI CONSTRUCTION,0.0052,工业,index tracking
+2025-01-31,1871.T,PS CONSTRUCTION,0.0021,工业,index tracking
+2025-01-31,1873.T,NIHON HOUSE,0.0017,可选消费,index tracking
+2025-01-31,1878.T,大东建托,0.1401,房地产,index tracking
+2025-01-31,1879.T,SHINNIHON,0.0056,工业,index tracking
+2025-01-31,1882.T,TOA ROAD,0.0056,工业,index tracking
+2025-01-31,1884.T,NIPPON ROAD,0.0045,工业,index tracking
+2025-01-31,1885.T,TOA,0.0089,工业,index tracking
+2025-01-31,1887.T,JDC,0.0039,工业,index tracking
+2025-01-31,1888.T,WAKACHIKU CONSTRUCTION,0.0027,工业,index tracking
+2025-01-31,1890.T,TOYO CONSTRUCTION,0.0099,工业,index tracking
+2025-01-31,1893.T,五洋建设,0.0211,工业,index tracking
+2025-01-31,1898.T,SEIKITOKYU KOGYO,0.0054,工业,index tracking
+2025-01-31,1899.T,FUKUDA,0.0047,工业,index tracking
+2025-01-31,1911.T,住友林业,0.1141,可选消费,index tracking
+2025-01-31,1925.T,大和房屋工业,0.3642,房地产,index tracking
+2025-01-31,1926.T,RAITO KOGYO,0.011,工业,index tracking
+2025-01-31,1928.T,积水房屋,0.2678,可选消费,index tracking
+2025-01-31,1929.T,NITTOC CONSTRUCTION,0.0025,工业,index tracking
+2025-01-31,1930.T,HOKURIKU ELECTRICAL CONSTRUCTION,0.002,工业,index tracking
+2025-01-31,1934.T,YURTEC,0.0079,工业,index tracking
+2025-01-31,1938.T,NIPPON RIETEC,0.0026,工业,index tracking
+2025-01-31,1939.T,YONDENKO,0.0047,工业,index tracking
+2025-01-31,1941.T,CHUDENKO,0.0124,工业,index tracking
+2025-01-31,1942.T,电力工业,0.0336,工业,index tracking
+2025-01-31,1944.T,KINDEN,0.0545,工业,index tracking
+2025-01-31,1945.T,TOKYO ENERGY & SYSTEMS,0.0029,工业,index tracking
+2025-01-31,1946.T,TOENEC,0.0042,工业,index tracking
+2025-01-31,1949.T,SUMITOMO DENSETSU,0.01,工业,index tracking
+2025-01-31,1950.T,NIPPON DENSETSU KOGYO,0.0095,工业,index tracking
+2025-01-31,1951.T,EXEO,0.0432,工业,index tracking
+2025-01-31,1952.T,SHIN NIPPON AIR TECHNOLOGIES,0.0062,工业,index tracking
+2025-01-31,1959.T,九州电工,0.0281,工业,index tracking
+2025-01-31,1961.T,SANKI ENGINEERING,0.0161,工业,index tracking
+2025-01-31,1963.T,日挥控股,0.0319,工业,index tracking
+2025-01-31,1964.T,CHUGAI RO,0.0027,工业,index tracking
+2025-01-31,1968.T,TAIHEI DENGYO KAISHA,0.0077,工业,index tracking
+2025-01-31,1969.T,TAKASAGO THERMAL ENGINEERING,0.036,工业,index tracking
+2025-01-31,1975.T,ASAHI KOGYOSHA,0.0051,工业,index tracking
+2025-01-31,1976.T,MEISEI INDUSTRIAL,0.0058,工业,index tracking
+2025-01-31,1979.T,TAIKISHA,0.0148,工业,index tracking
+2025-01-31,1980.T,DAI-DAN,0.012,工业,index tracking
+2025-01-31,1982.T,HIBIYA ENGINEERING,0.0077,工业,index tracking
+2025-01-31,2001.T,NIPPN,0.0177,日常消费,index tracking
+2025-01-31,2002.T,日清制粉,0.045,日常消费,index tracking
+2025-01-31,2003.T,NITTO FUJI FLOUR MILLING,0.0029,日常消费,index tracking
+2025-01-31,2004.T,SHOWA SANGYO,0.0058,日常消费,index tracking
+2025-01-31,2053.T,CHUBU SHIRYO,0.0045,日常消费,index tracking
+2025-01-31,2060.T,FEED ONE,0.0031,日常消费,index tracking
+2025-01-31,2108.T,NIPPON BEET SUGAR MANUFACTURING,0.0031,日常消费,index tracking
+2025-01-31,2109.T,MITSUI DM SUGAR,0.0085,日常消费,index tracking
+2025-01-31,2117.T,WELLNEO SUGAR,0.0032,日常消费,index tracking
+2025-01-31,2120.T,LIFULL,0.0013,通讯服务,index tracking
+2025-01-31,2121.T,MIXI,0.0156,信息技术,index tracking
+2025-01-31,2124.T,JAC RECRUITMENT,0.0064,工业,index tracking
+2025-01-31,2127.T,NIHON M&A CENTER,0.0231,金融,index tracking
+2025-01-31,2130.T,MEMBERS,0.001,通讯服务,index tracking
+2025-01-31,2146.T,UT GROUP,0.0074,信息技术,index tracking
+2025-01-31,2148.T,ITMEDIA,0.0023,信息技术,index tracking
+2025-01-31,2150.T,CARENET,0.0031,医疗保健,index tracking
+2025-01-31,2153.T,E·J,0.0024,工业,index tracking
+2025-01-31,2154.T,OPEN UP,0.0163,工业,index tracking
+2025-01-31,2157.T,KOSHIDAKA HOLDINGS,0.0084,可选消费,index tracking
+2025-01-31,2168.T,PASONA,0.0063,工业,index tracking
+2025-01-31,2170.T,LINK AND MOTIVATION,0.0033,工业,index tracking
+2025-01-31,2175.T,SMS,0.0165,工业,index tracking
+2025-01-31,2181.T,PERSOL,0.0557,工业,index tracking
+2025-01-31,2193.T,COOKPAD,0.0011,信息技术,index tracking
+2025-01-31,2201.T,森永制果,0.0277,日常消费,index tracking
+2025-01-31,2204.T,NAKAMURAYA,0.002,日常消费,index tracking
+2025-01-31,2206.T,EZAKI GLICO,0.0331,日常消费,index tracking
+2025-01-31,2207.T,MEITO SANGYO,0.0022,日常消费,index tracking
+2025-01-31,2209.T,IMURAYA,0.0033,日常消费,index tracking
+2025-01-31,2211.T,FUJIYA,0.0042,日常消费,index tracking
+2025-01-31,2212.T,YAMAZAKI BAKING,0.0463,日常消费,index tracking
+2025-01-31,2217.T,MOROZOFF,0.0039,日常消费,index tracking
+2025-01-31,2220.T,KAMEDA SEIKA,0.0061,日常消费,index tracking
+2025-01-31,2222.T,KOTOBUKI SPIRITS,0.0333,日常消费,index tracking
+2025-01-31,2229.T,CALBEE,0.0335,日常消费,index tracking
+2025-01-31,2264.T,森永乳业,0.0267,日常消费,index tracking
+2025-01-31,2266.T,ROKKO BUTTER,0.0023,日常消费,index tracking
+2025-01-31,2267.T,YAKULT HONSHA,0.1003,日常消费,index tracking
+2025-01-31,2269.T,明治,0.0994,日常消费,index tracking
+2025-01-31,2270.T,MEGMILK SNOW BRAND,0.0177,日常消费,index tracking
+2025-01-31,2281.T,PRIMA MEAT PACKERS,0.0073,日常消费,index tracking
+2025-01-31,2282.T,日本火腿,0.054,日常消费,index tracking
+2025-01-31,2288.T,MARUDAI FOOD,0.0041,日常消费,index tracking
+2025-01-31,2292.T,S FOODS,0.0069,日常消费,index tracking
+2025-01-31,2294.T,KAKIYASU HONTEN,0.003,日常消费,index tracking
+2025-01-31,2296.T,ITOHAM YONEKYU,0.0146,日常消费,index tracking
+2025-01-31,2301.T,GAKUJO,0.003,工业,index tracking
+2025-01-31,2305.T,STUDIO ALICE,0.0028,可选消费,index tracking
+2025-01-31,2307.T,CROSS CAT,0.0016,信息技术,index tracking
+2025-01-31,2317.T,SYSTENA,0.0128,信息技术,index tracking
+2025-01-31,2325.T,NJS,0.0025,工业,index tracking
+2025-01-31,2326.T,DIGITAL ARTS,0.0095,信息技术,index tracking
+2025-01-31,2327.T,NS SOLUTIONS,0.0341,信息技术,index tracking
+2025-01-31,2331.T,综合警备保障,0.045,工业,index tracking
+2025-01-31,2335.T,CUBE SYSTEM,0.0014,信息技术,index tracking
+2025-01-31,2337.T,ICHIGO,0.0075,房地产,index tracking
+2025-01-31,2353.T,NIPPON PARKING DEVELOPMENT,0.0062,工业,index tracking
+2025-01-31,2359.T,CORE,0.0021,信息技术,index tracking
+2025-01-31,2371.T,KAKAKU.COM,0.0455,信息技术,index tracking
+2025-01-31,2372.T,I'ROM GROUP,0.0029,医疗保健,index tracking
+2025-01-31,2374.T,SAINT-CARE HOLDING,0.0012,医疗保健,index tracking
+2025-01-31,2378.T,RENAISSANCE,0.0021,可选消费,index tracking
+2025-01-31,2379.T,DIP,0.0105,信息技术,index tracking
+2025-01-31,2384.T,SBS HOLDINGS,0.0055,工业,index tracking
+2025-01-31,2389.T,DIGITAL,0.0017,通讯服务,index tracking
+2025-01-31,2395.T,SHIN NIPPON BIOMEDICAL LABORATORIES,0.0047,医疗保健,index tracking
+2025-01-31,2413.T,M3,0.0725,医疗保健,index tracking
+2025-01-31,2429.T,WORLD,0.0021,工业,index tracking
+2025-01-31,2432.T,DENA,0.0283,信息技术,index tracking
+2025-01-31,2433.T,HAKUHODO DY,0.0338,通讯服务,index tracking
+2025-01-31,2440.T,GURUNAVI,0.0013,信息技术,index tracking
+2025-01-31,2445.T,TAKAMIYA,0.0014,工业,index tracking
+2025-01-31,2461.T,FAN COMMUNICATIONS,0.0015,工业,index tracking
+2025-01-31,2462.T,LIKE,0.0019,工业,index tracking
+2025-01-31,2471.T,S-POOL,0.0023,工业,index tracking
+2025-01-31,2475.T,WDB HOLDINGS,0.0023,工业,index tracking
+2025-01-31,2477.T,TEMAIRAZU,0.0011,信息技术,index tracking
+2025-01-31,2489.T,ADWAYS,0.0009,通讯服务,index tracking
+2025-01-31,2491.T,VALUECOMMERCE,0.0027,通讯服务,index tracking
+2025-01-31,2492.T,INFOMART,0.0079,信息技术,index tracking
+2025-01-31,2501.T,札幌,0.0587,日常消费,index tracking
+2025-01-31,2502.T,朝日,0.3128,日常消费,index tracking
+2025-01-31,2503.T,麒麟,0.2024,日常消费,index tracking
+2025-01-31,250A.T,SHIMADAYA,0.001,日常消费,index tracking
+2025-01-31,2531.T,宝控股,0.0228,日常消费,index tracking
+2025-01-31,2533.T,OENON,0.0031,日常消费,index tracking
+2025-01-31,2540.T,YOMEISHU SEIZO,0.0021,日常消费,index tracking
+2025-01-31,256A.T,TOBISHIMA,0.0042,工业,index tracking
+2025-01-31,2579.T,COCA-COLA BOTTLERS JAPAN HOLDINGS,0.0375,日常消费,index tracking
+2025-01-31,2585.T,LIFEDRINK,0.0116,日常消费,index tracking
+2025-01-31,2587.T,三得利,0.0841,日常消费,index tracking
+2025-01-31,2590.T,DYDO,0.0091,日常消费,index tracking
+2025-01-31,2593.T,伊藤园,0.0284,日常消费,index tracking
+2025-01-31,2594.T,KEY COFFEE,0.0057,日常消费,index tracking
+2025-01-31,2602.T,NISSHIN OILLIO,0.0174,日常消费,index tracking
+2025-01-31,2607.T,FUJI OIL,0.0166,日常消费,index tracking
+2025-01-31,2613.T,J-OIL MILLS,0.0058,日常消费,index tracking
+2025-01-31,262A.T,INTERMESTIC,0.0038,可选消费,index tracking
+2025-01-31,2659.T,SAN-A,0.0133,日常消费,index tracking
+2025-01-31,2664.T,CAWACHI,0.0055,日常消费,index tracking
+2025-01-31,2670.T,ABC-MART,0.0377,可选消费,index tracking
+2025-01-31,2674.T,HARD OFF,0.0021,可选消费,index tracking
+2025-01-31,2676.T,TAKACHIHO KOHEKI,0.0042,信息技术,index tracking
+2025-01-31,2678.T,ASKUL,0.0107,可选消费,index tracking
+2025-01-31,2681.T,GEO HOLDINGS,0.0055,可选消费,index tracking
+2025-01-31,2685.T,ADASTRIA,0.0122,可选消费,index tracking
+2025-01-31,268A.T,RIGAKU,0.0116,工业,index tracking
+2025-01-31,2692.T,ITOCHU-SHOKUHIN,0.0044,日常消费,index tracking
+2025-01-31,2695.T,KURA SUSHI,0.0086,可选消费,index tracking
+2025-01-31,2698.T,CAN DO,0.0032,可选消费,index tracking
+2025-01-31,2726.T,PAL GROUP,0.0209,可选消费,index tracking
+2025-01-31,2730.T,EDION,0.0212,可选消费,index tracking
+2025-01-31,2733.T,ARATA,0.0129,可选消费,index tracking
+2025-01-31,2734.T,SALA,0.0046,能源,index tracking
+2025-01-31,2737.T,TOMEN DEVICES,0.0024,信息技术,index tracking
+2025-01-31,2742.T,HALOWS,0.004,日常消费,index tracking
+2025-01-31,2749.T,JP-HOLDINGS,0.0043,可选消费,index tracking
+2025-01-31,2752.T,FUJIO FOOD,0.0036,可选消费,index tracking
+2025-01-31,2753.T,AMIYAKI TEI,0.0031,可选消费,index tracking
+2025-01-31,2760.T,东京电子设备,0.0084,信息技术,index tracking
+2025-01-31,2767.T,FIELDS,0.008,可选消费,index tracking
+2025-01-31,2768.T,双日,0.0948,工业,index tracking
+2025-01-31,2784.T,阿弗瑞萨控股,0.0527,医疗保健,index tracking
+2025-01-31,2791.T,DAIKOKUTENBUSSAN,0.0072,日常消费,index tracking
+2025-01-31,2792.T,HONEYS HOLDINGS,0.004,可选消费,index tracking
+2025-01-31,2801.T,龟甲万,0.1336,日常消费,index tracking
+2025-01-31,2802.T,味之素,0.3579,日常消费,index tracking
+2025-01-31,2804.T,BULL-DOG SAUCE,0.0023,日常消费,index tracking
+2025-01-31,2809.T,KEWPIE,0.0401,日常消费,index tracking
+2025-01-31,2810.T,HOUSE FOODS GROUP,0.0235,日常消费,index tracking
+2025-01-31,2811.T,KAGOME,0.0308,日常消费,index tracking
+2025-01-31,2815.T,ARIAKE JAPAN,0.0128,日常消费,index tracking
+2025-01-31,2819.T,EBARA FOODS INDUSTRY,0.0019,日常消费,index tracking
+2025-01-31,285A.T,KIOXIA,0.0206,信息技术,index tracking
+2025-01-31,2871.T,日冷,0.0381,日常消费,index tracking
+2025-01-31,2874.T,YOKOHAMA REITO,0.0058,日常消费,index tracking
+2025-01-31,2875.T,东洋水产,0.1152,日常消费,index tracking
+2025-01-31,2882.T,EAT&HOLIDINGS,0.0027,可选消费,index tracking
+2025-01-31,2884.T,YOSHIMURA FOOD,0.0014,日常消费,index tracking
+2025-01-31,2897.T,日清食品,0.1087,日常消费,index tracking
+2025-01-31,2908.T,FUJICCO,0.0042,日常消费,index tracking
+2025-01-31,2910.T,ROCK FIELD,0.0044,日常消费,index tracking
+2025-01-31,2914.T,日本烟草,0.5972,日常消费,index tracking
+2025-01-31,2915.T,KENKO MAYONNAISE,0.0028,日常消费,index tracking
+2025-01-31,2918.T,WARABEYA NICHIYO HOLDINGS,0.0035,日常消费,index tracking
+2025-01-31,2922.T,NATORI,0.0034,日常消费,index tracking
+2025-01-31,2929.T,PHARMA FOODS INTERNATIONAL,0.0032,医疗保健,index tracking
+2025-01-31,2930.T,KITANOTATSUJIN,0.0017,日常消费,index tracking
+2025-01-31,2931.T,EUGLENA,0.0064,日常消费,index tracking
+2025-01-31,2933.T,KIBUN FOODS,0.0024,日常消费,index tracking
+2025-01-31,2935.T,PICKLES,0.0016,日常消费,index tracking
+2025-01-31,2975.T,STAR MICA,0.0022,房地产,index tracking
+2025-01-31,2980.T,SRE,0.0031,房地产,index tracking
+2025-01-31,3001.T,KATAKURA INDUSTRIES,0.0048,工业,index tracking
+2025-01-31,3002.T,GUNZE,0.0094,可选消费,index tracking
+2025-01-31,3003.T,HULIC,0.0791,房地产,index tracking
+2025-01-31,3023.T,RASA,0.0021,工业,index tracking
+2025-01-31,3028.T,ALPEN,0.0055,可选消费,index tracking
+2025-01-31,3031.T,RACCOON HOLDINGS,0.0017,信息技术,index tracking
+2025-01-31,3034.T,QOL HOLDINGS,0.0048,日常消费,index tracking
+2025-01-31,3036.T,ALCONIX,0.0058,材料,index tracking
+2025-01-31,3038.T,神户物产,0.0727,日常消费,index tracking
+2025-01-31,3040.T,SOLITON SYSTEMS K.K.,0.0015,信息技术,index tracking
+2025-01-31,3046.T,JINS HOLDINGS,0.0144,可选消费,index tracking
+2025-01-31,3048.T,BIC CAMERA,0.0266,可选消费,index tracking
+2025-01-31,3050.T,DCM,0.0195,可选消费,index tracking
+2025-01-31,3053.T,PEPPER FOOD SERVICE,0.0013,可选消费,index tracking
+2025-01-31,3064.T,MONOTARO,0.1003,工业,index tracking
+2025-01-31,3076.T,AI HOLDINGS,0.0095,信息技术,index tracking
+2025-01-31,3086.T,J.FRONT RETAILING,0.0666,可选消费,index tracking
+2025-01-31,3087.T,DOUTOR·NICHIRES,0.0111,可选消费,index tracking
+2025-01-31,3088.T,MATSUKIYOCOCOKARA,0.1079,日常消费,index tracking
+2025-01-31,3091.T,BRONCO BILLY,0.0057,可选消费,index tracking
+2025-01-31,3092.T,ZOZO,0.1009,信息技术,index tracking
+2025-01-31,3093.T,TREASURE FACTORY,0.003,可选消费,index tracking
+2025-01-31,3097.T,MONOGATARI,0.0173,可选消费,index tracking
+2025-01-31,3099.T,三越伊势丹,0.1071,可选消费,index tracking
+2025-01-31,3101.T,东洋纺,0.0107,材料,index tracking
+2025-01-31,3103.T,尤尼吉可,0.0012,可选消费,index tracking
+2025-01-31,3104.T,FUJIBO,0.0051,材料,index tracking
+2025-01-31,3105.T,NISSHINBO MICRO DEVICES,0.017,工业,index tracking
+2025-01-31,3106.T,KURABO INDUSTRIES,0.0098,可选消费,index tracking
+2025-01-31,3107.T,DAIWABO HOLDINGS,0.0356,信息技术,index tracking
+2025-01-31,3109.T,SHIKIBO,0.0018,可选消费,index tracking
+2025-01-31,3110.T,NITTO BOSEKI,0.0164,工业,index tracking
+2025-01-31,3116.T,TOYOTA BOSHOKU,0.0218,可选消费,index tracking
+2025-01-31,3132.T,MACNICA,0.0377,信息技术,index tracking
+2025-01-31,3134.T,HAMEE,0.0016,信息技术,index tracking
+2025-01-31,3139.T,LACTO JAPAN,0.0035,日常消费,index tracking
+2025-01-31,3141.T,WELCIA,0.0308,日常消费,index tracking
+2025-01-31,3148.T,CREATE SD,0.0107,日常消费,index tracking
+2025-01-31,3150.T,GREMZ,0.0026,工业,index tracking
+2025-01-31,3151.T,VITAL KSK,0.0043,医疗保健,index tracking
+2025-01-31,3153.T,YASHIMA DENKI,0.0037,信息技术,index tracking
+2025-01-31,3154.T,MEDIUS,0.0015,医疗保健,index tracking
+2025-01-31,3156.T,RESTAR CORPORATION,0.0057,信息技术,index tracking
+2025-01-31,3167.T,TOKAI HOLDINGS,0.0136,工业,index tracking
+2025-01-31,3176.T,SANYO TRADING,0.0041,工业,index tracking
+2025-01-31,3179.T,SYUPPIN,0.0029,信息技术,index tracking
+2025-01-31,3180.T,BEAUTY GARAGE,0.001,可选消费,index tracking
+2025-01-31,3182.T,OISIX RA DAICHI,0.0064,信息技术,index tracking
+2025-01-31,3183.T,WIN-PARTNERS,0.0026,医疗保健,index tracking
+2025-01-31,3186.T,NEXTAGE,0.0091,可选消费,index tracking
+2025-01-31,3191.T,JOYFUL HONDA,0.0138,可选消费,index tracking
+2025-01-31,3193.T,ETERNAL HOSPITALITY,0.0027,可选消费,index tracking
+2025-01-31,3196.T,HOTLAND HOLDINGS,0.0042,可选消费,index tracking
+2025-01-31,3197.T,SKYLARK HOLDINGS,0.0893,可选消费,index tracking
+2025-01-31,3198.T,SFP,0.0032,可选消费,index tracking
+2025-01-31,3199.T,WATAHAN,0.0035,日常消费,index tracking
+2025-01-31,3201.T,JAPAN WOOL TEXTILE,0.0086,可选消费,index tracking
+2025-01-31,3221.T,YOSSIX HOLDINGS,0.0027,可选消费,index tracking
+2025-01-31,3222.T,UNITED SUPER MARKETS,0.0088,日常消费,index tracking
+2025-01-31,3231.T,NOMURA REAL ESTATE,0.0642,房地产,index tracking
+2025-01-31,3232.T,MIE KOTSU,0.0027,工业,index tracking
+2025-01-31,3245.T,DEAR LIFE,0.0042,房地产,index tracking
+2025-01-31,3252.T,NIPPON COMMERCIAL DEVELOPMENT,0.0049,房地产,index tracking
+2025-01-31,3267.T,PHIL,0.0004,工业,index tracking
+2025-01-31,3276.T,JAPAN PROPERTY MANAGEMENT CENTER,0.0016,房地产,index tracking
+2025-01-31,3284.T,HOOSIERS,0.004,可选消费,index tracking
+2025-01-31,3288.T,OPEN HOUSE,0.0462,房地产,index tracking
+2025-01-31,3289.T,东急不动产,0.0745,房地产,index tracking
+2025-01-31,3291.T,饭田集团控股,0.0559,可选消费,index tracking
+2025-01-31,3302.T,TEIKOKU SEN-I,0.0068,工业,index tracking
+2025-01-31,3315.T,NIPPON COKE & ENGINEERING,0.0025,能源,index tracking
+2025-01-31,3319.T,GOLF DIGEST ONLINE,0.0006,信息技术,index tracking
+2025-01-31,3328.T,BEENOS,0.0066,可选消费,index tracking
+2025-01-31,3333.T,ASAHI,0.0033,可选消费,index tracking
+2025-01-31,3341.T,NIHON CHOUZAI,0.0023,日常消费,index tracking
+2025-01-31,3349.T,COSMOS PHARMACEUTICAL,0.0382,日常消费,index tracking
+2025-01-31,3360.T,SHIP HEALTHCARE,0.0223,医疗保健,index tracking
+2025-01-31,3371.T,SOFTCREATE HOLDINGS,0.0042,信息技术,index tracking
+2025-01-31,3382.T,SEVEN & I,0.7251,日常消费,index tracking
+2025-01-31,3387.T,CREATE RESTAURANTS HOLDINGS,0.0271,可选消费,index tracking
+2025-01-31,3388.T,MEIJI ELECTRIC INDUSTRIES,0.0014,工业,index tracking
+2025-01-31,3391.T,TSURUHA,0.0443,日常消费,index tracking
+2025-01-31,3395.T,SAINT MARC,0.0055,可选消费,index tracking
+2025-01-31,3397.T,TORIDOLL HOLDINGS,0.0282,可选消费,index tracking
+2025-01-31,3401.T,帝人,0.032,材料,index tracking
+2025-01-31,3402.T,东丽工业,0.1986,材料,index tracking
+2025-01-31,3405.T,可乐丽,0.0766,材料,index tracking
+2025-01-31,3407.T,旭化成,0.1797,材料,index tracking
+2025-01-31,3415.T,TOKYO BASE,0.0009,可选消费,index tracking
+2025-01-31,3421.T,INABA SEISAKUSHO,0.0024,工业,index tracking
+2025-01-31,3431.T,MIYAJI ENGINEERING,0.0061,工业,index tracking
+2025-01-31,3433.T,TOCALO,0.0135,工业,index tracking
+2025-01-31,3436.T,胜高,0.0571,信息技术,index tracking
+2025-01-31,3443.T,KAWADA TECHNOLOGIES,0.0045,工业,index tracking
+2025-01-31,3445.T,RS TECHNOLOGIES,0.006,信息技术,index tracking
+2025-01-31,3457.T,HOUSE DO,0.0018,可选消费,index tracking
+2025-01-31,3458.T,CRE,0.0019,房地产,index tracking
+2025-01-31,3465.T,KI-STAR REAL ESTATE,0.0058,可选消费,index tracking
+2025-01-31,3475.T,GOOD COM ASSET,0.0019,房地产,index tracking
+2025-01-31,3480.T,J.S.B.,0.0033,房地产,index tracking
+2025-01-31,3482.T,LOADSTAR CAPITAL K.K.,0.0039,房地产,index tracking
+2025-01-31,3498.T,KASUMIGASEKI CAPITAL,0.0152,公用事业,index tracking
+2025-01-31,3539.T,JM,0.0046,日常消费,index tracking
+2025-01-31,3543.T,KOMEDA,0.0192,可选消费,index tracking
+2025-01-31,3546.T,ALLEANZA,0.0022,可选消费,index tracking
+2025-01-31,3547.T,KUSHIKATSU TANAKA HOLDINGS,0.0011,可选消费,index tracking
+2025-01-31,3548.T,BAROQUE JAPAN,0.0024,可选消费,index tracking
+2025-01-31,3549.T,KUSURI NO AOKI,0.0229,日常消费,index tracking
+2025-01-31,3561.T,CHIKARANOMOTO,0.0024,可选消费,index tracking
+2025-01-31,3563.T,FOOD&LIFE COMPANIES,0.0494,可选消费,index tracking
+2025-01-31,3565.T,ASCENTECH K.K.,0.0009,能源,index tracking
+2025-01-31,3569.T,SEIREN,0.013,可选消费,index tracking
+2025-01-31,3580.T,KOMATSU MATERE,0.003,可选消费,index tracking
+2025-01-31,3591.T,WACOAL,0.0283,可选消费,index tracking
+2025-01-31,3593.T,HOGY MEDICAL,0.0164,医疗保健,index tracking
+2025-01-31,3608.T,TSI,0.0099,可选消费,index tracking
+2025-01-31,3612.T,WORLD,0.0096,可选消费,index tracking
+2025-01-31,3626.T,TIS,0.0916,信息技术,index tracking
+2025-01-31,3632.T,GREE HOLDINGS,0.0039,信息技术,index tracking
+2025-01-31,3633.T,GMO PEPABO,0.0004,信息技术,index tracking
+2025-01-31,3635.T,KOEI TECMO,0.0368,通讯服务,index tracking
+2025-01-31,3636.T,MITSUBISHI RESEARCH INSTITUTE,0.0058,信息技术,index tracking
+2025-01-31,3649.T,FINDEX,0.0018,医疗保健,index tracking
+2025-01-31,3655.T,BRAINPAD,0.0021,信息技术,index tracking
+2025-01-31,3656.T,KLAB,0.0009,信息技术,index tracking
+2025-01-31,3657.T,POLE TO WIN,0.0015,信息技术,index tracking
+2025-01-31,3659.T,NEXON,0.1123,通讯服务,index tracking
+2025-01-31,3660.T,ISTYLE,0.004,信息技术,index tracking
+2025-01-31,3661.T,M-UP HOLDINGS,0.005,信息技术,index tracking
+2025-01-31,3662.T,ATEAM HOLDINGS,0.0016,信息技术,index tracking
+2025-01-31,3663.T,CELSYS,0.005,信息技术,index tracking
+2025-01-31,3665.T,ENIGMO,0.0009,信息技术,index tracking
+2025-01-31,3668.T,COLOPL,0.0042,信息技术,index tracking
+2025-01-31,3673.T,BROADLEAF,0.0065,信息技术,index tracking
+2025-01-31,3676.T,DIGITAL HEARTS HOLDINGS,0.0016,信息技术,index tracking
+2025-01-31,3678.T,MEDIA DO,0.0018,信息技术,index tracking
+2025-01-31,3679.T,ZIGEXN,0.0029,通讯服务,index tracking
+2025-01-31,3681.T,V-CUBE,0.0007,信息技术,index tracking
+2025-01-31,3687.T,FIXSTARS,0.0044,信息技术,index tracking
+2025-01-31,3688.T,CARTA,0.002,工业,index tracking
+2025-01-31,3694.T,OPTIM,0.002,信息技术,index tracking
+2025-01-31,3696.T,CERES,0.0033,通讯服务,index tracking
+2025-01-31,3697.T,SHIFT,0.0325,信息技术,index tracking
+2025-01-31,3708.T,TOKUSHU TOKAI PAPER,0.0044,材料,index tracking
+2025-01-31,3741.T,SYSTEMS ENGINEERING CONSULTANTS,0.0021,信息技术,index tracking
+2025-01-31,3762.T,TECHMATRIX,0.0138,信息技术,index tracking
+2025-01-31,3763.T,PRO-SHIP,0.0017,信息技术,index tracking
+2025-01-31,3765.T,GUNGHO ONLINE ENTERTAINMENT,0.0204,通讯服务,index tracking
+2025-01-31,3769.T,GMO PAYMENT GATEWAY,0.0474,工业,index tracking
+2025-01-31,3771.T,SYSTEM RESEARCH,0.0028,信息技术,index tracking
+2025-01-31,3774.T,INTERNET INITIATIVE JAPAN,0.0401,信息技术,index tracking
+2025-01-31,3778.T,SAKURA INTERNET,0.0187,信息技术,index tracking
+2025-01-31,3788.T,GMO GLOBAL SIGN,0.0019,信息技术,index tracking
+2025-01-31,3817.T,SRA,0.0062,信息技术,index tracking
+2025-01-31,3834.T,ASAHI NET,0.0018,信息技术,index tracking
+2025-01-31,3835.T,EBASE,0.0022,信息技术,index tracking
+2025-01-31,3836.T,AVANT,0.0069,信息技术,index tracking
+2025-01-31,3837.T,AD-SOL NISSIN,0.0021,信息技术,index tracking
+2025-01-31,3843.T,FREEBIT,0.0018,通讯服务,index tracking
+2025-01-31,3844.T,COMTURE,0.0073,信息技术,index tracking
+2025-01-31,3853.T,ASTERIA,0.0012,信息技术,index tracking
+2025-01-31,3854.T,I'LL,0.0036,信息技术,index tracking
+2025-01-31,3861.T,王子控股,0.0598,材料,index tracking
+2025-01-31,3863.T,日本制纸,0.0116,材料,index tracking
+2025-01-31,3865.T,HOKUETSU,0.0207,材料,index tracking
+2025-01-31,3880.T,DAIO PAPER,0.0109,材料,index tracking
+2025-01-31,3901.T,MARKLINES,0.0033,信息技术,index tracking
+2025-01-31,3902.T,MEDICAL DATA VISION,0.0016,医疗保健,index tracking
+2025-01-31,3903.T,GUMI,0.002,信息技术,index tracking
+2025-01-31,3915.T,TERRASKY,0.0026,信息技术,index tracking
+2025-01-31,3916.T,DIGITAL INFORMATION TECHNOLOGIES,0.003,信息技术,index tracking
+2025-01-31,3921.T,NEOJAPAN,0.0011,信息技术,index tracking
+2025-01-31,3922.T,PR TIMES,0.0011,通讯服务,index tracking
+2025-01-31,3923.T,RAKUS,0.0232,信息技术,index tracking
+2025-01-31,3925.T,DOUBLE STANDARD,0.0015,信息技术,index tracking
+2025-01-31,3926.T,OPEN DOOR,0.0011,信息技术,index tracking
+2025-01-31,3932.T,AKATSUKI,0.0036,信息技术,index tracking
+2025-01-31,3937.T,UBICOM,0.0011,信息技术,index tracking
+2025-01-31,3939.T,KANAMIC NETWORK,0.0014,医疗保健,index tracking
+2025-01-31,3941.T,RENGO,0.0201,材料,index tracking
+2025-01-31,3946.T,TOMOKU,0.0034,材料,index tracking
+2025-01-31,3950.T,THE PACK,0.0066,材料,index tracking
+2025-01-31,3962.T,CHANGE HOLDINGS,0.0092,信息技术,index tracking
+2025-01-31,3964.T,AUCNET,0.0031,信息技术,index tracking
+2025-01-31,3978.T,MACROMILL,0.0062,工业,index tracking
+2025-01-31,3983.T,ORO,0.0026,信息技术,index tracking
+2025-01-31,3984.T,USER LOCAL,0.0022,信息技术,index tracking
+2025-01-31,3993.T,PKSHA TECHNOLOGY,0.0073,信息技术,index tracking
+2025-01-31,3994.T,MONEY FORWARD,0.0267,信息技术,index tracking
+2025-01-31,4004.T,RESONAC,0.0858,材料,index tracking
+2025-01-31,4005.T,住友化学,0.068,材料,index tracking
+2025-01-31,4008.T,SUMITOMO SEIKA CHEMICALS,0.0055,材料,index tracking
+2025-01-31,4021.T,日产化学,0.0607,材料,index tracking
+2025-01-31,4022.T,RASA INDUSTRIES,0.0022,材料,index tracking
+2025-01-31,4023.T,KUREHA,0.0145,材料,index tracking
+2025-01-31,4025.T,TAKI CHEMICAL,0.0033,材料,index tracking
+2025-01-31,4027.T,TAYCA,0.0027,材料,index tracking
+2025-01-31,4028.T,ISHIHARA SANGYO KAISHA,0.0067,材料,index tracking
+2025-01-31,4041.T,NIPPON SODA,0.0154,材料,index tracking
+2025-01-31,4042.T,东曹,0.0695,材料,index tracking
+2025-01-31,4043.T,德山,0.021,材料,index tracking
+2025-01-31,4044.T,CENTRAL GLASS,0.0104,工业,index tracking
+2025-01-31,4045.T,TOAGOSEI,0.0168,材料,index tracking
+2025-01-31,4046.T,OSAKA SODA,0.0147,材料,index tracking
+2025-01-31,4047.T,KANTO DENKA KOGYO,0.0052,材料,index tracking
+2025-01-31,4053.T,SUN,0.0013,工业,index tracking
+2025-01-31,4061.T,DENKA,0.0202,材料,index tracking
+2025-01-31,4062.T,IBIDEN,0.0669,信息技术,index tracking
+2025-01-31,4063.T,信越化学工业,1.0914,材料,index tracking
+2025-01-31,4064.T,NIPPON CARBIDE INDUSTRIES,0.0024,材料,index tracking
+2025-01-31,4071.T,PLUS ALPHA CONSULTING,0.0058,信息技术,index tracking
+2025-01-31,4072.T,DENSAN SYSTEM,0.0025,信息技术,index tracking
+2025-01-31,4078.T,SAKAI CHEMICAL INDUSTRY,0.0045,材料,index tracking
+2025-01-31,4082.T,DAIICHI KIGENSO KAGAKU-KOGYO,0.0019,材料,index tracking
+2025-01-31,4088.T,AIR WATER,0.046,材料,index tracking
+2025-01-31,4091.T,日本酸素控股,0.1078,材料,index tracking
+2025-01-31,4092.T,NIPPON CHEMICAL INDUSTRIAL,0.0022,材料,index tracking
+2025-01-31,4095.T,NIHON PARKERIZING,0.0142,材料,index tracking
+2025-01-31,4097.T,KOATSU GAS KOGYO,0.0031,材料,index tracking
+2025-01-31,4099.T,SHIKOKU CHEMICALS,0.0055,材料,index tracking
+2025-01-31,4100.T,TODA KOGYO,0.0006,材料,index tracking
+2025-01-31,4109.T,STELLA CHEMIFA,0.0061,材料,index tracking
+2025-01-31,4112.T,HODOGAYA CHEMICAL,0.0029,材料,index tracking
+2025-01-31,4114.T,日本触媒,0.0304,材料,index tracking
+2025-01-31,4116.T,DAINICHISEIKA COLOR & CHEMICALS MFG,0.005,材料,index tracking
+2025-01-31,4118.T,KANEKA,0.0234,材料,index tracking
+2025-01-31,4151.T,协和麒麟,0.0687,医疗保健,index tracking
+2025-01-31,4180.T,APPIER,0.0125,信息技术,index tracking
+2025-01-31,4182.T,三菱瓦斯化学,0.0556,材料,index tracking
+2025-01-31,4183.T,三井化学,0.0773,材料,index tracking
+2025-01-31,4186.T,TOKYO OHKA KOGYO,0.0419,材料,index tracking
+2025-01-31,4187.T,OSAKA ORGANIC CHEMICAL INDUSTRY,0.0057,材料,index tracking
+2025-01-31,4188.T,三菱化学集团,0.1462,材料,index tracking
+2025-01-31,4189.T,KH NEOCHEM,0.0095,材料,index tracking
+2025-01-31,4194.T,VISIONAL,0.0231,信息技术,index tracking
+2025-01-31,4202.T,DAICEL,0.0394,材料,index tracking
+2025-01-31,4203.T,SUMITOMO BAKELITE,0.0298,材料,index tracking
+2025-01-31,4204.T,积水化学,0.1292,可选消费,index tracking
+2025-01-31,4205.T,ZEON,0.0281,材料,index tracking
+2025-01-31,4206.T,AICA KOGYO,0.0206,工业,index tracking
+2025-01-31,4208.T,UBE,0.0297,材料,index tracking
+2025-01-31,4212.T,SEKISUI JUSHI,0.0065,工业,index tracking
+2025-01-31,4216.T,ASAHI YUKIZAI,0.0073,材料,index tracking
+2025-01-31,4218.T,NICHIBAN,0.0032,工业,index tracking
+2025-01-31,4220.T,RIKEN TECHNOS,0.0046,材料,index tracking
+2025-01-31,4221.T,OKURA INDUSTRIAL,0.0035,材料,index tracking
+2025-01-31,4228.T,SEKISUI KASEI,0.0012,材料,index tracking
+2025-01-31,4229.T,GUN EI CHEMICAL INDUSTRY,0.0016,材料,index tracking
+2025-01-31,4246.T,DAIKYONISHIKAWA,0.0035,可选消费,index tracking
+2025-01-31,4249.T,MORIROKU COMPANY,0.0028,材料,index tracking
+2025-01-31,4251.T,KEIWA,0.0017,材料,index tracking
+2025-01-31,4272.T,日本化药,0.0217,材料,index tracking
+2025-01-31,4275.T,CARLIT,0.0029,材料,index tracking
+2025-01-31,4286.T,CL,0.0004,通讯服务,index tracking
+2025-01-31,4290.T,PRESTIGE INTERNATIONAL,0.0085,工业,index tracking
+2025-01-31,4298.T,PROTO,0.0034,通讯服务,index tracking
+2025-01-31,4299.T,HIMACS,0.0011,信息技术,index tracking
+2025-01-31,4301.T,AMUSE,0.0024,通讯服务,index tracking
+2025-01-31,4307.T,野村综合研究所,0.289,信息技术,index tracking
+2025-01-31,4310.T,DREAM INCUBATOR,0.0022,金融,index tracking
+2025-01-31,4318.T,QUICK,0.004,工业,index tracking
+2025-01-31,4323.T,JAPAN SYSTEM TECHNIQUES,0.0043,信息技术,index tracking
+2025-01-31,4324.T,电通集团,0.099,通讯服务,index tracking
+2025-01-31,4326.T,INTAGE HOLDINGS,0.0023,通讯服务,index tracking
+2025-01-31,4331.T,TAKE AND GIVE. NEEDS,0.0012,可选消费,index tracking
+2025-01-31,4333.T,TOHO SYSTEM SCIENCE,0.0016,信息技术,index tracking
+2025-01-31,4337.T,PIA,0.0028,可选消费,index tracking
+2025-01-31,4343.T,AEON FANTASY,0.0032,可选消费,index tracking
+2025-01-31,4344.T,SOURCENEXT,0.0029,信息技术,index tracking
+2025-01-31,4345.T,CTS,0.003,工业,index tracking
+2025-01-31,4350.T,MEDICAL SYSTEM NETWORK,0.001,日常消费,index tracking
+2025-01-31,4362.T,NIPPON FINE CHEMICAL,0.0038,材料,index tracking
+2025-01-31,4368.T,FUSO CHEMICAL,0.0079,材料,index tracking
+2025-01-31,4369.T,TRI CHEMICAL LABORATORIES,0.009,信息技术,index tracking
+2025-01-31,4373.T,SIMPLEX,0.0144,信息技术,index tracking
+2025-01-31,4382.T,HEROZ,0.001,通讯服务,index tracking
+2025-01-31,4384.T,RAKSUL,0.0083,工业,index tracking
+2025-01-31,4385.T,MERCARI,0.0262,通讯服务,index tracking
+2025-01-31,4390.T,IPS,0.0019,通讯服务,index tracking
+2025-01-31,4396.T,SYSTEM SUPPORT HOLDINGS,0.0017,信息技术,index tracking
+2025-01-31,4401.T,ADEKA,0.0255,材料,index tracking
+2025-01-31,4403.T,NOF,0.0614,材料,index tracking
+2025-01-31,4410.T,HARIMA CHEMICALS GROUP,0.0017,材料,index tracking
+2025-01-31,4420.T,ESOL,0.0011,信息技术,index tracking
+2025-01-31,4432.T,WINGARC1ST,0.009,信息技术,index tracking
+2025-01-31,4433.T,HITO-COMMUNICATIONS,0.0008,工业,index tracking
+2025-01-31,4434.T,SERVERWORKS,0.0011,信息技术,index tracking
+2025-01-31,4443.T,SANSAN,0.0174,信息技术,index tracking
+2025-01-31,4449.T,GIFTEE,0.0031,信息技术,index tracking
+2025-01-31,4452.T,花王,0.3788,日常消费,index tracking
+2025-01-31,4461.T,DKS,0.0027,材料,index tracking
+2025-01-31,4462.T,ISHIHARA CHEMICAL,0.0026,材料,index tracking
+2025-01-31,4471.T,SANYO CHEMICAL INDUSTRIES,0.0061,材料,index tracking
+2025-01-31,4480.T,MEDLEY,0.0113,信息技术,index tracking
+2025-01-31,4481.T,BASE CO,0.0037,金融,index tracking
+2025-01-31,4483.T,JMC,0.0122,医疗保健,index tracking
+2025-01-31,4502.T,武田制药,0.9437,医疗保健,index tracking
+2025-01-31,4503.T,安斯泰来制药,0.3347,医疗保健,index tracking
+2025-01-31,4506.T,住友制药,0.0137,医疗保健,index tracking
+2025-01-31,4507.T,盐野义制药,0.1914,医疗保健,index tracking
+2025-01-31,4516.T,日本新药,0.0248,医疗保健,index tracking
+2025-01-31,4519.T,中外制药,0.5311,医疗保健,index tracking
+2025-01-31,4521.T,科研制药,0.0182,医疗保健,index tracking
+2025-01-31,4523.T,日本卫材,0.1519,医疗保健,index tracking
+2025-01-31,4526.T,RIKEN VITAMIN,0.005,日常消费,index tracking
+2025-01-31,4527.T,ROHTO PHARMACEUTICAL,0.0703,医疗保健,index tracking
+2025-01-31,4528.T,小野药品工业,0.0831,医疗保健,index tracking
+2025-01-31,4530.T,久光制药,0.025,医疗保健,index tracking
+2025-01-31,4534.T,MOCHIDA PHARMACEUTICAL,0.0107,医疗保健,index tracking
+2025-01-31,4536.T,参天制药,0.0715,医疗保健,index tracking
+2025-01-31,4538.T,FUSO PHARMACEUTICAL INDUSTRIES,0.0024,医疗保健,index tracking
+2025-01-31,4540.T,TSUMURA,0.0396,医疗保健,index tracking
+2025-01-31,4543.T,泰尔茂,0.4925,医疗保健,index tracking
+2025-01-31,4544.T,H.U,0.0193,医疗保健,index tracking
+2025-01-31,4547.T,KISSEI PHARMACEUTICAL,0.016,医疗保健,index tracking
+2025-01-31,4548.T,SEIKAGAKU,0.0038,医疗保健,index tracking
+2025-01-31,4549.T,EIKEN CHEMICAL,0.0085,医疗保健,index tracking
+2025-01-31,4551.T,TORII PHARMACEUTICAL,0.0067,医疗保健,index tracking
+2025-01-31,4552.T,JCR PHARMACEUTICALS,0.0047,医疗保健,index tracking
+2025-01-31,4553.T,TOWA PHARMACEUTICAL,0.0102,医疗保健,index tracking
+2025-01-31,4554.T,FUJI PHARMA,0.0027,医疗保健,index tracking
+2025-01-31,4559.T,ZERIA PHARMACEUTICAL,0.0089,医疗保健,index tracking
+2025-01-31,4565.T,NXERA PHARMA,0.0115,医疗保健,index tracking
+2025-01-31,4568.T,第一三共,1.0171,医疗保健,index tracking
+2025-01-31,4569.T,KYORIN PHARMACEUTICAL,0.008,医疗保健,index tracking
+2025-01-31,4574.T,TAIKO PHARMACEUTICAL,0.0018,医疗保健,index tracking
+2025-01-31,4577.T,DAITO PHARMACEUTICAL,0.0036,医疗保健,index tracking
+2025-01-31,4578.T,大冢控股,0.5063,医疗保健,index tracking
+2025-01-31,4587.T,PEPTIDREAM,0.0262,医疗保健,index tracking
+2025-01-31,4611.T,DAI NIPPON TORYO,0.0034,材料,index tracking
+2025-01-31,4612.T,日本涂料,0.1094,材料,index tracking
+2025-01-31,4613.T,KANSAI PAINT,0.0444,材料,index tracking
+2025-01-31,4617.T,CHUGOKU MARINE PAINTS,0.0135,材料,index tracking
+2025-01-31,4620.T,FUJIKURA KASEI,0.0016,材料,index tracking
+2025-01-31,4626.T,TAIYO,0.0184,材料,index tracking
+2025-01-31,4631.T,DIC,0.0301,材料,index tracking
+2025-01-31,4633.T,SAKATA INX,0.0096,材料,index tracking
+2025-01-31,4634.T,ARTIENCE,0.0139,材料,index tracking
+2025-01-31,4641.T,ALTECH,0.0056,工业,index tracking
+2025-01-31,4651.T,SANIX,0.0008,工业,index tracking
+2025-01-31,4658.T,NIPPON AIR CONDITIONING SERVICES,0.0031,工业,index tracking
+2025-01-31,4661.T,东方乐园,0.533,可选消费,index tracking
+2025-01-31,4662.T,FOCUS SYSTEMS,0.0019,信息技术,index tracking
+2025-01-31,4665.T,DUSKIN,0.021,工业,index tracking
+2025-01-31,4666.T,PARK24,0.0396,工业,index tracking
+2025-01-31,4668.T,MEIKO NETWORK JAPAN,0.0023,可选消费,index tracking
+2025-01-31,4671.T,FALCO,0.0025,医疗保健,index tracking
+2025-01-31,4674.T,CRESCO,0.0047,信息技术,index tracking
+2025-01-31,4676.T,FUJI MEDIA,0.053,通讯服务,index tracking
+2025-01-31,4680.T,ROUND ONE,0.0321,可选消费,index tracking
+2025-01-31,4681.T,RESORTTRUST,0.0332,可选消费,index tracking
+2025-01-31,4684.T,OBIC,0.2175,信息技术,index tracking
+2025-01-31,4686.T,JUSTSYSTEMS,0.0122,信息技术,index tracking
+2025-01-31,4687.T,TDC SOFT,0.006,信息技术,index tracking
+2025-01-31,4689.T,LINE雅虎,0.1834,信息技术,index tracking
+2025-01-31,4694.T,BML,0.0091,医疗保健,index tracking
+2025-01-31,4704.T,趋势科技,0.1222,信息技术,index tracking
+2025-01-31,4709.T,ID,0.003,信息技术,index tracking
+2025-01-31,4714.T,RISO KYOIKU,0.0048,可选消费,index tracking
+2025-01-31,4716.T,ORACLE,0.0685,信息技术,index tracking
+2025-01-31,4718.T,WASEDA ACADEMY,0.0028,可选消费,index tracking
+2025-01-31,4719.T,ALPHA SYSTEMS,0.0028,信息技术,index tracking
+2025-01-31,4722.T,FUTURE,0.0114,信息技术,index tracking
+2025-01-31,4725.T,CAC HOLDINGS,0.0027,信息技术,index tracking
+2025-01-31,4732.T,USS,0.074,可选消费,index tracking
+2025-01-31,4733.T,OBIC BUSINESS CONSULTANTS,0.0332,信息技术,index tracking
+2025-01-31,4743.T,ITFOR,0.0043,信息技术,index tracking
+2025-01-31,4745.T,TOKYO INDIVIDUALIZED EDUCATIONAL,0.0011,可选消费,index tracking
+2025-01-31,4746.T,TOUKEI COMPUTER,0.0031,工业,index tracking
+2025-01-31,4751.T,CYBERAGENT,0.0665,通讯服务,index tracking
+2025-01-31,4755.T,乐天集团,0.179,信息技术,index tracking
+2025-01-31,4763.T,CREEK & RIVER,0.0022,工业,index tracking
+2025-01-31,4765.T,SBI GLOBAL ASSET MANAGEMENT,0.0035,金融,index tracking
+2025-01-31,4767.T,TOW,0.0014,通讯服务,index tracking
+2025-01-31,4768.T,大冢商会,0.1,信息技术,index tracking
+2025-01-31,4776.T,CYBOZU,0.0096,信息技术,index tracking
+2025-01-31,4792.T,YAMADA CONSULTING,0.0025,工业,index tracking
+2025-01-31,4801.T,CENTRAL SPORTS,0.0023,可选消费,index tracking
+2025-01-31,4809.T,PARACA,0.0014,工业,index tracking
+2025-01-31,4812.T,DENTSU SOKEN,0.0151,信息技术,index tracking
+2025-01-31,4813.T,ACCESS,0.0031,信息技术,index tracking
+2025-01-31,4819.T,DIGITAL GARAGE,0.0161,信息技术,index tracking
+2025-01-31,4820.T,EM SYSTEMS,0.0032,信息技术,index tracking
+2025-01-31,4825.T,WEATHERNEWS,0.0071,工业,index tracking
+2025-01-31,4826.T,COMPUTER INSTITUTE OF JAPAN,0.0033,信息技术,index tracking
+2025-01-31,4828.T,BUSINESS ENGINEERING,0.0021,信息技术,index tracking
+2025-01-31,4839.T,WOWOW,0.0019,通讯服务,index tracking
+2025-01-31,4845.T,SCALA,0.0009,信息技术,index tracking
+2025-01-31,4848.T,FULLCAST HOLDINGS,0.0032,工业,index tracking
+2025-01-31,4849.T,EN JAPAN,0.0085,工业,index tracking
+2025-01-31,4880.T,CELLSOURCE,0.0014,医疗保健,index tracking
+2025-01-31,4886.T,ASKA PHARMACEUTICAL,0.0045,医疗保健,index tracking
+2025-01-31,4887.T,SAWAI GROUP,0.0298,医疗保健,index tracking
+2025-01-31,4901.T,富士胶片控股,0.5234,可选消费,index tracking
+2025-01-31,4902.T,柯尼卡美能达,0.0357,可选消费,index tracking
+2025-01-31,4911.T,资生堂,0.1377,日常消费,index tracking
+2025-01-31,4912.T,LION,0.0533,日常消费,index tracking
+2025-01-31,4914.T,TAKASAGO INTERNATIONAL,0.0092,材料,index tracking
+2025-01-31,4917.T,MANDOM,0.0061,日常消费,index tracking
+2025-01-31,4919.T,MILBON,0.0129,日常消费,index tracking
+2025-01-31,4922.T,高丝,0.0353,日常消费,index tracking
+2025-01-31,4923.T,COTA,0.0042,日常消费,index tracking
+2025-01-31,4927.T,POLA ORBIS,0.0183,日常消费,index tracking
+2025-01-31,4928.T,NOEVIR,0.0104,日常消费,index tracking
+2025-01-31,4931.T,新日本制药,0.0028,日常消费,index tracking
+2025-01-31,4933.T,I-NE,0.0018,日常消费,index tracking
+2025-01-31,4936.T,AXXZIA,0.0007,日常消费,index tracking
+2025-01-31,4951.T,S.T.,0.0031,日常消费,index tracking
+2025-01-31,4956.T,KONISHI,0.0102,材料,index tracking
+2025-01-31,4958.T,T.HASEGAWA,0.0144,材料,index tracking
+2025-01-31,4967.T,KOBAYASHI PHARMACEUTICAL,0.0382,日常消费,index tracking
+2025-01-31,4968.T,ARAKAWA CHEMICAL INDUSTRIES,0.0026,材料,index tracking
+2025-01-31,4971.T,MEC,0.0067,材料,index tracking
+2025-01-31,4973.T,JAPAN PURE CHEMICAL,0.002,材料,index tracking
+2025-01-31,4974.T,TAKARA BIO,0.0082,医疗保健,index tracking
+2025-01-31,4975.T,JCU,0.0101,材料,index tracking
+2025-01-31,4979.T,OAT AGRIO,0.0021,材料,index tracking
+2025-01-31,4980.T,DEXERIALS,0.045,信息技术,index tracking
+2025-01-31,4985.T,EARTH,0.0116,日常消费,index tracking
+2025-01-31,4992.T,HOKKO CHEMICAL INDUSTRY,0.0033,材料,index tracking
+2025-01-31,4994.T,TAISEI LAMICK,0.0018,材料,index tracking
+2025-01-31,4996.T,KUMIAI CHEMICAL INDUSTRY,0.0076,材料,index tracking
+2025-01-31,4997.T,NIHON NOHYAKU,0.0029,材料,index tracking
+2025-01-31,5011.T,NICHIREKI GROUP,0.0065,工业,index tracking
+2025-01-31,5013.T,YUSHIRO,0.0028,材料,index tracking
+2025-01-31,5017.T,FUJI OIL,0.0021,能源,index tracking
+2025-01-31,5019.T,出光兴产,0.1227,能源,index tracking
+2025-01-31,5020.T,ENEOS,0.3364,能源,index tracking
+2025-01-31,5021.T,科斯莫能源控股,0.0561,能源,index tracking
+2025-01-31,5032.T,ANYCOLOR,0.0109,信息技术,index tracking
+2025-01-31,5074.T,TESS,0.0016,公用事业,index tracking
+2025-01-31,5076.T,INFRONEER,0.0302,工业,index tracking
+2025-01-31,5101.T,横滨橡胶,0.0447,可选消费,index tracking
+2025-01-31,5105.T,TOYO TIRE,0.037,可选消费,index tracking
+2025-01-31,5108.T,普利司通,0.4122,可选消费,index tracking
+2025-01-31,5110.T,住友橡胶,0.0449,可选消费,index tracking
+2025-01-31,5121.T,FUJIKURA COMPOSITES,0.0038,可选消费,index tracking
+2025-01-31,5122.T,冈本,0.0071,材料,index tracking
+2025-01-31,5142.T,ACHILLES,0.002,材料,index tracking
+2025-01-31,5185.T,FUKOKU,0.0027,可选消费,index tracking
+2025-01-31,5186.T,NITTA,0.0089,工业,index tracking
+2025-01-31,5191.T,SUMITOMO RIKO,0.0089,可选消费,index tracking
+2025-01-31,5192.T,MITSUBOSHI BELTING,0.0138,工业,index tracking
+2025-01-31,5195.T,BANDO CHEMICAL INDUSTRIES,0.0071,工业,index tracking
+2025-01-31,5201.T,AGC,0.1101,工业,index tracking
+2025-01-31,5202.T,日本板硝子,0.0049,工业,index tracking
+2025-01-31,5208.T,ARISAWA MFG,0.0055,信息技术,index tracking
+2025-01-31,5214.T,日本电气硝子,0.0313,信息技术,index tracking
+2025-01-31,5218.T,OHARA,0.0013,信息技术,index tracking
+2025-01-31,5232.T,住友大阪水泥,0.0145,材料,index tracking
+2025-01-31,5233.T,太平洋水泥,0.0611,材料,index tracking
+2025-01-31,5262.T,NIPPON HUME,0.0034,工业,index tracking
+2025-01-31,5269.T,NIPPON CONCRETE INDUSTRIES,0.0018,材料,index tracking
+2025-01-31,5273.T,MITANI SEKISAN,0.0045,材料,index tracking
+2025-01-31,5288.T,ASIA PILE HOLDINGS,0.003,材料,index tracking
+2025-01-31,5301.T,东海碳素,0.0202,材料,index tracking
+2025-01-31,5302.T,NIPPON CARBON,0.0062,工业,index tracking
+2025-01-31,5310.T,TOYO TANSO,0.0071,工业,index tracking
+2025-01-31,5331.T,NORITAKE,0.0108,工业,index tracking
+2025-01-31,5332.T,东陶,0.0697,工业,index tracking
+2025-01-31,5333.T,日本碍子,0.056,工业,index tracking
+2025-01-31,5334.T,日本特殊陶业,0.1059,可选消费,index tracking
+2025-01-31,5344.T,MARUWA,0.0401,信息技术,index tracking
+2025-01-31,5351.T,SHINAGAWA REFRACTORIES,0.0054,材料,index tracking
+2025-01-31,5352.T,KROSAKI HARIMA,0.0043,材料,index tracking
+2025-01-31,5357.T,YOTAI REFRACTORIES,0.0022,材料,index tracking
+2025-01-31,5384.T,FUJIMI,0.0149,材料,index tracking
+2025-01-31,5393.T,NICHIAS,0.0325,工业,index tracking
+2025-01-31,5401.T,日本制铁,0.4238,材料,index tracking
+2025-01-31,5406.T,神户制钢,0.0865,材料,index tracking
+2025-01-31,5408.T,NAKAYAMA STEEL WORKS,0.0041,材料,index tracking
+2025-01-31,5410.T,GODO STEEL,0.0058,材料,index tracking
+2025-01-31,5411.T,日本钢铁工程控股,0.1406,材料,index tracking
+2025-01-31,5423.T,东京钢铁制造,0.0113,材料,index tracking
+2025-01-31,5440.T,KYOEI STEEL,0.0048,材料,index tracking
+2025-01-31,5444.T,大和工业,0.0376,材料,index tracking
+2025-01-31,5445.T,TOKYO TEKKO,0.0068,材料,index tracking
+2025-01-31,5449.T,OSAKA STEEL,0.0028,材料,index tracking
+2025-01-31,5451.T,YODOGAWA STEEL WORKS,0.0135,材料,index tracking
+2025-01-31,5461.T,CHUBU STEEL PLATE,0.0039,材料,index tracking
+2025-01-31,5463.T,丸一钢管,0.0267,材料,index tracking
+2025-01-31,5464.T,MORY INDUSTRIES,0.003,材料,index tracking
+2025-01-31,5471.T,大同特殊钢,0.0202,材料,index tracking
+2025-01-31,5480.T,NIPPON YAKIN KOGYO,0.007,材料,index tracking
+2025-01-31,5481.T,SANYO SPECIAL STEEL,0.0051,材料,index tracking
+2025-01-31,5482.T,AICHI STEEL,0.0104,材料,index tracking
+2025-01-31,5541.T,太平洋金属,0.0037,材料,index tracking
+2025-01-31,5563.T,NIPPON DENKO,0.0043,材料,index tracking
+2025-01-31,5602.T,KURIMOTO,0.0054,材料,index tracking
+2025-01-31,5631.T,日本制钢,0.0425,工业,index tracking
+2025-01-31,5632.T,MITSUBISHI STEEL MFG,0.0031,材料,index tracking
+2025-01-31,5659.T,NIPPON SEISEN,0.0028,工业,index tracking
+2025-01-31,5698.T,ENVIPRO,0.001,工业,index tracking
+2025-01-31,5702.T,DAIKI ALUMINIUM INDUSTRY,0.0039,材料,index tracking
+2025-01-31,5703.T,日本轻金属控股,0.0121,材料,index tracking
+2025-01-31,5706.T,三井金属,0.0298,材料,index tracking
+2025-01-31,5707.T,东邦亚铅,0.0011,材料,index tracking
+2025-01-31,5711.T,三菱材料,0.0454,材料,index tracking
+2025-01-31,5713.T,住友金属矿山,0.1176,材料,index tracking
+2025-01-31,5714.T,同和控股,0.0325,材料,index tracking
+2025-01-31,5715.T,FURUKAWA,0.0068,工业,index tracking
+2025-01-31,5726.T,OSAKA TITANIUM TECHNOLOGIES,0.0085,材料,index tracking
+2025-01-31,5727.T,TOHO TITANIUM,0.0056,材料,index tracking
+2025-01-31,5741.T,UACJ,0.0194,材料,index tracking
+2025-01-31,5757.T,CK SAN-ETSU,0.0025,材料,index tracking
+2025-01-31,5801.T,古河电气工业,0.0617,工业,index tracking
+2025-01-31,5802.T,住友电气工业,0.2607,可选消费,index tracking
+2025-01-31,5803.T,藤仓,0.1748,工业,index tracking
+2025-01-31,5805.T,SWCC,0.0264,工业,index tracking
+2025-01-31,5821.T,HIRAKAWA HEWTECH,0.0026,工业,index tracking
+2025-01-31,5830.T,伊予银行,0.0536,金融,index tracking
+2025-01-31,5831.T,SHIZUOKA FINANCIAL,0.0757,金融,index tracking
+2025-01-31,5832.T,CHUGIN FINANCIAL,0.0357,金融,index tracking
+2025-01-31,5838.T,RAKUTEN BANK,0.055,金融,index tracking
+2025-01-31,5844.T,KYOTO FINANCIAL,0.073,金融,index tracking
+2025-01-31,5851.T,RYOBI,0.0063,工业,index tracking
+2025-01-31,5857.T,ARE,0.0202,材料,index tracking
+2025-01-31,5901.T,东洋制罐集团控股,0.039,材料,index tracking
+2025-01-31,5902.T,HOKKAN,0.0023,材料,index tracking
+2025-01-31,5909.T,CORONA,0.0014,可选消费,index tracking
+2025-01-31,5911.T,YOKOGAWA BRIDGE,0.0121,工业,index tracking
+2025-01-31,5929.T,SANWA,0.1249,工业,index tracking
+2025-01-31,5930.T,BUNKA SHUTTER,0.0127,工业,index tracking
+2025-01-31,5932.T,SANKYO TATEYAMA,0.002,工业,index tracking
+2025-01-31,5933.T,ALINCO,0.0021,工业,index tracking
+2025-01-31,5938.T,骊住集团,0.0661,工业,index tracking
+2025-01-31,5943.T,NORITZ,0.0062,工业,index tracking
+2025-01-31,5946.T,CHOFU SEISAKUSHO,0.0056,可选消费,index tracking
+2025-01-31,5947.T,RINNAI,0.0472,可选消费,index tracking
+2025-01-31,5949.T,UNIPRES,0.005,可选消费,index tracking
+2025-01-31,5957.T,NITTOSEIKO,0.0022,工业,index tracking
+2025-01-31,5959.T,OKABE,0.0034,工业,index tracking
+2025-01-31,5970.T,G-TEKT,0.005,可选消费,index tracking
+2025-01-31,5975.T,TOPRE,0.0087,可选消费,index tracking
+2025-01-31,5976.T,NETUREN,0.0038,材料,index tracking
+2025-01-31,5981.T,TOKYO ROPE MFG,0.002,材料,index tracking
+2025-01-31,5985.T,SUNCALL,0.0007,可选消费,index tracking
+2025-01-31,5988.T,PIOLAX,0.0082,可选消费,index tracking
+2025-01-31,5989.T,H-ONE,0.0027,可选消费,index tracking
+2025-01-31,5991.T,日本发条,0.0456,可选消费,index tracking
+2025-01-31,5992.T,CHUO SPRING,0.0026,可选消费,index tracking
+2025-01-31,6005.T,MIURA,0.0443,工业,index tracking
+2025-01-31,6013.T,TAKUMA,0.0144,工业,index tracking
+2025-01-31,6028.T,TECHNOPRO,0.0488,工业,index tracking
+2025-01-31,6035.T,IR JAPAN,0.001,工业,index tracking
+2025-01-31,6036.T,KEEPER TECHNICAL LABORATORY,0.0071,材料,index tracking
+2025-01-31,6047.T,GUNOSY,0.0013,信息技术,index tracking
+2025-01-31,6050.T,E-GUARDIAN,0.0024,信息技术,index tracking
+2025-01-31,6055.T,JAPAN MATERIAL,0.0138,工业,index tracking
+2025-01-31,6058.T,VECTOR/MINATO-KU,0.0037,通讯服务,index tracking
+2025-01-31,6062.T,CHARM CARE,0.0028,医疗保健,index tracking
+2025-01-31,6070.T,CAREERLINK,0.0024,工业,index tracking
+2025-01-31,6071.T,IBJ,0.0013,可选消费,index tracking
+2025-01-31,6073.T,ASANTE,0.0021,可选消费,index tracking
+2025-01-31,6078.T,VALUE HR,0.0035,医疗保健,index tracking
+2025-01-31,6080.T,M&A CAPITAL PARTNERS,0.0064,金融,index tracking
+2025-01-31,6082.T,RIDE ON EXPRESS HOLDINGS,0.001,可选消费,index tracking
+2025-01-31,6088.T,SIGMAXYZ,0.0071,工业,index tracking
+2025-01-31,6089.T,WILL GROUP,0.0022,工业,index tracking
+2025-01-31,6095.T,MEDPEER,0.001,医疗保健,index tracking
+2025-01-31,6098.T,RECRUIT,2.2024,工业,index tracking
+2025-01-31,6099.T,ELAN,0.0025,医疗保健,index tracking
+2025-01-31,6101.T,TSUGAMI,0.009,工业,index tracking
+2025-01-31,6103.T,大隈控股,0.0156,工业,index tracking
+2025-01-31,6104.T,SHIBAURA MACHINE,0.0117,工业,index tracking
+2025-01-31,6113.T,AMADA,0.0566,工业,index tracking
+2025-01-31,6118.T,AIDA ENGINEERING,0.0046,工业,index tracking
+2025-01-31,6134.T,FUJI,0.0259,工业,index tracking
+2025-01-31,6135.T,MAKINO MILLING MACHINE,0.0326,工业,index tracking
+2025-01-31,6136.T,OSG,0.0192,工业,index tracking
+2025-01-31,6140.T,ASAHI DIAMOND INDUSTRIAL,0.0055,工业,index tracking
+2025-01-31,6141.T,DMG MORI,0.0402,工业,index tracking
+2025-01-31,6143.T,SODICK,0.0055,工业,index tracking
+2025-01-31,6146.T,DISCO,0.5467,信息技术,index tracking
+2025-01-31,6151.T,NITTO KOHKI,0.0023,工业,index tracking
+2025-01-31,6157.T,NS TOOL,0.0016,工业,index tracking
+2025-01-31,6167.T,FUJI DIE,0.0015,工业,index tracking
+2025-01-31,6178.T,日本邮政,0.4703,金融,index tracking
+2025-01-31,6183.T,BELLSYSTEM24,0.0035,工业,index tracking
+2025-01-31,6184.T,KAMAKURA SHINSHO,0.0011,可选消费,index tracking
+2025-01-31,6191.T,AIRTRIP,0.0024,信息技术,index tracking
+2025-01-31,6194.T,ATRAE,0.0014,工业,index tracking
+2025-01-31,6196.T,STRIKE,0.004,金融,index tracking
+2025-01-31,6197.T,SOLASTO,0.0034,医疗保健,index tracking
+2025-01-31,6199.T,SERAKU,0.0013,信息技术,index tracking
+2025-01-31,6200.T,INSOURCE,0.006,工业,index tracking
+2025-01-31,6201.T,丰田工业,0.2791,可选消费,index tracking
+2025-01-31,6209.T,NPR-RIKEN,0.0081,可选消费,index tracking
+2025-01-31,6222.T,SHIMA SEIKI MFG,0.0041,工业,index tracking
+2025-01-31,6235.T,OPTORUN,0.0076,信息技术,index tracking
+2025-01-31,6237.T,IWAKI,0.0041,工业,index tracking
+2025-01-31,6238.T,FURYU,0.0026,可选消费,index tracking
+2025-01-31,6240.T,YAMASHIN-FILTER,0.0034,工业,index tracking
+2025-01-31,6247.T,HISAKA WORKS,0.0032,工业,index tracking
+2025-01-31,6250.T,YAMABIKO,0.0114,工业,index tracking
+2025-01-31,6254.T,NOMURA MICRO SCIENCE,0.0109,工业,index tracking
+2025-01-31,6258.T,HIRATA,0.0066,工业,index tracking
+2025-01-31,6262.T,PEGASUS SEWING MACHINE MFG,0.0014,工业,index tracking
+2025-01-31,6264.T,MARUMAE,0.0017,工业,index tracking
+2025-01-31,6266.T,TAZMO,0.0038,信息技术,index tracking
+2025-01-31,6268.T,NABTESCO,0.0444,工业,index tracking
+2025-01-31,6269.T,MODEC,0.0103,能源,index tracking
+2025-01-31,6272.T,RHEON AUTOMATIC MACHINERY,0.0039,工业,index tracking
+2025-01-31,6273.T,SMC,0.4472,工业,index tracking
+2025-01-31,6277.T,HOSOKAWA MICRON,0.0077,工业,index tracking
+2025-01-31,6278.T,UNION TOOL,0.0053,工业,index tracking
+2025-01-31,6279.T,ZUIKO,0.0022,工业,index tracking
+2025-01-31,6282.T,OILES,0.0084,工业,index tracking
+2025-01-31,6284.T,NISSEI ASB MACHINE,0.0047,工业,index tracking
+2025-01-31,6287.T,SATO HOLDINGS,0.007,工业,index tracking
+2025-01-31,6289.T,GIKEN,0.0036,工业,index tracking
+2025-01-31,6291.T,AIRTECH JAPAN,0.0013,工业,index tracking
+2025-01-31,6293.T,NISSEI PLASTIC INDUSTRIAL,0.0016,工业,index tracking
+2025-01-31,6298.T,Y.A.C.HOLDINGS,0.0023,信息技术,index tracking
+2025-01-31,6301.T,小松集团,0.5924,工业,index tracking
+2025-01-31,6302.T,住友重工,0.0482,工业,index tracking
+2025-01-31,6305.T,日立建机,0.0377,工业,index tracking
+2025-01-31,6306.T,NIKKO GLOBAL,0.0027,工业,index tracking
+2025-01-31,6309.T,TOMOE ENGINEERING,0.0038,工业,index tracking
+2025-01-31,6310.T,ISEKI,0.0022,工业,index tracking
+2025-01-31,6315.T,TOWA,0.0161,信息技术,index tracking
+2025-01-31,6317.T,KITAGAWA,0.0012,工业,index tracking
+2025-01-31,6323.T,RORZE,0.0227,信息技术,index tracking
+2025-01-31,6326.T,KUBOTA,0.2532,工业,index tracking
+2025-01-31,6328.T,EBARA JITSUGYO,0.0048,工业,index tracking
+2025-01-31,6330.T,TOYO ENGINEERING,0.0026,工业,index tracking
+2025-01-31,6331.T,MITSUBISHI KAKOKI KAISHA,0.0032,工业,index tracking
+2025-01-31,6332.T,TSUKISHIMA,0.005,工业,index tracking
+2025-01-31,6333.T,TEIKOKU ELECTRIC MFG,0.0049,工业,index tracking
+2025-01-31,6339.T,SINTOKOGIO,0.0053,工业,index tracking
+2025-01-31,6340.T,SHIBUYA,0.0087,工业,index tracking
+2025-01-31,6345.T,AICHI,0.006,工业,index tracking
+2025-01-31,6349.T,KOMORI,0.0076,工业,index tracking
+2025-01-31,6351.T,TSURUMI MANUFACTURING,0.0065,工业,index tracking
+2025-01-31,6358.T,SAKAI HEAVY INDUSTRIES,0.0023,工业,index tracking
+2025-01-31,6361.T,荏原制作所,0.1344,工业,index tracking
+2025-01-31,6363.T,TORISHIMA PUMP MFG,0.005,工业,index tracking
+2025-01-31,6364.T,AIRMAN CORPORATION,0.0051,工业,index tracking
+2025-01-31,6367.T,大金工业,0.607,工业,index tracking
+2025-01-31,6368.T,ORGANO,0.0304,工业,index tracking
+2025-01-31,6369.T,TOYO KANETSU K.K.,0.0036,能源,index tracking
+2025-01-31,6370.T,栗田工业,0.0771,工业,index tracking
+2025-01-31,6371.T,TSUBAKIMOTO CHAIN,0.022,工业,index tracking
+2025-01-31,6376.T,NIKKISO,0.0066,工业,index tracking
+2025-01-31,6378.T,KIMURA CHEMICAL PLANTS,0.0016,工业,index tracking
+2025-01-31,6379.T,RAIZNEXT,0.0055,能源,index tracking
+2025-01-31,6381.T,ANEST IWATA,0.0058,工业,index tracking
+2025-01-31,6383.T,大福库,0.1378,工业,index tracking
+2025-01-31,6387.T,SAMCO,0.0018,信息技术,index tracking
+2025-01-31,6395.T,TADANO,0.0169,工业,index tracking
+2025-01-31,6406.T,FUJITEC,0.0483,工业,index tracking
+2025-01-31,6407.T,CKD,0.0179,工业,index tracking
+2025-01-31,6412.T,平和,0.0197,可选消费,index tracking
+2025-01-31,6413.T,RISO KAGAKU,0.0057,可选消费,index tracking
+2025-01-31,6417.T,SANKYO,0.0612,可选消费,index tracking
+2025-01-31,6418.T,JAPAN CASH MACHINE,0.0035,信息技术,index tracking
+2025-01-31,6419.T,MARS GROUP HOLDINGS,0.0054,可选消费,index tracking
+2025-01-31,6420.T,FUKUSHIMA GALILEI,0.0099,工业,index tracking
+2025-01-31,6430.T,DAIKOKU DENKI,0.0032,可选消费,index tracking
+2025-01-31,6432.T,TAKEUCHI MFG,0.0251,工业,index tracking
+2025-01-31,6436.T,AMANO,0.0293,信息技术,index tracking
+2025-01-31,6440.T,JUKI,0.0015,工业,index tracking
+2025-01-31,6445.T,JANOME,0.0021,可选消费,index tracking
+2025-01-31,6448.T,兄弟工业,0.093,可选消费,index tracking
+2025-01-31,6454.T,MAX,0.0122,工业,index tracking
+2025-01-31,6455.T,MORITA HOLDINGS,0.0089,工业,index tracking
+2025-01-31,6457.T,GLORY,0.0176,工业,index tracking
+2025-01-31,6458.T,SINKO INDUSTRIES,0.0091,工业,index tracking
+2025-01-31,6459.T,DAIWA INDUSTRIES,0.0062,工业,index tracking
+2025-01-31,6460.T,世嘉飒美控股,0.0683,可选消费,index tracking
+2025-01-31,6463.T,TPR,0.0077,可选消费,index tracking
+2025-01-31,6464.T,TSUBAKI NAKASHIMA,0.0029,工业,index tracking
+2025-01-31,6465.T,HOSHIZAKI,0.0942,工业,index tracking
+2025-01-31,6470.T,TAIHO KOGYO,0.0014,可选消费,index tracking
+2025-01-31,6471.T,日本精工,0.0317,工业,index tracking
+2025-01-31,6472.T,NTN,0.015,工业,index tracking
+2025-01-31,6473.T,捷太格特,0.0276,工业,index tracking
+2025-01-31,6474.T,NACHI-FUJIKOSHI,0.0062,工业,index tracking
+2025-01-31,6479.T,美蓓亚三美,0.1108,工业,index tracking
+2025-01-31,6480.T,NIPPON THOMPSON,0.0035,工业,index tracking
+2025-01-31,6481.T,THK,0.0564,工业,index tracking
+2025-01-31,6482.T,YUSHIN,0.0016,工业,index tracking
+2025-01-31,6485.T,MAEZAWA KYUSO INDUSTRIES,0.0024,工业,index tracking
+2025-01-31,6486.T,EAGLE INDUSTRY,0.0058,可选消费,index tracking
+2025-01-31,6490.T,NIPPON PILLAR PACKING,0.01,材料,index tracking
+2025-01-31,6498.T,KITZ,0.0097,工业,index tracking
+2025-01-31,6501.T,日立,2.5783,信息技术,index tracking
+2025-01-31,6503.T,三菱电机,0.6637,工业,index tracking
+2025-01-31,6504.T,富士电机,0.1147,工业,index tracking
+2025-01-31,6506.T,YASKAWA ELECTRIC,0.1251,信息技术,index tracking
+2025-01-31,6507.T,SINFONIA TECHNOLOGY,0.0177,工业,index tracking
+2025-01-31,6508.T,MEIDENSHA,0.0171,工业,index tracking
+2025-01-31,6516.T,SANYO DENKI,0.0103,工业,index tracking
+2025-01-31,6517.T,DENYO,0.0052,工业,index tracking
+2025-01-31,6523.T,PHC,0.0049,医疗保健,index tracking
+2025-01-31,6525.T,科意半导体,0.0434,信息技术,index tracking
+2025-01-31,6526.T,SOCIONEXT,0.0616,信息技术,index tracking
+2025-01-31,6532.T,BAYCURRENT,0.1261,工业,index tracking
+2025-01-31,6533.T,ORCHESTRA,0.0004,通讯服务,index tracking
+2025-01-31,6535.T,I-MOBILE,0.0016,通讯服务,index tracking
+2025-01-31,6539.T,MATCHING SERVICE JAPAN,0.0015,工业,index tracking
+2025-01-31,6544.T,JAPAN ELEVATOR SERVICE,0.0303,工业,index tracking
+2025-01-31,6560.T,LTS,0.0009,信息技术,index tracking
+2025-01-31,6564.T,MIDAC,0.0026,工业,index tracking
+2025-01-31,6571.T,QB NET,0.0015,可选消费,index tracking
+2025-01-31,6572.T,RPA,0.0011,信息技术,index tracking
+2025-01-31,6584.T,SANOH INDUSTRIAL,0.0025,可选消费,index tracking
+2025-01-31,6586.T,MAKITA,0.1458,工业,index tracking
+2025-01-31,6588.T,TOSHIBA TEC,0.0129,可选消费,index tracking
+2025-01-31,6590.T,SHIBAURA MECHATRONICS,0.0151,信息技术,index tracking
+2025-01-31,6592.T,MABUCHI MOTOR,0.0235,工业,index tracking
+2025-01-31,6594.T,尼得科,0.3013,工业,index tracking
+2025-01-31,6615.T,UMC ELECTRONICS,0.0005,信息技术,index tracking
+2025-01-31,6616.T,TOREX SEMICONDUCTOR,0.0014,信息技术,index tracking
+2025-01-31,6617.T,TAKAOKA TOKO,0.0029,工业,index tracking
+2025-01-31,6619.T,W-SCOPE,0.002,材料,index tracking
+2025-01-31,6620.T,MIYAKOSHI,0.0014,可选消费,index tracking
+2025-01-31,6622.T,DAIHEN,0.0172,工业,index tracking
+2025-01-31,6630.T,YA-MAN,0.0036,日常消费,index tracking
+2025-01-31,6632.T,JVC KENWOOD,0.0361,可选消费,index tracking
+2025-01-31,6638.T,MIMAKI ENGINEERING,0.0031,可选消费,index tracking
+2025-01-31,6644.T,OSAKI ELECTRIC,0.0041,信息技术,index tracking
+2025-01-31,6645.T,欧姆龙,0.1195,信息技术,index tracking
+2025-01-31,6651.T,NITTO KOGYO,0.0099,工业,index tracking
+2025-01-31,6652.T,IDEC,0.0096,工业,index tracking
+2025-01-31,6674.T,GS YUASA,0.0284,工业,index tracking
+2025-01-31,6676.T,BUFFALO,0.0012,可选消费,index tracking
+2025-01-31,6678.T,TECHNO MEDICA,0.0009,医疗保健,index tracking
+2025-01-31,6699.T,DIAMOND ELECTRIC,0.0005,信息技术,index tracking
+2025-01-31,6701.T,日本电气,0.5571,信息技术,index tracking
+2025-01-31,6702.T,富士通,0.7047,信息技术,index tracking
+2025-01-31,6703.T,冲电气工业,0.012,信息技术,index tracking
+2025-01-31,6706.T,DKK,0.0017,信息技术,index tracking
+2025-01-31,6707.T,SANKEN ELECTRIC,0.0159,信息技术,index tracking
+2025-01-31,6718.T,AIPHONE,0.0042,信息技术,index tracking
+2025-01-31,6723.T,瑞萨电子,0.4074,信息技术,index tracking
+2025-01-31,6724.T,精工爱普生,0.0917,可选消费,index tracking
+2025-01-31,6727.T,WACOM,0.012,可选消费,index tracking
+2025-01-31,6728.T,ULVAC,0.0343,信息技术,index tracking
+2025-01-31,6730.T,AXELL,0.0016,信息技术,index tracking
+2025-01-31,6737.T,EIZO,0.0073,可选消费,index tracking
+2025-01-31,6740.T,JAPAN DISPLAY,0.0022,信息技术,index tracking
+2025-01-31,6741.T,NIPPON SIGNAL,0.0053,信息技术,index tracking
+2025-01-31,6742.T,KYOSAN ELECTRIC MANUFACTURING,0.003,信息技术,index tracking
+2025-01-31,6744.T,NOHMI BOSAI,0.0106,信息技术,index tracking
+2025-01-31,6745.T,HOCHIKI,0.004,信息技术,index tracking
+2025-01-31,6750.T,ELECOM,0.0091,可选消费,index tracking
+2025-01-31,6752.T,松下,0.4787,可选消费,index tracking
+2025-01-31,6753.T,夏普,0.0343,可选消费,index tracking
+2025-01-31,6754.T,ANRITSU,0.0256,信息技术,index tracking
+2025-01-31,6755.T,FUJITSU GENERAL,0.0198,可选消费,index tracking
+2025-01-31,6758.T,索尼,2.9813,可选消费,index tracking
+2025-01-31,6762.T,TDK,0.4139,信息技术,index tracking
+2025-01-31,6763.T,TEIKOKU TSUSHIN KOGYO,0.0026,信息技术,index tracking
+2025-01-31,6768.T,TAMURA,0.006,信息技术,index tracking
+2025-01-31,6770.T,ALPS ALPINE,0.0321,信息技术,index tracking
+2025-01-31,6779.T,NIHON DEMPA KOGYO,0.0021,信息技术,index tracking
+2025-01-31,6785.T,SUZUKI,0.0024,信息技术,index tracking
+2025-01-31,6787.T,MEIKO ELECTRONICS,0.0229,信息技术,index tracking
+2025-01-31,6788.T,NIHON TRIM,0.0021,工业,index tracking
+2025-01-31,6794.T,FOSTER ELECTRIC,0.0042,可选消费,index tracking
+2025-01-31,6798.T,SMK,0.0017,信息技术,index tracking
+2025-01-31,6800.T,YOKOWO,0.0037,信息技术,index tracking
+2025-01-31,6804.T,HOSIDEN,0.0131,信息技术,index tracking
+2025-01-31,6806.T,HIROSE ELECTRIC,0.0687,信息技术,index tracking
+2025-01-31,6807.T,日本航空电子工业,0.0187,信息技术,index tracking
+2025-01-31,6809.T,TOA/KOBE,0.0024,可选消费,index tracking
+2025-01-31,6810.T,MAXELL,0.0097,可选消费,index tracking
+2025-01-31,6814.T,FURUNO ELECTRIC,0.0079,信息技术,index tracking
+2025-01-31,6817.T,SUMIDA,0.0031,信息技术,index tracking
+2025-01-31,6820.T,ICOM,0.0027,信息技术,index tracking
+2025-01-31,6823.T,RION,0.0029,医疗保健,index tracking
+2025-01-31,6841.T,横河电机,0.0951,信息技术,index tracking
+2025-01-31,6844.T,SHINDENGEN ELECTRIC MANUFACTURING,0.0024,信息技术,index tracking
+2025-01-31,6845.T,AZBIL,0.0804,信息技术,index tracking
+2025-01-31,6849.T,日本光电工业,0.0499,医疗保健,index tracking
+2025-01-31,6850.T,CHINO,0.0023,信息技术,index tracking
+2025-01-31,6855.T,JAPAN ELECTRONIC MATERIALS,0.0032,信息技术,index tracking
+2025-01-31,6856.T,堀场制作所,0.0466,信息技术,index tracking
+2025-01-31,6857.T,ADVANTEST,0.6856,信息技术,index tracking
+2025-01-31,6859.T,ESPEC,0.0058,工业,index tracking
+2025-01-31,6861.T,基恩士,1.6902,信息技术,index tracking
+2025-01-31,6866.T,HIOKI E.E.,0.0102,信息技术,index tracking
+2025-01-31,6869.T,SYSMEX,0.1939,医疗保健,index tracking
+2025-01-31,6871.T,MICRONICS JAPAN,0.0158,信息技术,index tracking
+2025-01-31,6875.T,MEGACHIPS,0.0114,信息技术,index tracking
+2025-01-31,6877.T,OBARA GROUP,0.006,工业,index tracking
+2025-01-31,6879.T,IMAGICA GROUP,0.0014,信息技术,index tracking
+2025-01-31,6902.T,日本电装,0.531,可选消费,index tracking
+2025-01-31,6905.T,COSEL,0.0032,工业,index tracking
+2025-01-31,6908.T,IRISO ELECTRONICS,0.0067,信息技术,index tracking
+2025-01-31,6914.T,OPTEX GROUP,0.0076,信息技术,index tracking
+2025-01-31,6915.T,CHIYODA INTEGRE,0.0026,工业,index tracking
+2025-01-31,6920.T,LASERTEC,0.1507,信息技术,index tracking
+2025-01-31,6923.T,STANLEY ELECTRIC,0.0408,可选消费,index tracking
+2025-01-31,6925.T,USHIO,0.0232,工业,index tracking
+2025-01-31,6929.T,NIPPON CERAMIC,0.0056,信息技术,index tracking
+2025-01-31,6937.T,FURUKAWA BATTERY,0.0026,可选消费,index tracking
+2025-01-31,6941.T,YAMAICHI ELECTRONICS,0.0048,信息技术,index tracking
+2025-01-31,6947.T,ZUKEN,0.0113,信息技术,index tracking
+2025-01-31,6951.T,JEOL,0.0335,医疗保健,index tracking
+2025-01-31,6952.T,卡西欧,0.026,可选消费,index tracking
+2025-01-31,6954.T,发那科,0.5664,工业,index tracking
+2025-01-31,6958.T,CMK,0.0034,信息技术,index tracking
+2025-01-31,6961.T,ENPLAS,0.0039,信息技术,index tracking
+2025-01-31,6962.T,DAISHINKU,0.0018,信息技术,index tracking
+2025-01-31,6963.T,罗姆半导体,0.0677,信息技术,index tracking
+2025-01-31,6965.T,滨松光子学,0.0775,信息技术,index tracking
+2025-01-31,6966.T,MITSUI HIGH-TEC,0.0101,信息技术,index tracking
+2025-01-31,6967.T,新光电气工业,0.0521,信息技术,index tracking
+2025-01-31,6971.T,京瓷,0.2522,信息技术,index tracking
+2025-01-31,6976.T,太阳诱电,0.0241,信息技术,index tracking
+2025-01-31,6981.T,村田制作所,0.5465,信息技术,index tracking
+2025-01-31,6986.T,FUTABA,0.0023,工业,index tracking
+2025-01-31,6988.T,日东电工,0.2206,材料,index tracking
+2025-01-31,6995.T,东海理化,0.0162,可选消费,index tracking
+2025-01-31,6996.T,NICHICON,0.0072,信息技术,index tracking
+2025-01-31,6997.T,NIPPON CHEMI-CON,0.0031,信息技术,index tracking
+2025-01-31,6999.T,KOA,0.0041,信息技术,index tracking
+2025-01-31,7003.T,三井造船,0.0215,工业,index tracking
+2025-01-31,7004.T,KANADEVIA,0.0223,工业,index tracking
+2025-01-31,7011.T,三菱重工,1.0188,工业,index tracking
+2025-01-31,7012.T,川崎重工,0.1338,工业,index tracking
+2025-01-31,7013.T,IHI,0.1907,工业,index tracking
+2025-01-31,7014.T,名村造船所,0.0144,工业,index tracking
+2025-01-31,7033.T,MANAGEMENT SOLUTIONS,0.0022,工业,index tracking
+2025-01-31,7034.T,PRORED PARTNERS,0.0003,工业,index tracking
+2025-01-31,7038.T,FRONTIER MANAGEMENT,0.0006,工业,index tracking
+2025-01-31,7071.T,AMVIS,0.0036,医疗保健,index tracking
+2025-01-31,7085.T,CURVES,0.0052,可选消费,index tracking
+2025-01-31,7088.T,FORUM ENGINEERING,0.0032,工业,index tracking
+2025-01-31,7092.T,FAST FITNESS JAPAN,0.0011,可选消费,index tracking
+2025-01-31,7095.T,MACBEE PLANET,0.0024,工业,index tracking
+2025-01-31,7102.T,NIPPON SHARYO,0.0022,工业,index tracking
+2025-01-31,7105.T,MITSUBISHI LOGISNEXT,0.008,工业,index tracking
+2025-01-31,7128.T,MARUKA FURUSATO,0.005,工业,index tracking
+2025-01-31,7130.T,YAMAE,0.0058,房地产,index tracking
+2025-01-31,7148.T,FINANCIAL PRODUCTS,0.0223,金融,index tracking
+2025-01-31,7164.T,日本全国保证,0.0357,金融,index tracking
+2025-01-31,7167.T,MEBUKI FINANCIAL,0.0856,金融,index tracking
+2025-01-31,7172.T,JAPAN INVESTMENT ADVISER,0.0051,金融,index tracking
+2025-01-31,7173.T,TOKYO KIRABOSHI FINANCIAL,0.0153,金融,index tracking
+2025-01-31,7180.T,九州金融集团,0.0344,金融,index tracking
+2025-01-31,7181.T,日本邮政保险,0.0873,金融,index tracking
+2025-01-31,7182.T,日本邮政银行,0.3284,金融,index tracking
+2025-01-31,7184.T,THE FIRST BANK OF TOYAMA,0.0085,金融,index tracking
+2025-01-31,7186.T,CONCORDIA FINANCIAL GROUP,0.1193,金融,index tracking
+2025-01-31,7187.T,J-LEASE,0.0023,金融,index tracking
+2025-01-31,7189.T,西日本金融控股,0.0326,金融,index tracking
+2025-01-31,7198.T,SBI ARUHI,0.0022,金融,index tracking
+2025-01-31,7199.T,PREMIUM,0.011,金融,index tracking
+2025-01-31,7201.T,日产汽车,0.1343,可选消费,index tracking
+2025-01-31,7202.T,五十铃汽车,0.1624,可选消费,index tracking
+2025-01-31,7203.T,丰田汽车,3.9712,可选消费,index tracking
+2025-01-31,7205.T,日野汽车,0.0193,工业,index tracking
+2025-01-31,7211.T,三菱汽车,0.0443,可选消费,index tracking
+2025-01-31,7220.T,MUSASHI SEIMITSU INDUSTRY,0.0189,可选消费,index tracking
+2025-01-31,7222.T,NISSAN SHATAI,0.0039,可选消费,index tracking
+2025-01-31,7224.T,新明和工业,0.0098,工业,index tracking
+2025-01-31,7226.T,KYOKUTO KAIHATSU KOGYO,0.0082,工业,index tracking
+2025-01-31,7231.T,TOPY INDUSTRIES,0.0042,材料,index tracking
+2025-01-31,7236.T,T.RAD,0.002,可选消费,index tracking
+2025-01-31,7238.T,AKEBONO BRAKE,0.0017,可选消费,index tracking
+2025-01-31,7239.T,TACHI-S,0.0086,可选消费,index tracking
+2025-01-31,7240.T,NOK,0.023,可选消费,index tracking
+2025-01-31,7241.T,FUTABA INDUSTRIAL,0.0058,可选消费,index tracking
+2025-01-31,7242.T,KYB,0.0125,可选消费,index tracking
+2025-01-31,7244.T,ICHIKOH INDUSTRIES,0.0018,可选消费,index tracking
+2025-01-31,7245.T,DAIDO METAL,0.0025,可选消费,index tracking
+2025-01-31,7246.T,PRESS KOGYO,0.0056,可选消费,index tracking
+2025-01-31,7250.T,PACIFIC INDUSTRIAL,0.0088,可选消费,index tracking
+2025-01-31,7259.T,爱信精机,0.0938,可选消费,index tracking
+2025-01-31,7261.T,马自达汽车,0.0822,可选消费,index tracking
+2025-01-31,7267.T,本田汽车,0.8801,可选消费,index tracking
+2025-01-31,7269.T,铃木汽车,0.3795,可选消费,index tracking
+2025-01-31,7270.T,SUBARU,0.2061,可选消费,index tracking
+2025-01-31,7272.T,雅马哈发动机,0.1383,可选消费,index tracking
+2025-01-31,7276.T,小糸制作所,0.0532,可选消费,index tracking
+2025-01-31,7278.T,EXEDY,0.0198,可选消费,index tracking
+2025-01-31,7280.T,MITSUBA,0.0042,可选消费,index tracking
+2025-01-31,7282.T,丰田合成,0.02,可选消费,index tracking
+2025-01-31,7283.T,AISAN INDUSTRY,0.0091,可选消费,index tracking
+2025-01-31,7294.T,YOROZU,0.0027,可选消费,index tracking
+2025-01-31,7296.T,F.C.C,0.0137,可选消费,index tracking
+2025-01-31,7309.T,禧玛诺,0.2385,可选消费,index tracking
+2025-01-31,7313.T,TS TECH,0.018,可选消费,index tracking
+2025-01-31,7322.T,SAN JU SAN FINANCIAL,0.0053,金融,index tracking
+2025-01-31,7327.T,DAISHI HOKUETSU FINANCIAL,0.0234,金融,index tracking
+2025-01-31,7337.T,HIROGIN,0.0431,金融,index tracking
+2025-01-31,7350.T,OKINAWA FINANCIAL,0.0052,金融,index tracking
+2025-01-31,7354.T,DIRECT MARKETING MIX,0.0009,可选消费,index tracking
+2025-01-31,7358.T,POPPINS,0.0006,可选消费,index tracking
+2025-01-31,7366.T,LITALICO,0.0026,信息技术,index tracking
+2025-01-31,7380.T,JUROKU FINANCIAL,0.0163,金融,index tracking
+2025-01-31,7381.T,HOKKOKU FINANCIAL,0.0131,金融,index tracking
+2025-01-31,7383.T,NET PROTECTIONS,0.004,金融,index tracking
+2025-01-31,7384.T,PROCREA,0.0049,金融,index tracking
+2025-01-31,7388.T,FP PARTNER,0.0024,金融,index tracking
+2025-01-31,7389.T,AICHI FINANCIAL,0.0125,金融,index tracking
+2025-01-31,7408.T,JAMCO,0.0027,工业,index tracking
+2025-01-31,7414.T,ONOKEN,0.0045,工业,index tracking
+2025-01-31,7419.T,NOJIMA,0.0203,可选消费,index tracking
+2025-01-31,7420.T,SATORI ELECTRIC,0.0028,信息技术,index tracking
+2025-01-31,7421.T,KAPPA·CREATE,0.0061,可选消费,index tracking
+2025-01-31,7433.T,HAKUTO,0.0068,信息技术,index tracking
+2025-01-31,7438.T,KONDOTEC,0.0027,工业,index tracking
+2025-01-31,7447.T,NAGAILEBEN,0.007,医疗保健,index tracking
+2025-01-31,7451.T,MITSUBISHI SHOKUHIN,0.0122,日常消费,index tracking
+2025-01-31,7453.T,良品计划,0.1305,可选消费,index tracking
+2025-01-31,7456.T,MATSUDA SANGYO,0.0064,工业,index tracking
+2025-01-31,7458.T,DAIICHIKOSHO,0.0186,通讯服务,index tracking
+2025-01-31,7459.T,MEDIPAL HOLDINGS,0.0674,医疗保健,index tracking
+2025-01-31,7463.T,ADVAN,0.0023,工业,index tracking
+2025-01-31,7466.T,SPK,0.0023,可选消费,index tracking
+2025-01-31,7467.T,HAGIWARA ELECTRIC HOLDINGS,0.0039,信息技术,index tracking
+2025-01-31,7475.T,ALBIS,0.0023,日常消费,index tracking
+2025-01-31,7476.T,AS ONE,0.021,医疗保健,index tracking
+2025-01-31,7480.T,SUZUDEN,0.0022,信息技术,index tracking
+2025-01-31,7482.T,SHIMOJIMA,0.0023,可选消费,index tracking
+2025-01-31,7483.T,DOSHISHA,0.0052,可选消费,index tracking
+2025-01-31,7504.T,KOHSOKU,0.0039,材料,index tracking
+2025-01-31,7508.T,G-7 HOLDINGS,0.0042,可选消费,index tracking
+2025-01-31,7510.T,TAKEBISHI,0.0022,信息技术,index tracking
+2025-01-31,7512.T,AEON HOKKAIDO,0.0059,日常消费,index tracking
+2025-01-31,7513.T,KOJIMA,0.0051,可选消费,index tracking
+2025-01-31,7516.T,KOHNAN SHOJI,0.0106,可选消费,index tracking
+2025-01-31,7520.T,ECO'S,0.002,日常消费,index tracking
+2025-01-31,7522.T,WATAMI,0.003,可选消费,index tracking
+2025-01-31,7525.T,RIX,0.0018,工业,index tracking
+2025-01-31,7527.T,SYSTEMSOFT,0.0005,信息技术,index tracking
+2025-01-31,7532.T,PAN PACIFIC INTERNATIONAL,0.2326,可选消费,index tracking
+2025-01-31,7537.T,MARUBUN,0.0026,信息技术,index tracking
+2025-01-31,7545.T,NISHIMATSUYA CHAIN,0.0137,可选消费,index tracking
+2025-01-31,7550.T,ZENSHO HOLDINGS,0.1297,可选消费,index tracking
+2025-01-31,7552.T,HAPPINET,0.0095,可选消费,index tracking
+2025-01-31,7554.T,KOURAKUEN HOLDINGS,0.0024,可选消费,index tracking
+2025-01-31,7570.T,HASHIMOTO SOGYO HOLDINGS,0.0013,工业,index tracking
+2025-01-31,7575.T,JAPAN LIFELINE,0.0101,医疗保健,index tracking
+2025-01-31,7581.T,SAIZERIYA,0.0183,可选消费,index tracking
+2025-01-31,7590.T,TAKASHO,0.0009,可选消费,index tracking
+2025-01-31,7593.T,VT,0.0054,可选消费,index tracking
+2025-01-31,7595.T,ARGO GRAPHICS,0.0114,信息技术,index tracking
+2025-01-31,7596.T,UORIKI,0.0023,日常消费,index tracking
+2025-01-31,7599.T,IDOM,0.0104,可选消费,index tracking
+2025-01-31,7600.T,JAPAN MEDICAL DYNAMIC MARKETING,0.0012,医疗保健,index tracking
+2025-01-31,7605.T,FUJI/MIYAGI,0.0024,可选消费,index tracking
+2025-01-31,7606.T,UNITED ARROWS,0.0075,可选消费,index tracking
+2025-01-31,7607.T,SHINWA,0.0048,工业,index tracking
+2025-01-31,7609.T,DAITRON,0.0031,信息技术,index tracking
+2025-01-31,7611.T,HIDAY HIDAKA,0.0128,可选消费,index tracking
+2025-01-31,7613.T,SIIX,0.0043,信息技术,index tracking
+2025-01-31,7616.T,COLOWIDE,0.0257,可选消费,index tracking
+2025-01-31,7628.T,OHASHI TECHNICA,0.0025,可选消费,index tracking
+2025-01-31,7630.T,ICHIBANYA,0.0104,可选消费,index tracking
+2025-01-31,7637.T,HAKUDO,0.0018,材料,index tracking
+2025-01-31,7649.T,SUGI HOLDINGS,0.0386,日常消费,index tracking
+2025-01-31,7679.T,YAKUODO HOLDINGS,0.0025,日常消费,index tracking
+2025-01-31,7683.T,WA,0.0007,可选消费,index tracking
+2025-01-31,7701.T,岛津,0.1634,信息技术,index tracking
+2025-01-31,7702.T,JMS,0.001,医疗保健,index tracking
+2025-01-31,7715.T,NAGANO KEIKI,0.0037,信息技术,index tracking
+2025-01-31,7717.T,V TECHNOLOGY,0.0029,信息技术,index tracking
+2025-01-31,7718.T,STAR MICRONICS,0.0084,工业,index tracking
+2025-01-31,7721.T,TOKYO KEIKI,0.0056,工业,index tracking
+2025-01-31,7723.T,AICHI TOKEI DENKI,0.0023,信息技术,index tracking
+2025-01-31,7725.T,INTER ACTION,0.0017,信息技术,index tracking
+2025-01-31,7729.T,东京精密,0.0384,信息技术,index tracking
+2025-01-31,7730.T,MANI,0.0145,医疗保健,index tracking
+2025-01-31,7731.T,尼康,0.0662,可选消费,index tracking
+2025-01-31,7732.T,TOPCON,0.0416,信息技术,index tracking
+2025-01-31,7733.T,奥林巴斯,0.3405,医疗保健,index tracking
+2025-01-31,7734.T,RIKEN KEIKI,0.0111,信息技术,index tracking
+2025-01-31,7735.T,SCREEN HOLDINGS,0.1147,信息技术,index tracking
+2025-01-31,7739.T,CANON ELECTRONICS,0.0061,可选消费,index tracking
+2025-01-31,7740.T,腾龙,0.0158,可选消费,index tracking
+2025-01-31,7741.T,保谷光学,1.0296,医疗保健,index tracking
+2025-01-31,7744.T,NORITSU KOKI,0.012,可选消费,index tracking
+2025-01-31,7745.T,A&D,0.006,信息技术,index tracking
+2025-01-31,7747.T,ASAHI INTECC,0.0802,医疗保健,index tracking
+2025-01-31,7751.T,佳能,0.6288,信息技术,index tracking
+2025-01-31,7752.T,理光集团,0.1182,可选消费,index tracking
+2025-01-31,7762.T,西铁城,0.0218,信息技术,index tracking
+2025-01-31,7780.T,MENICON,0.0131,医疗保健,index tracking
+2025-01-31,7817.T,PARAMOUNT BED,0.0152,医疗保健,index tracking
+2025-01-31,7818.T,TRANSACTION,0.0032,日常消费,index tracking
+2025-01-31,7820.T,NIHON FLUSH,0.0017,工业,index tracking
+2025-01-31,7821.T,MAEDA KOSEN,0.0099,工业,index tracking
+2025-01-31,7823.T,ARTNATURE,0.0021,日常消费,index tracking
+2025-01-31,7826.T,FURUYA METAL,0.0071,材料,index tracking
+2025-01-31,7832.T,万代南梦宫,0.2633,可选消费,index tracking
+2025-01-31,7839.T,SHOEI,0.0153,可选消费,index tracking
+2025-01-31,7840.T,FRANCE BED,0.0046,可选消费,index tracking
+2025-01-31,7844.T,MARVELOUS,0.0027,通讯服务,index tracking
+2025-01-31,7846.T,PILOT,0.0169,工业,index tracking
+2025-01-31,7856.T,HAGIHARA INDUSTRIES,0.0025,可选消费,index tracking
+2025-01-31,7860.T,AVEX,0.0068,通讯服务,index tracking
+2025-01-31,7864.T,FUJI SEAL INTERNATIONAL,0.0135,材料,index tracking
+2025-01-31,7867.T,TOMY COMPANY,0.0507,可选消费,index tracking
+2025-01-31,7868.T,KOSAIDO,0.0051,工业,index tracking
+2025-01-31,7874.T,LEC,0.0041,可选消费,index tracking
+2025-01-31,7888.T,SANKO GOSEI,0.0022,工业,index tracking
+2025-01-31,7893.T,PRONEXUS,0.0035,工业,index tracking
+2025-01-31,7911.T,凸版印刷,0.1439,工业,index tracking
+2025-01-31,7912.T,大日本印刷,0.1197,工业,index tracking
+2025-01-31,7914.T,KYODO PRINTING,0.003,工业,index tracking
+2025-01-31,7915.T,NISSHA,0.007,工业,index tracking
+2025-01-31,7917.T,ZACROS,0.0079,材料,index tracking
+2025-01-31,7921.T,TAKARA,0.0042,工业,index tracking
+2025-01-31,7925.T,MAEZAWA KASEI INDUSTRIES,0.0031,工业,index tracking
+2025-01-31,7931.T,MIRAI INDUSTRY,0.0033,工业,index tracking
+2025-01-31,7936.T,ASICS,0.3234,可选消费,index tracking
+2025-01-31,7937.T,TSUTSUMI JEWELRY,0.0014,可选消费,index tracking
+2025-01-31,7942.T,JSP,0.0044,材料,index tracking
+2025-01-31,7943.T,NICHIHA,0.0092,工业,index tracking
+2025-01-31,7944.T,ROLAND,0.0073,可选消费,index tracking
+2025-01-31,7947.T,FP,0.0169,材料,index tracking
+2025-01-31,7949.T,KOMATSU WALL INDUSTRY,0.0025,工业,index tracking
+2025-01-31,7951.T,雅马哈,0.0495,可选消费,index tracking
+2025-01-31,7952.T,KAWAI MUSICAL INSTRUMENTS MANUFACTURING,0.0023,可选消费,index tracking
+2025-01-31,7955.T,CLEANUP,0.0016,可选消费,index tracking
+2025-01-31,7956.T,PIGEON,0.0236,日常消费,index tracking
+2025-01-31,7958.T,TENMA,0.0059,材料,index tracking
+2025-01-31,7962.T,KING JIM,0.0019,工业,index tracking
+2025-01-31,7965.T,ZOJIRUSHI,0.0127,可选消费,index tracking
+2025-01-31,7966.T,LINTEC,0.0139,材料,index tracking
+2025-01-31,7970.T,SHIN-ETSU POLYMER,0.0089,材料,index tracking
+2025-01-31,7972.T,ITOKI,0.0081,工业,index tracking
+2025-01-31,7974.T,任天堂,1.6226,通讯服务,index tracking
+2025-01-31,7976.T,MITSUBISHI PENCIL,0.0077,工业,index tracking
+2025-01-31,7979.T,SHOFU,0.0054,医疗保健,index tracking
+2025-01-31,7981.T,TAKARA STANDARD,0.0097,工业,index tracking
+2025-01-31,7984.T,KOKUYO,0.0323,工业,index tracking
+2025-01-31,7987.T,NAKABAYASHI,0.0014,工业,index tracking
+2025-01-31,7988.T,NIFCO,0.0351,可选消费,index tracking
+2025-01-31,7989.T,TACHIKAWA,0.0017,可选消费,index tracking
+2025-01-31,7990.T,GLOBERIDE,0.0048,可选消费,index tracking
+2025-01-31,7994.T,OKAMURA,0.015,工业,index tracking
+2025-01-31,7995.T,VALQUA,0.0063,材料,index tracking
+2025-01-31,8001.T,伊藤忠商事,1.2834,工业,index tracking
+2025-01-31,8002.T,丸红,0.5063,工业,index tracking
+2025-01-31,8005.T,SCROLL,0.0043,可选消费,index tracking
+2025-01-31,8008.T,YONDOSHI,0.0048,可选消费,index tracking
+2025-01-31,8011.T,SANYO SHOKAI,0.004,可选消费,index tracking
+2025-01-31,8012.T,长濑产业,0.0347,工业,index tracking
+2025-01-31,8014.T,CHORI,0.0049,可选消费,index tracking
+2025-01-31,8015.T,丰田通商,0.2108,工业,index tracking
+2025-01-31,8016.T,ONWARD,0.0102,可选消费,index tracking
+2025-01-31,8018.T,SANKYO SEIKO,0.0021,可选消费,index tracking
+2025-01-31,8020.T,兼松,0.029,工业,index tracking
+2025-01-31,8022.T,MIZUNO,0.0217,可选消费,index tracking
+2025-01-31,8029.T,LOOK HOLDINGS,0.0018,可选消费,index tracking
+2025-01-31,8031.T,三井物产,1.2052,工业,index tracking
+2025-01-31,8032.T,JAPAN PULP & PAPER,0.0083,工业,index tracking
+2025-01-31,8035.T,TOKYO ELECTRON,1.3933,信息技术,index tracking
+2025-01-31,8037.T,KAMEI,0.0051,工业,index tracking
+2025-01-31,8043.T,STARZEN,0.0053,日常消费,index tracking
+2025-01-31,8050.T,SEIKO GROUP,0.0208,可选消费,index tracking
+2025-01-31,8051.T,YAMAZEN,0.012,工业,index tracking
+2025-01-31,8052.T,TSUBAKIMOTO KOGYO,0.0029,工业,index tracking
+2025-01-31,8053.T,住友商事,0.5359,工业,index tracking
+2025-01-31,8056.T,BIPROGY,0.0409,信息技术,index tracking
+2025-01-31,8057.T,UCHIDA YOKO,0.0073,工业,index tracking
+2025-01-31,8058.T,三菱商事,1.223,工业,index tracking
+2025-01-31,8059.T,DAIICHI JITSUGYO,0.0065,工业,index tracking
+2025-01-31,8060.T,CANON MARKETING JAPAN,0.0266,可选消费,index tracking
+2025-01-31,8061.T,SEIKA,0.0058,工业,index tracking
+2025-01-31,8065.T,SATO SHO-JI,0.0027,工业,index tracking
+2025-01-31,8070.T,TOKYO SANGYO,0.002,工业,index tracking
+2025-01-31,8074.T,YUASA TRADING,0.0101,工业,index tracking
+2025-01-31,8075.T,SHINSHO,0.0036,工业,index tracking
+2025-01-31,8078.T,阪和兴业,0.021,工业,index tracking
+2025-01-31,8079.T,SHOEI FOODS,0.0073,日常消费,index tracking
+2025-01-31,8081.T,KANADEN,0.003,工业,index tracking
+2025-01-31,8084.T,RYODEN,0.0054,信息技术,index tracking
+2025-01-31,8086.T,NIPRO,0.0304,医疗保健,index tracking
+2025-01-31,8088.T,IWATANI,0.0451,工业,index tracking
+2025-01-31,8093.T,KYOKUTO BOEKI KAISHA,0.0024,工业,index tracking
+2025-01-31,8095.T,IWAKI,0.0022,医疗保健,index tracking
+2025-01-31,8097.T,SAN-AI OBBLI,0.0112,能源,index tracking
+2025-01-31,8098.T,INABATA,0.0231,工业,index tracking
+2025-01-31,8101.T,GSI CREOS,0.0031,可选消费,index tracking
+2025-01-31,8103.T,MEIWA,0.0026,工业,index tracking
+2025-01-31,8111.T,GOLDWIN,0.0366,可选消费,index tracking
+2025-01-31,8113.T,尤妮佳,0.1913,日常消费,index tracking
+2025-01-31,8125.T,WAKITA,0.0071,工业,index tracking
+2025-01-31,8129.T,东邦控股,0.0309,医疗保健,index tracking
+2025-01-31,8130.T,SANGETSU,0.0193,可选消费,index tracking
+2025-01-31,8131.T,MITSUUROKO GROUP,0.0061,能源,index tracking
+2025-01-31,8132.T,SINANEN HOLDINGS,0.0048,能源,index tracking
+2025-01-31,8133.T,ITOCHU ENEX,0.0105,能源,index tracking
+2025-01-31,8136.T,三丽鸥,0.1259,可选消费,index tracking
+2025-01-31,8137.T,SUN-WA TECHNOS,0.0027,信息技术,index tracking
+2025-01-31,8141.T,SHINKO SHOJI,0.0036,信息技术,index tracking
+2025-01-31,8142.T,TOHO,0.0032,日常消费,index tracking
+2025-01-31,8150.T,SANSHIN ELECTRONICS,0.0021,信息技术,index tracking
+2025-01-31,8151.T,TOYO,0.0035,信息技术,index tracking
+2025-01-31,8153.T,MOS FOOD SERVICES,0.0137,可选消费,index tracking
+2025-01-31,8154.T,KAGA ELECTRONICS,0.015,信息技术,index tracking
+2025-01-31,8157.T,TSUZUKI DENKI,0.0042,信息技术,index tracking
+2025-01-31,8158.T,SODA NIKKA,0.0029,工业,index tracking
+2025-01-31,8159.T,TACHIBANA ELETECH,0.0042,信息技术,index tracking
+2025-01-31,8160.T,KISOJI,0.0087,可选消费,index tracking
+2025-01-31,8163.T,SRS HOLDINGS,0.0052,可选消费,index tracking
+2025-01-31,8165.T,SENSHUKAI,0.0012,可选消费,index tracking
+2025-01-31,8167.T,RETAIL PARTNERS,0.005,日常消费,index tracking
+2025-01-31,8173.T,JOSHIN DENKI,0.0062,可选消费,index tracking
+2025-01-31,8174.T,NIPPON GAS,0.0277,公用事业,index tracking
+2025-01-31,8179.T,ROYAL HOLDINGS,0.0121,可选消费,index tracking
+2025-01-31,8185.T,CHIYODA,0.0032,可选消费,index tracking
+2025-01-31,8194.T,LIFE,0.01,日常消费,index tracking
+2025-01-31,8200.T,RINGER HUT,0.0078,可选消费,index tracking
+2025-01-31,8203.T,MRMAX HOLDINGS,0.0023,可选消费,index tracking
+2025-01-31,8214.T,AOKI,0.0075,可选消费,index tracking
+2025-01-31,8217.T,OKUWA,0.0034,日常消费,index tracking
+2025-01-31,8218.T,KOMERI,0.0109,可选消费,index tracking
+2025-01-31,8219.T,AOYAMA TRADING,0.0124,可选消费,index tracking
+2025-01-31,8227.T,SHIMAMURA,0.0552,可选消费,index tracking
+2025-01-31,8233.T,高岛屋,0.0488,可选消费,index tracking
+2025-01-31,8237.T,MATSUYA,0.0049,可选消费,index tracking
+2025-01-31,8242.T,H2O RETAILING,0.03,可选消费,index tracking
+2025-01-31,8244.T,KINTETSU DEPARTMENT STORE,0.0034,可选消费,index tracking
+2025-01-31,8252.T,丸井,0.0457,可选消费,index tracking
+2025-01-31,8253.T,CREDIT SAISON,0.0576,金融,index tracking
+2025-01-31,8255.T,AXIAL RETAILING,0.0065,日常消费,index tracking
+2025-01-31,8267.T,日本永旺,0.3701,日常消费,index tracking
+2025-01-31,8273.T,IZUMI,0.0126,可选消费,index tracking
+2025-01-31,8275.T,FORVAL,0.0015,信息技术,index tracking
+2025-01-31,8276.T,HEIWADO,0.0103,日常消费,index tracking
+2025-01-31,8278.T,FUJI,0.0105,可选消费,index tracking
+2025-01-31,8279.T,YAOKO,0.0286,日常消费,index tracking
+2025-01-31,8281.T,XEBIO HOLDINGS,0.0045,可选消费,index tracking
+2025-01-31,8282.T,K'S,0.0255,可选消费,index tracking
+2025-01-31,8283.T,PALTAC,0.018,可选消费,index tracking
+2025-01-31,8285.T,MITANI SANGYO,0.0015,工业,index tracking
+2025-01-31,8304.T,青空银行,0.041,金融,index tracking
+2025-01-31,8306.T,三菱日联金融,3.1403,金融,index tracking
+2025-01-31,8308.T,RESONA,0.3542,金融,index tracking
+2025-01-31,8309.T,SUMITOMO MITSUI TRUST GROUP,0.342,金融,index tracking
+2025-01-31,8316.T,三井住友金融集团,1.9966,金融,index tracking
+2025-01-31,8331.T,千叶银行,0.1018,金融,index tracking
+2025-01-31,8334.T,GUNMA BANK,0.0482,金融,index tracking
+2025-01-31,8336.T,MUSASHINO BANK,0.0123,金融,index tracking
+2025-01-31,8337.T,CHIBA KOGYO BANK,0.0092,金融,index tracking
+2025-01-31,8338.T,TSUKUBA BANK,0.0028,金融,index tracking
+2025-01-31,8341.T,77 BANK,0.0379,金融,index tracking
+2025-01-31,8343.T,AKITA BANK,0.0038,金融,index tracking
+2025-01-31,8344.T,YAMAGATA BANK,0.0029,金融,index tracking
+2025-01-31,8345.T,岩手银行,0.0048,金融,index tracking
+2025-01-31,8346.T,东邦银行,0.0066,金融,index tracking
+2025-01-31,8354.T,福冈金融,0.0913,金融,index tracking
+2025-01-31,8358.T,SURUGA BANK,0.0202,金融,index tracking
+2025-01-31,8359.T,八十二银行,0.0591,金融,index tracking
+2025-01-31,8360.T,山梨中央银行,0.0063,金融,index tracking
+2025-01-31,8361.T,大垣共立银行,0.0101,金融,index tracking
+2025-01-31,8362.T,FUKUI BANK,0.0043,金融,index tracking
+2025-01-31,8364.T,SHIMIZU BANK,0.0015,金融,index tracking
+2025-01-31,8366.T,SHIGA BANK,0.0173,金融,index tracking
+2025-01-31,8367.T,南都银行,0.0132,金融,index tracking
+2025-01-31,8368.T,HYAKUGO BANK,0.0159,金融,index tracking
+2025-01-31,8370.T,纪阳银行,0.0205,金融,index tracking
+2025-01-31,8377.T,HOKUHOKU FINANCIAL,0.0295,金融,index tracking
+2025-01-31,8381.T,山阴合同银行,0.0206,金融,index tracking
+2025-01-31,8386.T,HYAKUJUSHI BANK,0.0088,金融,index tracking
+2025-01-31,8387.T,SHIKOKU BANK,0.0044,金融,index tracking
+2025-01-31,8388.T,AWA BANK,0.0098,金融,index tracking
+2025-01-31,8392.T,大分银行,0.0046,金融,index tracking
+2025-01-31,8393.T,MIYAZAKI BANK,0.0053,金融,index tracking
+2025-01-31,8395.T,BANK OF SAGA,0.0034,金融,index tracking
+2025-01-31,8399.T,BANK OF THE RYUKYUS,0.0065,金融,index tracking
+2025-01-31,8410.T,SEVEN BANK,0.0273,金融,index tracking
+2025-01-31,8411.T,瑞穗金融集团,1.4385,金融,index tracking
+2025-01-31,8418.T,山口金融,0.0421,金融,index tracking
+2025-01-31,8424.T,FUYO GENERAL LEASE,0.0264,金融,index tracking
+2025-01-31,8425.T,MIZUHO LEASING,0.0189,金融,index tracking
+2025-01-31,8439.T,TOKYO CENTURY,0.0279,金融,index tracking
+2025-01-31,8473.T,SBI,0.1793,金融,index tracking
+2025-01-31,8511.T,日本证券金融,0.0175,金融,index tracking
+2025-01-31,8515.T,AIFUL,0.0139,金融,index tracking
+2025-01-31,8522.T,名古屋银行,0.0111,金融,index tracking
+2025-01-31,8524.T,北太平洋银行,0.0178,金融,index tracking
+2025-01-31,8541.T,EHIME BANK,0.0042,金融,index tracking
+2025-01-31,8544.T,KEIYO BANK,0.0091,金融,index tracking
+2025-01-31,8550.T,TOCHIGI BANK,0.0033,金融,index tracking
+2025-01-31,8551.T,KITA-NIPPON BANK,0.0027,金融,index tracking
+2025-01-31,8558.T,TOWA BANK,0.0031,金融,index tracking
+2025-01-31,8566.T,RICOH LEASING,0.0121,金融,index tracking
+2025-01-31,8570.T,AEON FINANCIAL SERVICE,0.0179,金融,index tracking
+2025-01-31,8572.T,ACOM,0.0226,金融,index tracking
+2025-01-31,8584.T,JACCS,0.0113,金融,index tracking
+2025-01-31,8585.T,ORIENT,0.0066,金融,index tracking
+2025-01-31,8591.T,欧力士,0.4892,金融,index tracking
+2025-01-31,8593.T,三菱日联租赁,0.1283,金融,index tracking
+2025-01-31,8595.T,JAFCO GROUP,0.0168,金融,index tracking
+2025-01-31,8600.T,TOMONY,0.0107,金融,index tracking
+2025-01-31,8601.T,大和证券,0.2001,金融,index tracking
+2025-01-31,8604.T,野村控股,0.424,金融,index tracking
+2025-01-31,8609.T,OKASAN SECURITIES,0.0126,金融,index tracking
+2025-01-31,8613.T,MARUSAN SECURITIES,0.0084,金融,index tracking
+2025-01-31,8614.T,TOYO SECURITIES,0.0041,金融,index tracking
+2025-01-31,8616.T,TOKAI TOKYO FINANCIAL,0.015,金融,index tracking
+2025-01-31,8622.T,MITO SECURITIES,0.004,金融,index tracking
+2025-01-31,8624.T,ICHIYOSHI SECURITIES,0.0043,金融,index tracking
+2025-01-31,8628.T,松井证券,0.0139,金融,index tracking
+2025-01-31,8630.T,日本财产保险,0.5265,金融,index tracking
+2025-01-31,8697.T,日本交易所,0.243,金融,index tracking
+2025-01-31,8698.T,MONEX,0.0222,金融,index tracking
+2025-01-31,8706.T,KYOKUTO SECURITIES,0.0051,金融,index tracking
+2025-01-31,8707.T,IWAICOSMO,0.007,金融,index tracking
+2025-01-31,8708.T,蓝泽证券,0.0063,金融,index tracking
+2025-01-31,8713.T,FIDEA,0.0039,金融,index tracking
+2025-01-31,8714.T,SENSHU IKEDA,0.0151,金融,index tracking
+2025-01-31,8715.T,ANICOM,0.0055,金融,index tracking
+2025-01-31,8725.T,MS&AD INSURANCE,0.5891,金融,index tracking
+2025-01-31,8739.T,SPARX,0.0041,金融,index tracking
+2025-01-31,8750.T,第一生命控股,0.4958,金融,index tracking
+2025-01-31,8766.T,东京海上控股,1.2465,金融,index tracking
+2025-01-31,8771.T,EGUARANTEE,0.0071,金融,index tracking
+2025-01-31,8793.T,NEC CAPITAL SOLUTIONS,0.0048,金融,index tracking
+2025-01-31,8795.T,T&D,0.197,金融,index tracking
+2025-01-31,8798.T,ADVANCE CREATE,0.001,金融,index tracking
+2025-01-31,8801.T,三井不动产,0.4789,房地产,index tracking
+2025-01-31,8802.T,三菱房地产,0.3198,房地产,index tracking
+2025-01-31,8803.T,HEIWA REAL ESTATE,0.0182,房地产,index tracking
+2025-01-31,8804.T,东京建筑,0.052,房地产,index tracking
+2025-01-31,8818.T,KEIHANSHIN BUILDING,0.0062,房地产,index tracking
+2025-01-31,8830.T,住友房地产开发,0.2171,房地产,index tracking
+2025-01-31,8841.T,TOC,0.0029,房地产,index tracking
+2025-01-31,8848.T,LEOPALACE21,0.012,房地产,index tracking
+2025-01-31,8850.T,STARTS,0.0157,可选消费,index tracking
+2025-01-31,8860.T,FUJI,0.0024,可选消费,index tracking
+2025-01-31,8864.T,AIRPORT FACILITIES,0.0021,房地产,index tracking
+2025-01-31,8869.T,MEIWA ESTATE,0.002,可选消费,index tracking
+2025-01-31,8871.T,GOLDCREST,0.0052,房地产,index tracking
+2025-01-31,8876.T,RELO GROUP,0.0275,房地产,index tracking
+2025-01-31,8877.T,ESLEAD,0.0054,可选消费,index tracking
+2025-01-31,8881.T,NISSHIN,0.0021,房地产,index tracking
+2025-01-31,8892.T,ES-CON JAPAN,0.0065,可选消费,index tracking
+2025-01-31,8897.T,MIRARTH HOLDINGS,0.0076,房地产,index tracking
+2025-01-31,8905.T,AEON MALL,0.0293,房地产,index tracking
+2025-01-31,8918.T,LAND,0.0011,房地产,index tracking
+2025-01-31,8919.T,KATITAS,0.0145,房地产,index tracking
+2025-01-31,8920.T,TOSHO,0.0015,可选消费,index tracking
+2025-01-31,8923.T,TOSEI,0.0099,房地产,index tracking
+2025-01-31,8934.T,SUN FRONTIER FUDOUSAN,0.0083,房地产,index tracking
+2025-01-31,8935.T,FJ NEXT,0.003,可选消费,index tracking
+2025-01-31,8999.T,GRANDY HOUSE,0.0014,房地产,index tracking
+2025-01-31,9001.T,东武铁道,0.0708,工业,index tracking
+2025-01-31,9003.T,SOTETSU,0.0214,工业,index tracking
+2025-01-31,9005.T,东急电铁,0.125,房地产,index tracking
+2025-01-31,9006.T,京浜急行,0.0423,工业,index tracking
+2025-01-31,9007.T,小田急电,0.0613,工业,index tracking
+2025-01-31,9008.T,京王电力铁道,0.0523,工业,index tracking
+2025-01-31,9009.T,京成电力铁道,0.0649,工业,index tracking
+2025-01-31,9010.T,FUJI KYUKO,0.0072,可选消费,index tracking
+2025-01-31,9020.T,东日本旅客铁道,0.3844,工业,index tracking
+2025-01-31,9021.T,西日本客运,0.1774,工业,index tracking
+2025-01-31,9022.T,东海客运,0.2796,工业,index tracking
+2025-01-31,9023.T,东京地铁,0.0729,工业,index tracking
+2025-01-31,9024.T,西武,0.0918,工业,index tracking
+2025-01-31,9025.T,KONOIKE TRANSPORT,0.0135,工业,index tracking
+2025-01-31,9031.T,NISHI-NIPPON RAILROAD,0.0163,工业,index tracking
+2025-01-31,9037.T,HAMAKYOREX,0.0117,工业,index tracking
+2025-01-31,9039.T,SAKAI MOVING SERVICE,0.0077,工业,index tracking
+2025-01-31,9041.T,近铁集团控股,0.0901,工业,index tracking
+2025-01-31,9042.T,阪急阪神,0.1316,工业,index tracking
+2025-01-31,9044.T,南海电气铁道,0.0288,工业,index tracking
+2025-01-31,9045.T,KEIHAN HOLDINGS,0.0462,工业,index tracking
+2025-01-31,9046.T,KOBE ELECTRIC RAILWAY,0.0017,工业,index tracking
+2025-01-31,9048.T,名古屋铁路,0.048,工业,index tracking
+2025-01-31,9052.T,SANYO ELECTRIC RAILWAY,0.0038,可选消费,index tracking
+2025-01-31,9064.T,雅玛多控股,0.0568,工业,index tracking
+2025-01-31,9065.T,山九,0.0336,工业,index tracking
+2025-01-31,9066.T,NISSIN,0.0078,工业,index tracking
+2025-01-31,9068.T,MARUZEN SHOWA UNYU,0.0093,工业,index tracking
+2025-01-31,9069.T,SENKO GROUP HOLDINGS,0.0257,工业,index tracking
+2025-01-31,9070.T,TONAMI,0.0036,工业,index tracking
+2025-01-31,9072.T,NIKKON HOLDINGS,0.0323,工业,index tracking
+2025-01-31,9075.T,FUKUYAMA TRANSPORTING,0.0099,工业,index tracking
+2025-01-31,9076.T,SEINO,0.029,工业,index tracking
+2025-01-31,9081.T,KANAGAWA CHUO KOTSU,0.0027,工业,index tracking
+2025-01-31,9090.T,AZ-COM MARUWA,0.0089,工业,index tracking
+2025-01-31,9101.T,日本邮船,0.2538,工业,index tracking
+2025-01-31,9104.T,商船三井,0.2522,工业,index tracking
+2025-01-31,9107.T,川崎汽船,0.1126,工业,index tracking
+2025-01-31,9110.T,NS UNITED KAIUN KAISHA,0.0062,工业,index tracking
+2025-01-31,9119.T,IINO KAIUN KAISHA,0.0103,工业,index tracking
+2025-01-31,9142.T,KYUSHU RAILWAY,0.0726,工业,index tracking
+2025-01-31,9143.T,SG,0.0617,工业,index tracking
+2025-01-31,9147.T,日本运通,0.0679,工业,index tracking
+2025-01-31,9161.T,INTEGRATED DESIGN & ENGINEERING,0.0111,工业,index tracking
+2025-01-31,9201.T,日本航空,0.147,工业,index tracking
+2025-01-31,9202.T,全日本航空,0.1989,工业,index tracking
+2025-01-31,9216.T,BEWITH,0.0009,信息技术,index tracking
+2025-01-31,9229.T,SUNWELS,0.0006,医疗保健,index tracking
+2025-01-31,9247.T,TRE,0.0093,工业,index tracking
+2025-01-31,9248.T,"PEOPLE, DREAMS & TECHNOLOGIES",0.0017,信息技术,index tracking
+2025-01-31,9260.T,NISHIMOTO,0.0016,日常消费,index tracking
+2025-01-31,9262.T,SILVER LIFE,0.0005,可选消费,index tracking
+2025-01-31,9267.T,GENKY DRUGSTORES,0.0073,日常消费,index tracking
+2025-01-31,9273.T,KOA SHOJI,0.0015,医疗保健,index tracking
+2025-01-31,9274.T,KOKUSAI PULP & PAPER,0.0037,工业,index tracking
+2025-01-31,9278.T,BOOKOFF,0.0027,可选消费,index tracking
+2025-01-31,9279.T,GIFT HOLDINGS,0.0043,可选消费,index tracking
+2025-01-31,9301.T,三菱仓库,0.0284,工业,index tracking
+2025-01-31,9302.T,MITSUI-SOKO HOLDINGS,0.0199,工业,index tracking
+2025-01-31,9303.T,住友仓库,0.0202,工业,index tracking
+2025-01-31,9304.T,SHIBUSAWA LOGISTICS,0.0035,工业,index tracking
+2025-01-31,9305.T,YAMATANE,0.0041,日常消费,index tracking
+2025-01-31,9308.T,INUI GLOBAL LOGISTICS,0.0053,工业,index tracking
+2025-01-31,9310.T,JAPAN TRANSCITY,0.0053,工业,index tracking
+2025-01-31,9319.T,CHUO WAREHOUSE,0.0022,工业,index tracking
+2025-01-31,9324.T,YASUDA LOGISTICS,0.003,工业,index tracking
+2025-01-31,9332.T,NISSO,0.0017,医疗保健,index tracking
+2025-01-31,9336.T,DAIEI KANKYO,0.016,工业,index tracking
+2025-01-31,9341.T,GENOVA,0.0012,医疗保健,index tracking
+2025-01-31,9347.T,NIPPON KANZAI,0.0072,工业,index tracking
+2025-01-31,9364.T,上组,0.0392,工业,index tracking
+2025-01-31,9369.T,K.R.S.,0.0037,工业,index tracking
+2025-01-31,9381.T,AIT,0.0027,工业,index tracking
+2025-01-31,9384.T,NAIGAI TRANS LINE,0.0026,工业,index tracking
+2025-01-31,9386.T,NIPPON CONCEPT,0.0017,工业,index tracking
+2025-01-31,9401.T,TBS,0.0528,通讯服务,index tracking
+2025-01-31,9404.T,NIPPON TELEVISION,0.0641,通讯服务,index tracking
+2025-01-31,9405.T,ASAHI BROADCASTING GROUP HOLDINGS,0.0015,通讯服务,index tracking
+2025-01-31,9409.T,TV ASAHI HOLDINGS,0.0151,通讯服务,index tracking
+2025-01-31,9412.T,SKY PERFECT JSAT HOLDINGS,0.0183,通讯服务,index tracking
+2025-01-31,9413.T,TV TOKYO,0.005,通讯服务,index tracking
+2025-01-31,9416.T,VISION,0.0044,通讯服务,index tracking
+2025-01-31,9418.T,U-NEXT HOLDINGS,0.0158,通讯服务,index tracking
+2025-01-31,9424.T,JAPAN COMMUNICATIONS,0.0025,通讯服务,index tracking
+2025-01-31,9432.T,日本电报电话,1.1445,通讯服务,index tracking
+2025-01-31,9433.T,KDDI,0.9611,通讯服务,index tracking
+2025-01-31,9434.T,软银公司,0.8075,通讯服务,index tracking
+2025-01-31,9435.T,光通信,0.1037,可选消费,index tracking
+2025-01-31,9438.T,MTI,0.0018,信息技术,index tracking
+2025-01-31,9449.T,GMO INTERNET GROUP,0.0227,信息技术,index tracking
+2025-01-31,9450.T,FIBERGATE,0.0009,通讯服务,index tracking
+2025-01-31,9468.T,KADOKAWA,0.0438,通讯服务,index tracking
+2025-01-31,9470.T,GAKKEN HOLDINGS,0.0048,通讯服务,index tracking
+2025-01-31,9474.T,ZENRIN,0.0038,通讯服务,index tracking
+2025-01-31,9501.T,东京电力,0.0865,公用事业,index tracking
+2025-01-31,9502.T,中部电力,0.1498,公用事业,index tracking
+2025-01-31,9503.T,关西电力,0.2103,公用事业,index tracking
+2025-01-31,9504.T,中国电力,0.0378,公用事业,index tracking
+2025-01-31,9505.T,北陆电力,0.0222,公用事业,index tracking
+2025-01-31,9506.T,东北电力,0.0752,公用事业,index tracking
+2025-01-31,9507.T,四国电力,0.0279,公用事业,index tracking
+2025-01-31,9508.T,九州电力,0.0781,公用事业,index tracking
+2025-01-31,9509.T,北海道电力,0.0209,公用事业,index tracking
+2025-01-31,9511.T,OKINAWA ELECTRIC POWER,0.0058,公用事业,index tracking
+2025-01-31,9513.T,电源开发,0.0464,公用事业,index tracking
+2025-01-31,9514.T,EF-ON,0.0007,工业,index tracking
+2025-01-31,9517.T,EREX,0.0039,公用事业,index tracking
+2025-01-31,9519.T,RENOVA,0.0042,公用事业,index tracking
+2025-01-31,9531.T,东京煤气,0.2086,公用事业,index tracking
+2025-01-31,9532.T,大阪瓦斯,0.1508,公用事业,index tracking
+2025-01-31,9533.T,东邦瓦斯,0.0385,公用事业,index tracking
+2025-01-31,9534.T,HOKKAIDO GAS,0.0041,公用事业,index tracking
+2025-01-31,9535.T,HIROSHIMA GAS,0.0019,公用事业,index tracking
+2025-01-31,9536.T,SAIBU GAS HOLDINGS,0.0045,公用事业,index tracking
+2025-01-31,9543.T,SHIZUOKA GAS,0.0058,公用事业,index tracking
+2025-01-31,9551.T,METAWATER,0.0064,工业,index tracking
+2025-01-31,9552.T,M&A RESEARCH INSTITUTE HOLDINGS,0.0044,金融,index tracking
+2025-01-31,9600.T,I-NET,0.0025,信息技术,index tracking
+2025-01-31,9601.T,SHOCHIKU,0.0177,通讯服务,index tracking
+2025-01-31,9602.T,东宝,0.1105,通讯服务,index tracking
+2025-01-31,9603.T,H.I.S.,0.0127,可选消费,index tracking
+2025-01-31,9605.T,TOEI,0.0238,通讯服务,index tracking
+2025-01-31,9612.T,LUCKLAND,0.002,工业,index tracking
+2025-01-31,9613.T,NTT DATA,0.1996,信息技术,index tracking
+2025-01-31,9616.T,KYORITSU MAINTENANCE,0.025,可选消费,index tracking
+2025-01-31,9619.T,ICHINEN HOLDINGS,0.0046,工业,index tracking
+2025-01-31,9621.T,CTI ENGINEERING,0.0071,工业,index tracking
+2025-01-31,9622.T,SPACE,0.0021,工业,index tracking
+2025-01-31,9627.T,AIN HOLDINGS,0.0125,日常消费,index tracking
+2025-01-31,9628.T,SAN,0.0023,可选消费,index tracking
+2025-01-31,9629.T,PCA,0.0032,信息技术,index tracking
+2025-01-31,9632.T,SUBARU ENTERPRISE,0.0034,工业,index tracking
+2025-01-31,9644.T,TANABE CONSULTING,0.0014,工业,index tracking
+2025-01-31,9658.T,BUSINESS BRAIN SHOWA·OTA,0.0023,信息技术,index tracking
+2025-01-31,9663.T,NAGAWA,0.0045,可选消费,index tracking
+2025-01-31,9672.T,TOKYOTOKEIBA,0.0085,可选消费,index tracking
+2025-01-31,9678.T,KANAMOTO,0.0126,工业,index tracking
+2025-01-31,9682.T,DTS,0.0187,信息技术,index tracking
+2025-01-31,9684.T,SQUARE ENIX HOLDINGS,0.0797,通讯服务,index tracking
+2025-01-31,9692.T,COMPUTER ENGINEERING & CONSULTING,0.006,信息技术,index tracking
+2025-01-31,9697.T,卡普空,0.1781,通讯服务,index tracking
+2025-01-31,9699.T,NISHIO,0.0091,工业,index tracking
+2025-01-31,9702.T,ISB,0.0016,信息技术,index tracking
+2025-01-31,9706.T,JAPAN AIRPORT TERMINAL,0.0442,工业,index tracking
+2025-01-31,9715.T,TRANSCOSMOS,0.0106,工业,index tracking
+2025-01-31,9716.T,NOMURA,0.0103,工业,index tracking
+2025-01-31,9719.T,SCSK,0.071,信息技术,index tracking
+2025-01-31,9722.T,FUJITA KANKO,0.0115,可选消费,index tracking
+2025-01-31,9726.T,KNT-CT,0.0018,可选消费,index tracking
+2025-01-31,9729.T,TOKAI,0.005,医疗保健,index tracking
+2025-01-31,9735.T,西科姆,0.2753,工业,index tracking
+2025-01-31,9739.T,NSW,0.0033,信息技术,index tracking
+2025-01-31,9740.T,CENTRAL SECURITY PATROLS,0.004,工业,index tracking
+2025-01-31,9742.T,INES,0.0036,信息技术,index tracking
+2025-01-31,9743.T,TANSEISHA,0.0049,工业,index tracking
+2025-01-31,9744.T,MEITEC,0.0287,工业,index tracking
+2025-01-31,9746.T,TKC,0.0171,工业,index tracking
+2025-01-31,9749.T,FUJI SOFT,0.0687,信息技术,index tracking
+2025-01-31,9755.T,OYO,0.006,工业,index tracking
+2025-01-31,9757.T,FUNAI SOKEN HOLDINGS,0.0125,工业,index tracking
+2025-01-31,9759.T,NSD,0.0318,信息技术,index tracking
+2025-01-31,9766.T,科乐美集团,0.1351,通讯服务,index tracking
+2025-01-31,9769.T,GAKKYUSHA,0.0021,可选消费,index tracking
+2025-01-31,9787.T,AEON DELIGHT,0.0113,工业,index tracking
+2025-01-31,9788.T,NAC,0.0016,工业,index tracking
+2025-01-31,9790.T,FUKUI COMPUTER HOLDINGS,0.0051,信息技术,index tracking
+2025-01-31,9793.T,DAISEKI,0.0232,工业,index tracking
+2025-01-31,9795.T,STEP,0.0021,可选消费,index tracking
+2025-01-31,9824.T,SENSHU ELECTRIC,0.0088,工业,index tracking
+2025-01-31,9828.T,GENKI GLOBAL DINING CONCEPTS,0.0048,可选消费,index tracking
+2025-01-31,9830.T,TRUSCO NAKAYAMA,0.0116,工业,index tracking
+2025-01-31,9831.T,山田控股,0.0372,可选消费,index tracking
+2025-01-31,9832.T,AUTOBACS SEVEN,0.0138,可选消费,index tracking
+2025-01-31,9837.T,MORITO,0.0032,可选消费,index tracking
+2025-01-31,9842.T,ARCLANDS,0.0136,可选消费,index tracking
+2025-01-31,9843.T,似鸟控股,0.1758,可选消费,index tracking
+2025-01-31,9850.T,GOURMET KINEYA,0.0024,可选消费,index tracking
+2025-01-31,9856.T,KU,0.0018,可选消费,index tracking
+2025-01-31,9861.T,YOSHINOYA,0.0307,可选消费,index tracking
+2025-01-31,9869.T,KATO SANGYO,0.0144,日常消费,index tracking
+2025-01-31,9880.T,INNOTECH,0.0025,信息技术,index tracking
+2025-01-31,9882.T,YELLOW HAT,0.0128,可选消费,index tracking
+2025-01-31,9887.T,MATSUYA FOODS HOLDINGS,0.0076,可选消费,index tracking
+2025-01-31,9889.T,JBCC HOLDINGS,0.0081,信息技术,index tracking
+2025-01-31,9896.T,JK HOLDINGS,0.002,工业,index tracking
+2025-01-31,9900.T,SAGAMI HOLDINGS,0.0075,可选消费,index tracking
+2025-01-31,9902.T,NICHIDEN,0.0046,工业,index tracking
+2025-01-31,9928.T,MIROKU JYOHO SERVICE,0.0044,信息技术,index tracking
+2025-01-31,9932.T,SUGIMOTO,0.0031,工业,index tracking
+2025-01-31,9934.T,INABA DENKISANGYO,0.0275,工业,index tracking
+2025-01-31,9936.T,OHSHO FOOD SERVICE,0.0152,可选消费,index tracking
+2025-01-31,9946.T,MINISTOP,0.0038,日常消费,index tracking
+2025-01-31,9948.T,ARCS,0.0121,日常消费,index tracking
+2025-01-31,9956.T,VALOR HOLDINGS,0.0111,日常消费,index tracking
+2025-01-31,9960.T,TOTECH,0.0063,工业,index tracking
+2025-01-31,9962.T,米思米,0.1004,工业,index tracking
+2025-01-31,9974.T,BELC,0.0083,日常消费,index tracking
+2025-01-31,9979.T,DAISYO,0.0018,可选消费,index tracking
+2025-01-31,9983.T,迅销,0.7628,可选消费,index tracking
+2025-01-31,9984.T,软银集团,1.1697,通讯服务,index tracking
+2025-01-31,9987.T,SUZUKEN,0.0425,医疗保健,index tracking
+2025-01-31,9989.T,SUNDRUG,0.0377,日常消费,index tracking
+2025-01-31,9990.T,SAC'S BAR HOLDINGS,0.0023,可选消费,index tracking
+2025-01-31,9991.T,GECOSS,0.0016,工业,index tracking
+2025-01-31,9997.T,BELLUNA,0.0056,可选消费,index tracking
+2025-04-11,4784.T,GMO AD PARTNERS,,通讯服务,index tracking

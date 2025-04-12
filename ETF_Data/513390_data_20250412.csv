@@ -1,0 +1,102 @@
+date,wind_code,sec_name,i_weight,industry,source
+2025-04-11,AAPL.O,苹果(APPLE),,信息技术,index tracking
+2025-04-11,ABNB.O,爱彼迎(AIRBNB),,可选消费,index tracking
+2025-04-11,ADBE.O,奥多比(ADOBE),,信息技术,index tracking
+2025-04-11,ADI.O,亚德诺(ANALOG),,信息技术,index tracking
+2025-04-11,ADP.O,自动数据处理,,工业,index tracking
+2025-04-11,ADSK.O,欧特克(AUTODESK),,信息技术,index tracking
+2025-04-11,AEP.O,美国电力,,公用事业,index tracking
+2025-04-11,AMAT.O,应用材料(APPLIED MATERIAL),,信息技术,index tracking
+2025-04-11,AMD.O,超威半导体(AMD),,信息技术,index tracking
+2025-04-11,AMGN.O,安进(AMGEN),,医疗保健,index tracking
+2025-04-11,AMZN.O,亚马逊(AMAZON),,可选消费,index tracking
+2025-04-11,ANSS.O,安西斯(ANSYS),,信息技术,index tracking
+2025-04-11,APP.O,APPLOVIN,,信息技术,index tracking
+2025-04-11,ARM.O,ARM,,信息技术,index tracking
+2025-04-11,ASML.O,阿斯麦,,信息技术,index tracking
+2025-04-11,AVGO.O,博通(BROADCOM),,信息技术,index tracking
+2025-04-11,AXON.O,AXON ENTERPRISE,,工业,index tracking
+2025-04-11,AZN.O,阿斯利康,,医疗保健,index tracking
+2025-04-11,BIIB.O,生物基因(BIOGEN),,医疗保健,index tracking
+2025-04-11,BKNG.O,BOOKING,,可选消费,index tracking
+2025-04-11,BKR.O,贝克休斯(BAKER HUGHES),,能源,index tracking
+2025-04-11,CCEP.O,可口可乐欧洲合伙,,日常消费,index tracking
+2025-04-11,CDNS.O,铿腾电子(CADENCE),,信息技术,index tracking
+2025-04-11,CDW.O,CDW,,信息技术,index tracking
+2025-04-11,CEG.O,CONSTELLATION ENERGY,,公用事业,index tracking
+2025-04-11,CHTR.O,特许通讯(CHARTER COMMUNICATIONS),,通讯服务,index tracking
+2025-04-11,CMCSA.O,康卡斯特(COMCAST),,通讯服务,index tracking
+2025-04-11,COST.O,开市客(COSTCO),,日常消费,index tracking
+2025-04-11,CPRT.O,科帕特(COPART),,工业,index tracking
+2025-04-11,CRWD.O,CROWDSTRIKE,,信息技术,index tracking
+2025-04-11,CSCO.O,思科(CISCO),,信息技术,index tracking
+2025-04-11,CSGP.O,科斯塔(COSTAR),,房地产,index tracking
+2025-04-11,CSX.O,CSX运输,,工业,index tracking
+2025-04-11,CTAS.O,信达思(CINTAS),,工业,index tracking
+2025-04-11,CTSH.O,高知特科技(COGNIZANT),,信息技术,index tracking
+2025-04-11,DASH.O,DOORDASH,,可选消费,index tracking
+2025-04-11,DDOG.O,DATADOG,,信息技术,index tracking
+2025-04-11,DXCM.O,德康医疗(DEXCOM),,医疗保健,index tracking
+2025-04-11,EA.O,艺电(ELECTRONIC ARTS),,通讯服务,index tracking
+2025-04-11,EXC.O,爱克斯龙电力(EXELON),,公用事业,index tracking
+2025-04-11,FANG.O,DIAMONDBACK能源,,能源,index tracking
+2025-04-11,FAST.O,快扣(FASTENAL),,工业,index tracking
+2025-04-11,FTNT.O,飞塔(FORTINET),,信息技术,index tracking
+2025-04-11,GEHC.O,GE HEALTHCARE,,医疗保健,index tracking
+2025-04-11,GFS.O,格芯(GLOBALFOUNDRIES),,信息技术,index tracking
+2025-04-11,GILD.O,吉利德科学(GILEAD SCIENCES),,医疗保健,index tracking
+2025-04-11,GOOG.O,谷歌(ALPHABET)-C,,通讯服务,index tracking
+2025-04-11,GOOGL.O,谷歌(ALPHABET)-A,,通讯服务,index tracking
+2025-04-11,HON.O,霍尼韦尔国际(HONEYWELL INTERNATIONAL),,工业,index tracking
+2025-04-11,IDXX.O,IDEXX实验室,,医疗保健,index tracking
+2025-04-11,INTC.O,英特尔(INTEL),,信息技术,index tracking
+2025-04-11,INTU.O,财捷(INTUIT),,信息技术,index tracking
+2025-04-11,ISRG.O,直觉外科(INTUITIVE),,医疗保健,index tracking
+2025-04-11,KDP.O,KEURIG DR PEPPER,,日常消费,index tracking
+2025-04-11,KHC.O,卡夫亨氏(KRAFT HEINZ),,日常消费,index tracking
+2025-04-11,KLAC.O,科天半导体(KLA),,信息技术,index tracking
+2025-04-11,LIN.O,德国林德,,材料,index tracking
+2025-04-11,LRCX.O,拉姆研究(LAM RESEARCH),,信息技术,index tracking
+2025-04-11,LULU.O,露露乐蒙(LULULEMON),,可选消费,index tracking
+2025-04-11,MAR.O,万豪国际(MARRIOTT INTL),,可选消费,index tracking
+2025-04-11,MCHP.O,微芯科技(MICROCHIP),,信息技术,index tracking
+2025-04-11,MDB.O,MONGODB,,信息技术,index tracking
+2025-04-11,MDLZ.O,亿滋国际(MONDELEZ INTL),,日常消费,index tracking
+2025-04-11,MELI.O,MERCADOLIBRE,,可选消费,index tracking
+2025-04-11,META.O,脸书(META PLATFORMS),,通讯服务,index tracking
+2025-04-11,MNST.O,怪物饮料(MONSTER BEVERAGE),,日常消费,index tracking
+2025-04-11,MRVL.O,迈威尔科技,,信息技术,index tracking
+2025-04-11,MSFT.O,微软(MICROSOFT),,信息技术,index tracking
+2025-04-11,MSTR.O,微策投资,,信息技术,index tracking
+2025-04-11,MU.O,美光科技(MICRON TECHNOLOGY),,信息技术,index tracking
+2025-04-11,NFLX.O,奈飞(NETFLIX),,通讯服务,index tracking
+2025-04-11,NVDA.O,英伟达(NVIDIA),,信息技术,index tracking
+2025-04-11,NXPI.O,恩智浦半导体(NXP SEMICONDUCTORS),,信息技术,index tracking
+2025-04-11,ODFL.O,统领货运线,,工业,index tracking
+2025-04-11,ON.O,安森美半导体(ON SEMICONDUCTOR),,信息技术,index tracking
+2025-04-11,ORLY.O,奥莱利汽车(O REILLY AUTOMOTIVE),,可选消费,index tracking
+2025-04-11,PANW.O,PALO ALTO NETWORKS,,信息技术,index tracking
+2025-04-11,PAYX.O,沛齐(PAYCHEX),,工业,index tracking
+2025-04-11,PCAR.O,帕卡(PACCAR),,工业,index tracking
+2025-04-11,PDD.O,拼多多,,可选消费,index tracking
+2025-04-11,PEP.O,百事(PEPSICO),,日常消费,index tracking
+2025-04-11,PLTR.O,PALANTIR TECHNOLOGIES,,信息技术,index tracking
+2025-04-11,PYPL.O,贝宝(PAYPAL),,金融,index tracking
+2025-04-11,QCOM.O,高通(QUALCOMM),,信息技术,index tracking
+2025-04-11,REGN.O,再生元制药(REGENERON),,医疗保健,index tracking
+2025-04-11,ROP.O,儒博科技(ROPER TECHNOLOGIES),,信息技术,index tracking
+2025-04-11,ROST.O,罗斯百货(ROSS),,可选消费,index tracking
+2025-04-11,SBUX.O,星巴克(STARBUCKS),,可选消费,index tracking
+2025-04-11,SNPS.O,新思科技(SYNOPSYS),,信息技术,index tracking
+2025-04-11,TEAM.O,ATLASSIAN,,信息技术,index tracking
+2025-04-11,TMUS.O,T-MOBILE US,,通讯服务,index tracking
+2025-04-11,TSLA.O,特斯拉(TESLA),,可选消费,index tracking
+2025-04-11,TTD.O,TRADE DESK,,通讯服务,index tracking
+2025-04-11,TTWO.O,TAKE-TWO互动软件,,通讯服务,index tracking
+2025-04-11,TXN.O,德州仪器(TEXAS INSTRUMENTS),,信息技术,index tracking
+2025-04-11,VRSK.O,VERISK ANALYTICS,,工业,index tracking
+2025-04-11,VRTX.O,福泰制药(VERTEX),,医疗保健,index tracking
+2025-04-11,WBD.O,WARNER BROS. DISCOVERY,,通讯服务,index tracking
+2025-04-11,WDAY.O,WORKDAY,,信息技术,index tracking
+2025-04-11,XEL.O,埃克西尔能源(XCEL ENERGY),,公用事业,index tracking
+2025-04-11,ZS.O,ZSCALER,,信息技术,index tracking
