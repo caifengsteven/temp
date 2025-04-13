@@ -1,0 +1,47 @@
+2025-04-13 14:47:32,047 - StockFuturesRollTracker - INFO - Connecting to Bloomberg at 127.0.0.1:8194
+2025-04-13 14:47:32,541 - StockFuturesRollTracker - INFO - Bloomberg session started successfully
+2025-04-13 14:47:32,542 - StockFuturesRollTracker - INFO - Read 7 stock futures from stock_futures_list.txt
+2025-04-13 14:47:33,166 - StockFuturesRollTracker - INFO - Found active contracts for 2330 TT: Front=2330=J5 TT Equity, Next=2330=K5 TT Equity
+2025-04-13 14:47:33,167 - StockFuturesRollTracker - INFO - Requesting roll data for 2330=J5 TT Equity and 2330=K5 TT Equity
+2025-04-13 14:47:33,524 - StockFuturesRollTracker - INFO - Roll data for 2330=J5 TT Equity/2330=K5 TT Equity: Volume=11.3%, OI=37.0%, Avg=24.2%
+2025-04-13 14:47:34,267 - StockFuturesRollTracker - INFO - Found active contracts for 2317 TT: Front=2317=J5 TT Equity, Next=2317=K5 TT Equity
+2025-04-13 14:47:34,268 - StockFuturesRollTracker - INFO - Requesting roll data for 2317=J5 TT Equity and 2317=K5 TT Equity
+2025-04-13 14:47:34,640 - StockFuturesRollTracker - INFO - Roll data for 2317=J5 TT Equity/2317=K5 TT Equity: Volume=19.0%, OI=49.5%, Avg=34.2%
+2025-04-13 14:47:35,513 - StockFuturesRollTracker - INFO - Found active contracts for 700 HK: Front=700=J5 HK Equity, Next=700=K5 HK Equity
+2025-04-13 14:47:35,514 - StockFuturesRollTracker - INFO - Requesting roll data for 700=J5 HK Equity and 700=K5 HK Equity
+2025-04-13 14:47:35,902 - StockFuturesRollTracker - INFO - Roll data for 700=J5 HK Equity/700=K5 HK Equity: Volume=20.7%, OI=66.4%, Avg=43.5%
+2025-04-13 14:47:36,698 - StockFuturesRollTracker - INFO - Found active contracts for 1299 HK: Front=1299=J5 HK Equity, Next=1299=K5 HK Equity
+2025-04-13 14:47:36,699 - StockFuturesRollTracker - INFO - Requesting roll data for 1299=J5 HK Equity and 1299=K5 HK Equity
+2025-04-13 14:47:37,080 - StockFuturesRollTracker - INFO - Roll data for 1299=J5 HK Equity/1299=K5 HK Equity: Volume=0.0%, OI=37.1%, Avg=18.5%
+2025-04-13 14:47:37,455 - StockFuturesRollTracker - WARNING - Security error for 005930=M5 KS Equity: Unknown/Invalid Security  [nid:21943]
+2025-04-13 14:47:37,727 - StockFuturesRollTracker - WARNING - Security error for 005930=U5 KS Equity: Unknown/Invalid Security  [nid:23102]
+2025-04-13 14:47:37,729 - StockFuturesRollTracker - WARNING - Front month contract 005930=M5 KS Equity not found for 005930 KS
+2025-04-13 14:47:37,730 - StockFuturesRollTracker - WARNING - No valid contracts found for 005930 KS, using sample data
+2025-04-13 14:47:37,730 - StockFuturesRollTracker - INFO - Generated sample contracts for 005930 KS: Front=005930=M5 KS Equity, Next=005930=U5 KS Equity
+2025-04-13 14:47:37,731 - StockFuturesRollTracker - INFO - Requesting roll data for 005930=M5 KS Equity and 005930=U5 KS Equity
+2025-04-13 14:47:38,025 - StockFuturesRollTracker - WARNING - Security error for 005930=M5 KS Equity: Unknown/Invalid Security  [nid:23600]
+2025-04-13 14:47:38,026 - StockFuturesRollTracker - WARNING - Security error for 005930=U5 KS Equity: Unknown/Invalid Security  [nid:23600]
+2025-04-13 14:47:38,026 - StockFuturesRollTracker - WARNING - Missing both volume and OI data for 005930=M5 KS Equity and 005930=U5 KS Equity, using sample data
+2025-04-13 14:47:38,027 - StockFuturesRollTracker - INFO - Sample roll data: Volume=48.4%, OI=38.9%, Avg=43.6%
+2025-04-13 14:47:38,405 - StockFuturesRollTracker - WARNING - Security error for 000660=M5 KS Equity: Unknown/Invalid Security  [nid:21931]
+2025-04-13 14:47:38,665 - StockFuturesRollTracker - WARNING - Security error for 000660=U5 KS Equity: Unknown/Invalid Security  [nid:21943]
+2025-04-13 14:47:38,666 - StockFuturesRollTracker - WARNING - Front month contract 000660=M5 KS Equity not found for 000660 KS
+2025-04-13 14:47:38,666 - StockFuturesRollTracker - WARNING - No valid contracts found for 000660 KS, using sample data
+2025-04-13 14:47:38,666 - StockFuturesRollTracker - INFO - Generated sample contracts for 000660 KS: Front=000660=M5 KS Equity, Next=000660=U5 KS Equity
+2025-04-13 14:47:38,666 - StockFuturesRollTracker - INFO - Requesting roll data for 000660=M5 KS Equity and 000660=U5 KS Equity
+2025-04-13 14:47:38,944 - StockFuturesRollTracker - WARNING - Security error for 000660=M5 KS Equity: Unknown/Invalid Security  [nid:23462]
+2025-04-13 14:47:38,944 - StockFuturesRollTracker - WARNING - Security error for 000660=U5 KS Equity: Unknown/Invalid Security  [nid:23462]
+2025-04-13 14:47:38,944 - StockFuturesRollTracker - WARNING - Missing both volume and OI data for 000660=M5 KS Equity and 000660=U5 KS Equity, using sample data
+2025-04-13 14:47:38,945 - StockFuturesRollTracker - INFO - Sample roll data: Volume=40.2%, OI=39.8%, Avg=40.0%
+2025-04-13 14:47:39,310 - StockFuturesRollTracker - WARNING - Security error for Z74=J5 SP Equity: Unknown/Invalid Security  [nid:19425]
+2025-04-13 14:47:39,582 - StockFuturesRollTracker - WARNING - Security error for Z74=K5 SP Equity: Unknown/Invalid Security  [nid:19392]
+2025-04-13 14:47:39,583 - StockFuturesRollTracker - WARNING - Front month contract Z74=J5 SP Equity not found for Z74 SP
+2025-04-13 14:47:39,583 - StockFuturesRollTracker - WARNING - No valid contracts found for Z74 SP, using sample data
+2025-04-13 14:47:39,583 - StockFuturesRollTracker - INFO - Generated sample contracts for Z74 SP: Front=Z74=J5 SP Equity, Next=Z74=K5 SP Equity
+2025-04-13 14:47:39,583 - StockFuturesRollTracker - INFO - Requesting roll data for Z74=J5 SP Equity and Z74=K5 SP Equity
+2025-04-13 14:47:39,869 - StockFuturesRollTracker - WARNING - Security error for Z74=J5 SP Equity: Unknown/Invalid Security  [nid:23600]
+2025-04-13 14:47:39,869 - StockFuturesRollTracker - WARNING - Security error for Z74=K5 SP Equity: Unknown/Invalid Security  [nid:23600]
+2025-04-13 14:47:39,869 - StockFuturesRollTracker - WARNING - Missing both volume and OI data for Z74=J5 SP Equity and Z74=K5 SP Equity, using sample data
+2025-04-13 14:47:39,870 - StockFuturesRollTracker - INFO - Sample roll data: Volume=26.1%, OI=24.6%, Avg=25.3%
+2025-04-13 14:47:40,020 - StockFuturesRollTracker - INFO - Roll data saved to Excel file: stock_futures_roll_data.xlsx
+2025-04-13 14:47:40,021 - StockFuturesRollTracker - INFO - Bloomberg session stopped
