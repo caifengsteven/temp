@@ -85,49 +85,62 @@ class StockFuturesRollTracker:
                 'months': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],  # All months
                 'rolldays': 5,
                 'year_format': '1-digit',
-                'suffix': 'Equity'
+                'suffix': 'Equity',
+                'expiry_day': 3,  # Third Wednesday of month (3rd week)
+                'expiry_weekday': 2  # Wednesday (0=Monday, 1=Tuesday, ...)
             },
             # Korean Exchange
             'KS': {
                 'months': [3, 6, 9, 12],  # Quarterly
                 'rolldays': 7, 
                 'year_format': '1-digit',
-                'suffix': 'Equity'
+                'suffix': 'Equity',
+                'expiry_day': 2,  # Second Thursday of month (2nd week)
+                'expiry_weekday': 3  # Thursday (0=Monday, 1=Tuesday, ...)
             },
             # Hong Kong Exchange
             'HK': {
                 'months': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],  # All months
                 'rolldays': 5,
                 'year_format': '1-digit',
-                'suffix': 'Equity'
+                'suffix': 'Equity',
+                'expiry_day': -1,  # Last business day of month
+                'expiry_weekday': None  # Not applicable for end-of-month expiry
             },
             # Singapore Exchange
             'SP': {
                 'months': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],  # All months
                 'rolldays': 5,
                 'year_format': '1-digit',
-                'suffix': 'Equity'
+                'suffix': 'Equity',
+                'expiry_day': -1,  # Last business day of month
+                'expiry_weekday': None  # Not applicable for end-of-month expiry
             },
             # Eurex
             'GY': {
                 'months': [3, 6, 9, 12],  # Quarterly
                 'rolldays': 7,
                 'year_format': '1-digit',
-                'suffix': 'Equity'
+                'suffix': 'Equity',
+                'expiry_day': 3,  # Third Friday of month (3rd week)
+                'expiry_weekday': 4  # Friday (0=Monday, 1=Tuesday, ...)
             },
             # Default for other markets
             'DEFAULT': {
                 'months': [3, 6, 9, 12],  # Quarterly is most common
                 'rolldays': 7,
                 'year_format': '1-digit',
-                'suffix': 'Equity'
+                'suffix': 'Equity',
+                'expiry_day': 3,  # Third Friday of month (3rd week) is most common
+                'expiry_weekday': 4  # Friday (0=Monday, 1=Tuesday, ...)
             }
         }
         
         # Bloomberg field mapping - try multiple field names for the same data
         self.field_mappings = {
             'volume': ['PX_VOLUME', 'VOLUME', 'VOLUME_ALL_TRADES', 'VOLUME_TDY'],
-            'open_interest': ['OPEN_INT', 'PX_OPEN_INT', 'OPN_INT', 'OPEN_INTEREST']
+            'open_interest': ['OPEN_INT', 'PX_OPEN_INT', 'OPN_INT', 'OPEN_INTEREST'],
+            'expiry_date': ['LAST_TRADEABLE_DT', 'EXPIRY_DT', 'TERMINATION_DT', 'FUT_NOTICE_FIRST']
         }
     
     def start_session(self) -> bool:
@@ -357,7 +370,159 @@ class StockFuturesRollTracker:
         
         return contract
     
-    def get_active_stock_futures_contracts(self, stock_info: Dict[str, str]) -> Tuple[str, str]:
+    def calculate_expiry_date(self, contract: str, exchange: str, month: int, year: int) -> datetime.date:
+        """
+        Calculate the expiration date for a futures contract.
+        
+        Args:
+            contract: Contract ticker
+            exchange: Exchange code
+            month: Contract month
+            year: Contract year
+            
+        Returns:
+            Expiration date
+        """
+        if self.use_sample_data:
+            return self.estimate_expiry_date(exchange, month, year)
+            
+        try:
+            # Try to get the expiry date from Bloomberg
+            refDataService = self.session.getService("//blp/refdata")
+            request = refDataService.createRequest("ReferenceDataRequest")
+            
+            # Add the contract
+            request.append("securities", contract)
+            
+            # Add multiple possible fields for expiry date
+            for field in self.field_mappings.get('expiry_date', []):
+                request.append("fields", field)
+            
+            # Send the request
+            self.session.sendRequest(request)
+            
+            # Process the response
+            expiry_date = None
+            
+            while True:
+                event = self.session.nextEvent(500)
+                
+                for msg in event:
+                    if msg.messageType() == blpapi.Name("ReferenceDataResponse"):
+                        securities = msg.getElement("securityData")
+                        
+                        for i in range(securities.numValues()):
+                            security = securities.getValue(i)
+                            
+                            if security.hasElement("securityError"):
+                                error = security.getElement("securityError").getElementAsString("message")
+                                logger.warning(f"Security error for {contract}: {error}")
+                                continue
+                                
+                            # Extract field data if available
+                            if security.hasElement("fieldData"):
+                                field_data = security.getElement("fieldData")
+                                
+                                # Try each expiry date field
+                                for field_name in self.field_mappings.get('expiry_date', []):
+                                    if field_data.hasElement(field_name):
+                                        try:
+                                            # Parse the expiry date from the field
+                                            date_str = field_data.getElementAsString(field_name)
+                                            expiry_date = datetime.datetime.strptime(date_str, "%Y-%m-%d").date()
+                                            logger.info(f"Found expiry date for {contract}: {expiry_date}")
+                                            break
+                                        except Exception as e:
+                                            logger.warning(f"Error parsing expiry date: {e}")
+                
+                if event.eventType() == blpapi.Event.RESPONSE:
+                    break
+                    
+            # If we couldn't get the expiry date from Bloomberg, estimate it
+            if expiry_date is None:
+                logger.warning(f"Could not get expiry date for {contract} from Bloomberg, estimating")
+                expiry_date = self.estimate_expiry_date(exchange, month, year)
+                
+            return expiry_date
+                
+        except Exception as e:
+            logger.error(f"Error getting expiry date: {e}")
+            # Fallback to estimation
+            return self.estimate_expiry_date(exchange, month, year)
+    
+    def estimate_expiry_date(self, exchange: str, month: int, year: int) -> datetime.date:
+        """
+        Estimate the expiration date for a futures contract based on market specifications.
+        
+        Args:
+            exchange: Exchange code
+            month: Contract month
+            year: Contract year
+            
+        Returns:
+            Estimated expiration date
+        """
+        # Get market specs
+        if exchange in self.market_specs:
+            market_info = self.market_specs[exchange]
+        else:
+            market_info = self.market_specs['DEFAULT']
+        
+        expiry_day = market_info['expiry_day']
+        expiry_weekday = market_info['expiry_weekday']
+        
+        # Calculate expiry date based on the exchange's rules
+        if expiry_day == -1:
+            # Last business day of the month
+            # Get the first day of the next month and subtract one day
+            if month == 12:
+                next_month = datetime.date(year + 1, 1, 1)
+            else:
+                next_month = datetime.date(year, month + 1, 1)
+                
+            last_day = next_month - datetime.timedelta(days=1)
+            
+            # Adjust if it falls on a weekend
+            while last_day.weekday() > 4:  # Saturday=5, Sunday=6
+                last_day -= datetime.timedelta(days=1)
+                
+            return last_day
+            
+        elif expiry_weekday is not None:
+            # Specific weekday of a specific week
+            # E.g., "Third Friday" or "Second Thursday"
+            
+            # Find the first occurrence of that weekday in the month
+            first_day = datetime.date(year, month, 1)
+            days_until_first = (expiry_weekday - first_day.weekday()) % 7
+            first_occurrence = first_day + datetime.timedelta(days=days_until_first)
+            
+            # Add the required number of weeks
+            expiry_date = first_occurrence + datetime.timedelta(days=(expiry_day - 1) * 7)
+            
+            return expiry_date
+            
+        else:
+            # Default to the 15th of the month
+            return datetime.date(year, month, 15)
+    
+    def calculate_days_to_expiry(self, expiry_date: datetime.date) -> int:
+        """
+        Calculate the number of days until expiry.
+        
+        Args:
+            expiry_date: Expiry date
+            
+        Returns:
+            Number of days until expiry (0 if expired)
+        """
+        today = datetime.date.today()
+        if expiry_date < today:
+            return 0
+        
+        return (expiry_date - today).days
+    
+    def get_active_stock_futures_contracts(self, stock_info: Dict[str, str]) -> Tuple[str, str, datetime.date, datetime.date]:
         """
         For a given stock, determine the front and next month futures contracts.
         
@@ -365,7 +530,7 @@ class StockFuturesRollTracker:
             stock_info: Dictionary with stock code and exchange
             
         Returns:
-            Tuple of (front_month_contract, next_month_contract)
+            Tuple of (front_month_contract, next_month_contract, front_expiry, next_expiry)
         """
         if self.use_sample_data:
             return self.get_sample_stock_futures_contracts(stock_info)
@@ -387,10 +552,21 @@ class StockFuturesRollTracker:
             
             if front_exists and next_exists:
                 logger.info(f"Found active contracts for {stock_code} {exchange}: Front={front_contract}, Next={next_contract}")
-                return front_contract, next_contract
+                
+                # Get expiry dates
+                front_expiry = self.calculate_expiry_date(front_contract, exchange, front_month, front_year)
+                next_expiry = self.calculate_expiry_date(next_contract, exchange, next_month, next_year)
+                
+                return front_contract, next_contract, front_expiry, next_expiry
+                
             elif front_exists:
                 logger.warning(f"Next month contract {next_contract} not found for {stock_code} {exchange}")
-                return front_contract, None
+                
+                # Get expiry date for front contract
+                front_expiry = self.calculate_expiry_date(front_contract, exchange, front_month, front_year)
+                
+                return front_contract, None, front_expiry, None
+                
             else:
                 logger.warning(f"Front month contract {front_contract} not found for {stock_code} {exchange}")
                 
@@ -411,10 +587,20 @@ class StockFuturesRollTracker:
                     
                     if front_exists and next_exists:
                         logger.info(f"Found active contracts with alternate stock code for {stock_code} {exchange}: Front={alt_front_contract}, Next={alt_next_contract}")
-                        return alt_front_contract, alt_next_contract
+                        
+                        # Get expiry dates
+                        front_expiry = self.calculate_expiry_date(alt_front_contract, exchange, front_month, front_year)
+                        next_expiry = self.calculate_expiry_date(alt_next_contract, exchange, next_month, next_year)
+                        
+                        return alt_front_contract, alt_next_contract, front_expiry, next_expiry
+                        
                     elif front_exists:
                         logger.warning(f"Alternative next month contract {alt_next_contract} not found for {stock_code} {exchange}")
-                        return alt_front_contract, None
+                        
+                        # Get expiry date for front contract
+                        front_expiry = self.calculate_expiry_date(alt_front_contract, exchange, front_month, front_year)
+                        
+                        return alt_front_contract, None, front_expiry, None
                 
                 # If we still can't find valid contracts, use sample data
                 logger.warning(f"No valid contracts found for {stock_code} {exchange}, using sample data")
@@ -476,7 +662,7 @@ class StockFuturesRollTracker:
             logger.error(f"Error verifying contract {contract}: {e}")
             return False
     
-    def get_sample_stock_futures_contracts(self, stock_info: Dict[str, str]) -> Tuple[str, str]:
+    def get_sample_stock_futures_contracts(self, stock_info: Dict[str, str]) -> Tuple[str, str, datetime.date, datetime.date]:
         """
         Generate sample front and next month stock futures contracts for testing.
         
@@ -484,7 +670,7 @@ class StockFuturesRollTracker:
             stock_info: Dictionary with stock code and exchange
             
         Returns:
-            Tuple of (front_month_contract, next_month_contract)
+            Tuple of (front_month_contract, next_month_contract, front_expiry, next_expiry)
         """
         stock_code = stock_info['stock_code']
         exchange = stock_info['exchange']
@@ -496,8 +682,12 @@ class StockFuturesRollTracker:
         front_contract = self.construct_stock_future_contract(stock_code, exchange, front_month, front_year)
         next_contract = self.construct_stock_future_contract(stock_code, exchange, next_month, next_year)
         
+        # Estimate expiry dates
+        front_expiry = self.estimate_expiry_date(exchange, front_month, front_year)
+        next_expiry = self.estimate_expiry_date(exchange, next_month, next_year)
+        
         logger.info(f"Generated sample contracts for {stock_code} {exchange}: Front={front_contract}, Next={next_contract}")
-        return front_contract, next_contract
+        return front_contract, next_contract, front_expiry, next_expiry
     
     def try_multiple_fields(self, field_data, field_type: str) -> Optional[float]:
         """
@@ -521,25 +711,36 @@ class StockFuturesRollTracker:
         
         return None
     
-    def calculate_roll_percentage(self, front_contract: str, next_contract: str) -> Dict[str, Any]:
+    def calculate_roll_percentage(self, front_contract: str, next_contract: str, 
+                                 front_expiry: datetime.date, next_expiry: datetime.date) -> Dict[str, Any]:
         """
         Calculate the roll percentage between front and next month contracts.
         
         Args:
             front_contract: Front month contract ticker
             next_contract: Next month contract ticker
+            front_expiry: Front month expiry date
+            next_expiry: Next month expiry date
             
         Returns:
             Dictionary with roll statistics
         """
         if self.use_sample_data:
-            return self.get_sample_roll_data(front_contract, next_contract)
+            return self.get_sample_roll_data(front_contract, next_contract, front_expiry, next_expiry)
+        
+        # Calculate days to expiry
+        front_days_to_expiry = self.calculate_days_to_expiry(front_expiry) if front_expiry else None
+        next_days_to_expiry = self.calculate_days_to_expiry(next_expiry) if next_expiry else None
         
         if not front_contract or not next_contract:
             logger.warning("Missing contract information, cannot calculate roll percentage")
             return {
                 'front_contract': front_contract,
                 'next_contract': next_contract,
+                'front_expiry': front_expiry,
+                'next_expiry': next_expiry,
+                'front_days_to_expiry': front_days_to_expiry,
+                'next_days_to_expiry': next_days_to_expiry,
                 'front_volume': 0,
                 'next_volume': 0,
                 'front_oi': 0,
@@ -629,7 +830,7 @@ class StockFuturesRollTracker:
             # If we don't have either volume or OI data, fall back to sample data
             if not have_volume and not have_oi:
                 logger.warning(f"Missing both volume and OI data for {front_contract} and {next_contract}, using sample data")
-                return self.get_sample_roll_data(front_contract, next_contract)
+                return self.get_sample_roll_data(front_contract, next_contract, front_expiry, next_expiry)
             
             # Calculate roll percentages
             volume_roll_pct = None
@@ -654,6 +855,10 @@ class StockFuturesRollTracker:
             result = {
                 'front_contract': front_contract,
                 'next_contract': next_contract,
+                'front_expiry': front_expiry,
+                'next_expiry': next_expiry,
+                'front_days_to_expiry': front_days_to_expiry,
+                'next_days_to_expiry': next_days_to_expiry,
                 'front_volume': front_volume or 0,
                 'next_volume': next_volume or 0,
                 'front_oi': front_oi or 0,
@@ -678,10 +883,12 @@ class StockFuturesRollTracker:
                 log_msg += "OI=N/A, "
                 
             if avg_roll_pct is not None:
-                log_msg += f"Avg={avg_roll_pct:.1f}%"
+                log_msg += f"Avg={avg_roll_pct:.1f}%, "
             else:
-                log_msg += "Avg=N/A"
+                log_msg += "Avg=N/A, "
                 
+            log_msg += f"Days to expiry: Front={front_days_to_expiry}, Next={next_days_to_expiry}"
+            
             logger.info(log_msg)
             
             return result
@@ -689,15 +896,18 @@ class StockFuturesRollTracker:
         except Exception as e:
             logger.error(f"Error calculating roll percentage: {e}")
             logger.warning(f"Falling back to sample data for {front_contract}/{next_contract}")
-            return self.get_sample_roll_data(front_contract, next_contract)
+            return self.get_sample_roll_data(front_contract, next_contract, front_expiry, next_expiry)
     
-    def get_sample_roll_data(self, front_contract: str, next_contract: str) -> Dict[str, Any]:
+    def get_sample_roll_data(self, front_contract: str, next_contract: str, 
+                             front_expiry: datetime.date, next_expiry: datetime.date) -> Dict[str, Any]:
         """
         Generate sample roll data for testing.
         
         Args:
             front_contract: Front month contract ticker
             next_contract: Next month contract ticker
+            front_expiry: Front month expiry date
+            next_expiry: Next month expiry date
             
         Returns:
             Dictionary with sample roll statistics
@@ -711,6 +921,10 @@ class StockFuturesRollTracker:
             if match:
                 stock_code = match.group(1)
                 exchange = match.group(2)
+        
+        # Calculate days to expiry
+        front_days_to_expiry = self.calculate_days_to_expiry(front_expiry) if front_expiry else None
+        next_days_to_expiry = self.calculate_days_to_expiry(next_expiry) if next_expiry else None
         
         # Get current date to determine realistic roll percentages
         now = datetime.datetime.now()
@@ -734,15 +948,28 @@ class StockFuturesRollTracker:
                 roll_mid_pct = 50   # Days 15-25: around 50% rolled
                 roll_end_pct = 95   # Days 25+: mostly rolled
             
-            # Calculate base roll percentage based on day of month
-            if day_of_month < 5:
-                base_pct = roll_start_pct + (day_of_month / 5) * 10
-            elif day_of_month < 15:
-                base_pct = roll_start_pct + ((day_of_month - 5) / 10) * (roll_mid_pct - roll_start_pct)
-            elif day_of_month < 25:
-                base_pct = roll_mid_pct + ((day_of_month - 15) / 10) * (roll_end_pct - roll_mid_pct)
+            # Use days to expiry to estimate roll percentage if available
+            if front_days_to_expiry is not None:
+                if front_days_to_expiry > 20:
+                    base_pct = roll_start_pct
+                elif front_days_to_expiry > 10:
+                    # Linear interpolation between start and mid points
+                    base_pct = roll_start_pct + (20 - front_days_to_expiry) / 10 * (roll_mid_pct - roll_start_pct)
+                elif front_days_to_expiry > 0:
+                    # Linear interpolation between mid and end points
+                    base_pct = roll_mid_pct + (10 - front_days_to_expiry) / 10 * (roll_end_pct - roll_mid_pct)
+                else:
+                    base_pct = roll_end_pct
             else:
-                base_pct = roll_end_pct + ((day_of_month - 25) / 5) * (100 - roll_end_pct)
+                # Fallback to using day of month
+                if day_of_month < 5:
+                    base_pct = roll_start_pct + (day_of_month / 5) * 10
+                elif day_of_month < 15:
+                    base_pct = roll_start_pct + ((day_of_month - 5) / 10) * (roll_mid_pct - roll_start_pct)
+                elif day_of_month < 25:
+                    base_pct = roll_mid_pct + ((day_of_month - 15) / 10) * (roll_end_pct - roll_mid_pct)
+                else:
+                    base_pct = roll_end_pct + ((day_of_month - 25) / 5) * (100 - roll_end_pct)
             
             # Add some randomness
             volume_base = base_pct + np.random.normal(0, 5)
@@ -775,6 +1002,10 @@ class StockFuturesRollTracker:
         result = {
             'front_contract': front_contract,
             'next_contract': next_contract,
+            'front_expiry': front_expiry,
+            'next_expiry': next_expiry,
+            'front_days_to_expiry': front_days_to_expiry,
+            'next_days_to_expiry': next_days_to_expiry,
             'front_volume': front_volume,
             'next_volume': next_volume,
             'front_oi': front_oi,
@@ -786,7 +1017,7 @@ class StockFuturesRollTracker:
         }
         
         if avg_roll_pct is not None:
-            logger.info(f"Sample roll data: Volume={volume_roll_pct:.1f}%, OI={oi_roll_pct:.1f}%, Avg={avg_roll_pct:.1f}%")
+            logger.info(f"Sample roll data: Volume={volume_roll_pct:.1f}%, OI={oi_roll_pct:.1f}%, Avg={avg_roll_pct:.1f}%, Days to expiry: Front={front_days_to_expiry}, Next={next_days_to_expiry}")
         
         return result
     
@@ -815,10 +1046,10 @@ class StockFuturesRollTracker:
             key = f"{stock_code} {exchange}"
             
             # Get active contracts
-            front_contract, next_contract = self.get_active_stock_futures_contracts(stock_info)
+            front_contract, next_contract, front_expiry, next_expiry = self.get_active_stock_futures_contracts(stock_info)
             
             # Calculate roll percentage
-            roll_data = self.calculate_roll_percentage(front_contract, next_contract)
+            roll_data = self.calculate_roll_percentage(front_contract, next_contract, front_expiry, next_expiry)
             
             # Store result
             roll_results[key] = roll_data
@@ -859,6 +1090,10 @@ class StockFuturesRollTracker:
                     'exchange': exchange,
                     'front_contract': roll_info.get('front_contract', ''),
                     'next_contract': roll_info.get('next_contract', ''),
+                    'front_expiry': roll_info.get('front_expiry', ''),
+                    'next_expiry': roll_info.get('next_expiry', ''),
+                    'front_days_to_expiry': roll_info.get('front_days_to_expiry', ''),
+                    'next_days_to_expiry': roll_info.get('next_days_to_expiry', ''),
                     'front_volume': roll_info.get('front_volume', 0),
                     'next_volume': roll_info.get('next_volume', 0),
                     'front_oi': roll_info.get('front_oi', 0),
@@ -913,11 +1148,19 @@ class StockFuturesRollTracker:
                 if avg_roll_pct is not None:
                     avg_roll_pct = avg_roll_pct / 100
                 
+                # Format expiry dates
+                front_expiry = roll_info.get('front_expiry')
+                next_expiry = roll_info.get('next_expiry')
+                
                 row = {
                     'Stock Code': stock_code,
                     'Exchange': exchange,
                     'Front Contract': roll_info.get('front_contract', ''),
                     'Next Contract': roll_info.get('next_contract', ''),
+                    'Front Expiry': front_expiry,
+                    'Next Expiry': next_expiry,
+                    'Front Days to Expiry': roll_info.get('front_days_to_expiry', ''),
+                    'Next Days to Expiry': roll_info.get('next_days_to_expiry', ''),
                     'Front Volume': roll_info.get('front_volume', 0),
                     'Next Volume': roll_info.get('next_volume', 0),
                     'Front OI': roll_info.get('front_oi', 0),
@@ -949,8 +1192,10 @@ class StockFuturesRollTracker:
                 'border': 1
             })
             
+            date_format = workbook.add_format({'num_format': 'yyyy-mm-dd'})
             pct_format = workbook.add_format({'num_format': '0.0%'})
             number_format = workbook.add_format({'num_format': '#,##0'})
+            days_format = workbook.add_format({'num_format': '0'})
             
             # Apply formats to columns
             for col_num, column in enumerate(df.columns):
@@ -961,21 +1206,34 @@ class StockFuturesRollTracker:
                     worksheet.set_column(col_num, col_num, 10)
                 elif column in ['Front Contract', 'Next Contract']:
                     worksheet.set_column(col_num, col_num, 20)
+                elif column in ['Front Expiry', 'Next Expiry']:
+                    worksheet.set_column(col_num, col_num, 12, date_format)
+                elif 'Days to Expiry' in column:
+                    worksheet.set_column(col_num, col_num, 10, days_format)
                 elif 'Roll %' in column:
-                    worksheet.set_column(col_num, col_num, 12, pct_format)
+                    worksheet.set_column(col_num, col_num, 10, pct_format)
                 elif 'Volume' in column or 'OI' in column:
                     worksheet.set_column(col_num, col_num, 12, number_format)
                 else:
                     worksheet.set_column(col_num, col_num, 15)
             
             # Add conditional formatting for roll percentages
-            roll_pct_cols = ['I', 'J', 'K']  # Volume Roll %, OI Roll %, Avg Roll %
+            roll_pct_cols = ['M', 'N', 'O']  # Volume Roll %, OI Roll %, Avg Roll %
             for col in roll_pct_cols:
                 worksheet.conditional_format(f'{col}2:{col}{len(df)+1}', {
                     'type': '3_color_scale',
                     'min_color': "#FFFFFF",
                     'mid_color': "#FFEB84",
                     'max_color': "#FF9A3C"
+                })
+            
+            # Add conditional formatting for days to expiry columns
+            days_cols = ['G', 'H']  # Front Days to Expiry, Next Days to Expiry
+            for col in days_cols:
+                worksheet.conditional_format(f'{col}2:{col}{len(df)+1}', {
+                    'type': 'data_bar',
+                    'bar_color': '#9CD1CE',
+                    'bar_solid': False
                 })
             
             # Save the workbook
@@ -1006,17 +1264,17 @@ class StockFuturesRollTracker:
             max_contract_len = max(max_contract_len, front_len, next_len)
         
         # Print header
-        print("\n" + "="*120)
+        print("\n" + "="*140)
         print(f"STOCK FUTURES ROLL PERCENTAGES - {self.latest_update_time.strftime('%Y-%m-%d %H:%M:%S')}")
         if self.use_sample_data:
             print("NOTE: Using sample data (Bloomberg connection not available)")
-        print("="*120)
+        print("="*140)
         
         # Print table header
         print(f"{'Stock':^{max_stock_len}} | {'Front Contract':^{max_contract_len}} | {'Next Contract':^{max_contract_len}} | " +
-              f"{'Front Vol':>10} | {'Next Vol':>10} | {'Front OI':>10} | {'Next OI':>10} | " +
+              f"{'Days to Exp':>10} | {'Next Exp':>10} | {'Front Vol':>10} | {'Next Vol':>10} | {'Front OI':>10} | {'Next OI':>10} | " +
               f"{'Vol Roll%':>8} | {'OI Roll%':>8} | {'Avg Roll%':>8}")
-        print("-"*(max_stock_len + 2*max_contract_len + 76))
+        print("-"*(max_stock_len + 2*max_contract_len + 102))
         
         # Sort by average roll percentage (descending)
         sorted_stocks = sorted(results.keys(), 
@@ -1030,6 +1288,8 @@ class StockFuturesRollTracker:
             # Get values
             front_contract = roll_info.get('front_contract', '')
             next_contract = roll_info.get('next_contract', '')
+            front_days_to_expiry = roll_info.get('front_days_to_expiry', '')
+            next_days_to_expiry = roll_info.get('next_days_to_expiry', '')
             front_volume = roll_info.get('front_volume', 0)
             next_volume = roll_info.get('next_volume', 0)
             front_oi = roll_info.get('front_oi', 0)
@@ -1043,6 +1303,20 @@ class StockFuturesRollTracker:
             oi_pct_str = f"{oi_roll_pct:.2f}%" if oi_roll_pct is not None else "N/A"
             avg_pct_str = f"{avg_roll_pct:.2f}%" if avg_roll_pct is not None else "N/A"
             
+            # Format days to expiry - color code based on how close to expiry
+            if front_days_to_expiry is not None:
+                if front_days_to_expiry <= 5:
+                    front_days_str = f"\033[91m{front_days_to_expiry}\033[0m"  # Red for imminent expiry
+                elif front_days_to_expiry <= 10:
+                    front_days_str = f"\033[93m{front_days_to_expiry}\033[0m"  # Yellow for approaching expiry
+                else:
+                    front_days_str = f"{front_days_to_expiry}"
+            else:
+                front_days_str = "N/A"
+                
+            # Show next expiry too
+            next_days_str = f"{next_days_to_expiry}" if next_days_to_expiry is not None else "N/A"
+            
             # Apply color based on roll percentage
             if avg_roll_pct is not None:
                 if avg_roll_pct > 80:
@@ -1054,10 +1328,10 @@ class StockFuturesRollTracker:
             
             # Print the row
             print(f"{stock_key:<{max_stock_len}} | {front_contract:<{max_contract_len}} | {next_contract:<{max_contract_len}} | " +
-                  f"{front_volume:>10,.0f} | {next_volume:>10,.0f} | {front_oi:>10,.0f} | {next_oi:>10,.0f} | " +
-                  f"{volume_pct_str:>8} | {oi_pct_str:>8} | {avg_pct_str:>8}")
+                  f"{front_days_str:>10} | {next_days_str:>10} | {front_volume:>10,.0f} | {next_volume:>10,.0f} | " +
+                  f"{front_oi:>10,.0f} | {next_oi:>10,.0f} | {volume_pct_str:>8} | {oi_pct_str:>8} | {avg_pct_str:>8}")
         
-        print("="*120 + "\n")
+        print("="*140 + "\n")
 
 
 def main():
