@@ -1,0 +1,1742 @@
+import blpapi
+import pandas as pd
+import numpy as np
+import datetime
+import logging
+import os
+import argparse
+import time
+import re
+from typing import List, Dict, Any, Optional
+from tabulate import tabulate
+
+# ANSI color codes for terminal output
+RED = "\033[91m"        # Bright red
+BOLD = "\033[1m"        # Bold
+FLASH = "\033[5m"       # Flashing text (not supported in all terminals)
+RESET = "\033[0m"       # Reset to default
+
+# Set up logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("tw_leverage_funds_tracker.log"),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger('TWLeverageFundsTracker')
+
+class TWLeverageFundsTracker:
+    """
+    A class to track and analyze Leveraged and Inverse ETFs in Taiwanese markets.
+    """
+    
+    def __init__(self, host: str = '127.0.0.1', port: int = 8194, use_sample_data: bool = False):
+        """
+        Initialize the Bloomberg connection.
+        
+        Args:
+            host: Bloomberg server host (default: localhost)
+            port: Bloomberg server port (default: 8194)
+            use_sample_data: Force use of sample data even if Bloomberg is available
+        """
+        self.host = host
+        self.port = port
+        self.session = None
+        self.use_sample_data = use_sample_data
+        
+        # Major Taiwanese indices for leveraged/inverse products
+        self.tw_indices = [
+            'TWSE Index',      # Taiwan Stock Exchange Weighted Index (TAIEX)
+            'TWSE ELEC Index', # Taiwan Electronics Index
+            'FTSE TWSE50 Index', # FTSE TWSE Taiwan 50 Index
+            'MSCI Taiwan Index', # MSCI Taiwan Index
+            'TPEx Index'       # Taipei Exchange Index (formerly GTSM)
+        ]
+        
+        # Major Taiwanese issuers of leveraged/inverse products
+        self.tw_li_issuers = [
+            'Yuanta',
+            'Fubon',
+            'Cathay',
+            'Capital',
+            'Fuh Hwa',
+            'Nomura',
+            'CTBC',
+            'SinoPac',
+            'KGI',
+            'Taishin'
+        ]
+        
+        # Mapping of underlying names to Bloomberg codes
+        self.underlying_code_map = {
+            'TWSE Index': 'TWSE Index',              # Taiwan Stock Exchange Weighted Index
+            'TWSE ELEC Index': 'TWEEIND Index',      # Taiwan Electronics Index
+            'FTSE TWSE50 Index': 'TWFIF50 Index',    # FTSE TWSE Taiwan 50 Index
+            'MSCI Taiwan Index': 'MXTW Index',       # MSCI Taiwan Index
+            'TPEx Index': 'GTEKI Index',             # Taipei Exchange Index
+            'Taiwan Semiconductor Index': 'TPWSIND Index',  # Taiwan Semiconductor Index
+            'Taiwan Financial Index': 'TPFIIND Index',      # Taiwan Financial Index
+            'Taiwan 50 Index': 'TWFIF50 Index',             # Taiwan 50 Index
+            'Taiwan Mid-Cap 100 Index': 'TWMC100 Index',    # Taiwan Mid-Cap 100 Index
+            'Taiwan Technology Index': 'TWT2 Index',        # Taiwan Technology Index
+            'Taiwan Banks Index': 'TWBANK Index'            # Taiwan Banks Index
+        }
+        
+        # For storing results
+        self.li_fund_data = {}
+        self.latest_update_time = None
+    
+    def start_session(self) -> bool:
+        """
+        Start a Bloomberg session.
+        
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        if self.use_sample_data:
+            logger.info("Using sample data mode, no Bloomberg connection required")
+            return True
+            
+        try:
+            # Initialize session options
+            session_options = blpapi.SessionOptions()
+            session_options.setServerHost(self.host)
+            session_options.setServerPort(self.port)
+            
+            logger.info(f"Connecting to Bloomberg at {self.host}:{self.port}")
+            
+            # Create a Session
+            self.session = blpapi.Session(session_options)
+            
+            # Start the session
+            if not self.session.start():
+                logger.error("Failed to start Bloomberg session.")
+                return False
+            
+            # Open the market data service
+            if not self.session.openService("//blp/refdata"):
+                logger.error("Failed to open //blp/refdata service")
+                return False
+            
+            logger.info("Bloomberg session started successfully")
+            return True
+            
+        except blpapi.Exception as e:
+            logger.error(f"Bloomberg API Exception: {e}")
+            return False
+            
+    def stop_session(self) -> None:
+        """Stop the Bloomberg session."""
+        if self.session and not self.use_sample_data:
+            self.session.stop()
+            logger.info("Bloomberg session stopped")
+    
+    def get_security_data(self, tickers: List[str], fields: List[str]) -> pd.DataFrame:
+        """
+        Get Bloomberg data for a list of securities.
+        
+        Args:
+            tickers: List of Bloomberg tickers
+            fields: List of Bloomberg fields to retrieve
+            
+        Returns:
+            DataFrame with security data
+        """
+        if self.use_sample_data:
+            # Generate sample data if requested
+            return pd.DataFrame()
+            
+        if not self.session:
+            logger.error("Session not started. Call start_session() first.")
+            return pd.DataFrame()
+            
+        if not tickers:
+            logger.warning("No tickers provided for data retrieval")
+            return pd.DataFrame()
+            
+        try:
+            # Get reference data service
+            refDataService = self.session.getService("//blp/refdata")
+            
+            # For large lists, chunk the requests
+            chunk_size = 100
+            all_data = []
+            
+            for i in range(0, len(tickers), chunk_size):
+                chunk = tickers[i:i + chunk_size]
+                
+                # Create request
+                request = refDataService.createRequest("ReferenceDataRequest")
+                
+                # Add securities
+                for ticker in chunk:
+                    request.append("securities", ticker)
+                
+                # Add fields
+                for field in fields:
+                    request.append("fields", field)
+                
+                # Send the request
+                logger.info(f"Requesting data for {len(chunk)} securities (chunk {i//chunk_size + 1})")
+                self.session.sendRequest(request)
+                
+                # Process the response
+                results = []
+                
+                while True:
+                    event = self.session.nextEvent(500)
+                    
+                    for msg in event:
+                        # Skip if no security data
+                        if not msg.hasElement("securityData"):
+                            continue
+                            
+                        securities_data = msg.getElement("securityData")
+                        
+                        for j in range(securities_data.numValues()):
+                            security_data = securities_data.getValue(j)
+                            ticker = security_data.getElementAsString("security")
+                            
+                            data = {'TICKER': ticker}
+                            
+                            # Check for field data
+                            if security_data.hasElement("fieldData"):
+                                field_data = security_data.getElement("fieldData")
+                                
+                                # Extract each field
+                                for field in fields:
+                                    if field_data.hasElement(field):
+                                        # Try as string first, then as float
+                                        try:
+                                            data[field] = field_data.getElementAsString(field)
+                                        except Exception:
+                                            try:
+                                                data[field] = field_data.getElementAsFloat(field)
+                                            except Exception:
+                                                data[field] = None
+                                    else:
+                                        data[field] = None
+                            
+                            # Check for field exceptions or errors
+                            if security_data.hasElement("fieldExceptions"):
+                                field_exceptions = security_data.getElement("fieldExceptions")
+                                for k in range(field_exceptions.numValues()):
+                                    exception = field_exceptions.getValue(k)
+                                    if exception.hasElement("fieldId") and exception.hasElement("errorInfo"):
+                                        field_id = exception.getElement("fieldId").getValueAsString()
+                                        error_info = exception.getElement("errorInfo").getElement("message").getValueAsString()
+                                        logger.debug(f"Field exception for {ticker}: {field_id} - {error_info}")
+                            
+                            results.append(data)
+                    
+                    if event.eventType() == blpapi.Event.RESPONSE:
+                        # End of RESPONSE event
+                        break
+                
+                all_data.extend(results)
+                
+                # Throttle requests
+                if i + chunk_size < len(tickers):
+                    time.sleep(0.1)
+            
+            # Convert to DataFrame
+            df = pd.DataFrame(all_data)
+            logger.info(f"Retrieved data for {len(df)} securities")
+            return df
+            
+        except Exception as e:
+            logger.error(f"Error getting security data: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
+            return pd.DataFrame()
+    
+    def get_tw_leveraged_inverse_funds(self) -> pd.DataFrame:
+        """
+        Get leveraged and inverse ETFs listed in Taiwan using direct ticker lookup.
+        
+        Returns:
+            DataFrame with leveraged/inverse ETF details
+        """
+        if self.use_sample_data:
+            # Return sample data in sample mode
+            return self.get_sample_li_etfs()
+        
+        # Method: Use patterns for Taiwanese leveraged/inverse ETFs
+        # Taiwanese ETFs use TT Equity suffix
+        
+        # Popular issuers and their numbered codes:
+        # Yuanta (0050-006x range, Leverage/Inverse funds often 00xx, 00xx1, 00xx2)
+        # Fubon (0060-007x range)
+        # CTBC (00xx with certain numbers)
+        # Cathay Securities (various 00xx ranges)
+        
+        # Collect common Taiwanese ETF codes
+        known_tickers = []
+        
+        # Yuanta ETFs - including popular leveraged/inverse funds
+        yuanta_etfs = [
+            '00631 TT Equity',  # Yuanta Daily Taiwan 50 Bull 2X
+            '00632 TT Equity',  # Yuanta Daily Taiwan 50 Bear -1X
+            '00633 TT Equity',  # Yuanta Daily Taiwan 50 Bear -2X
+            '00635 TT Equity',  # Yuanta Daily TAIEX Bull 2X
+            '00636 TT Equity',  # Yuanta Daily TAIEX Bear -1X
+            '00637 TT Equity',  # Yuanta Daily TAIEX Bear -2X
+            '00640 TT Equity',  # Yuanta MSCI Taiwan Leveraged 2X
+            '00641 TT Equity',  # Yuanta MSCI Taiwan Inverse -1X
+            '00645 TT Equity',  # Yuanta S&P Daily U.S. 500 2X Leveraged
+            '00646 TT Equity',  # Yuanta S&P Daily U.S. 500 -1X Inverse
+            '00662 TT Equity',  # Yuanta Daily CSI 300 Bull 2X
+            '00663 TT Equity',  # Yuanta Daily CSI 300 Bear -1X
+            '00670 TT Equity',  # Yuanta NIFTY 50 Daily 2X Leveraged
+            '00671 TT Equity',  # Yuanta NIFTY 50 Daily -1X Inverse
+            '00675 TT Equity',  # Yuanta FTSE Daily China 50 Bull 2X
+            '00676 TT Equity',  # Yuanta FTSE Daily China 50 Bear -1X
+            '00677 TT Equity',  # Yuanta FTSE Daily China 50 Bear -2X
+            '00690 TT Equity',  # Yuanta Daily NYSE FANG+ 2X Leveraged
+            '00691 TT Equity',  # Yuanta Daily NYSE FANG+ -1X Inverse
+            '00713 TT Equity',  # Yuanta Daily U.S. 20+ Year Treasury Bond 2X Leveraged
+            '00714 TT Equity',  # Yuanta Daily U.S. 20+ Year Treasury Bond -1X Inverse
+        ]
+        
+        # Fubon ETFs
+        fubon_etfs = [
+            '00663L TT Equity',  # Fubon TWSE Taiwan 50 2X Leveraged
+            '00663R TT Equity',  # Fubon TWSE Taiwan 50 -1X Inverse
+            '00664L TT Equity',  # Fubon TAIEX Daily 2X Leveraged
+            '00664R TT Equity',  # Fubon TAIEX Daily -1X Inverse
+            '00761R TT Equity',  # Fubon TAIEX Daily -2X Inverse
+        ]
+        
+        # Cathay ETFs
+        cathay_etfs = [
+            '00700L TT Equity',  # Cathay FTSE Taiwan 50 2X Daily Leveraged
+            '00701L TT Equity',  # Cathay Taiwan 2X Daily Leveraged
+            '00700R TT Equity',  # Cathay FTSE Taiwan 50 -1X Daily Inverse
+            '00701R TT Equity',  # Cathay Taiwan -1X Daily Inverse
+        ]
+        
+        # Capital Securities ETFs
+        capital_etfs = [
+            '00733L TT Equity',  # Capital TAIEX Daily Leveraged 2X
+            '00733R TT Equity',  # Capital TAIEX Daily Inverse -1X
+        ]
+        
+        # Other ETFs
+        other_etfs = [
+            '00688L TT Equity',  # Nomura Taiwan 2X Daily Leveraged
+            '00688R TT Equity',  # Nomura Taiwan -1X Daily Inverse
+            '00712R TT Equity',  # KGI NASDAQ -1X Daily Inverse
+            '00713L TT Equity',  # SinoPac NASDAQ 100 2X Daily Leveraged
+            '00634R TT Equity',  # Fuh Hwa -1X Taiwan Index Inverse
+            '00657L TT Equity',  # CTBC Taiwan Electronics 2X Daily Leveraged
+            '00657R TT Equity',  # CTBC Taiwan Electronics -1X Daily Inverse
+        ]
+        
+        # Combine all ETFs
+        known_tickers = yuanta_etfs + fubon_etfs + cathay_etfs + capital_etfs + other_etfs
+        
+        # Add systematic search for leveraged/inverse patterns in Taiwan market
+        # Look for common patterns in Taiwanese ETF codes
+        # Leveraged ETFs often end with 'L' in Taiwan, Inverse with 'R'
+        l_r_pattern_tickers = []
+        
+        # These are the ranges where most TW ETFs fall
+        for i in range(600, 780):
+            l_r_pattern_tickers.append(f"00{i}L TT Equity")  # Leveraged
+            l_r_pattern_tickers.append(f"00{i}R TT Equity")  # Inverse (Reverse)
+        
+        # Add Yuanta numeric codes range (most popular ETF issuer in Taiwan)
+        for i in range(630, 750):
+            l_r_pattern_tickers.append(f"00{i} TT Equity")
+        
+        # Combine and remove duplicates
+        all_tickers = list(set(known_tickers + l_r_pattern_tickers))
+        
+        logger.info(f"Checking {len(all_tickers)} potential ETF tickers")
+        
+        # Get data for all these tickers
+        fields = [
+            'SECURITY_DES', 
+            'SHORT_NAME', 
+            'NAME', 
+            'LONG_COMP_NAME',
+            'SECURITY_TYP2', 
+            'FUND_NET_ASSET_VAL', 
+            'FUND_TOTAL_ASSETS', 
+            'FUND_MKTCAP', 
+            'FX_MARKET_CAP',
+            'EQY_FUND_CRNCY',
+            'FUND_LEVERAGE_FACTOR',
+            'FUND_BENCHMARK',
+            'FUND_OBJECTIVE',
+            'FUND_ASSET_CLASS_FOCUS',
+            'CIE_DES',
+            'SECURITY_TYP'
+        ]
+        
+        all_etfs = self.get_security_data(all_tickers, fields)
+        
+        if all_etfs.empty:
+            logger.warning("No ETF data retrieved. Using sample data.")
+            return self.get_sample_li_etfs()
+        
+        # Filter for likely leveraged/inverse funds
+        def is_leveraged_inverse(row):
+            # Check ticker for L/R suffix (common in Taiwan for leveraged/inverse)
+            ticker = row.get('TICKER', '')
+            if isinstance(ticker, str):
+                # In Taiwan, L suffix often means Leveraged, R often means Reverse (Inverse)
+                if 'L TT Equity' in ticker or 'R TT Equity' in ticker:
+                    return True
+            
+            # Check security description and name
+            for field in ['SECURITY_DES', 'NAME', 'SHORT_NAME', 'LONG_COMP_NAME', 'FUND_OBJECTIVE']:
+                if field in row and isinstance(row[field], str):
+                    text = row[field].upper()
+                    
+                    # Look for Chinese and English leveraged/inverse keywords
+                    # 槓桿 = Leverage in Chinese, 反向 = Inverse in Chinese
+                    if any(kw in text for kw in ['LEVERAGED', 'INVERSE', 'LEVERAGE', '槓桿', '反向', '2X', '3X', '-1X', '-2X', '-3X', 'BULL', 'BEAR']):
+                        return True
+            
+            # Check leverage factor
+            if 'FUND_LEVERAGE_FACTOR' in row and pd.notna(row['FUND_LEVERAGE_FACTOR']):
+                factor = row['FUND_LEVERAGE_FACTOR']
+                try:
+                    factor_val = float(factor)
+                    if abs(factor_val) != 1.0:  # Not standard 1x exposure
+                        return True
+                except:
+                    # Handle non-numeric values
+                    if isinstance(factor, str) and any(x in factor.upper() for x in ['2X', '3X', '-1X', '-2X', '-3X']):
+                        return True
+            
+            return False
+        
+        # Apply filter
+        leveraged_inverse_df = all_etfs[all_etfs.apply(is_leveraged_inverse, axis=1)].copy()
+        
+        if leveraged_inverse_df.empty:
+            logger.warning("No leveraged/inverse ETFs identified after filtering. Using sample data.")
+            return self.get_sample_li_etfs()
+        
+        logger.info(f"Identified {len(leveraged_inverse_df)} leveraged/inverse ETFs")
+        
+        # Print a few examples of what we found for debugging
+        logger.info(f"Sample of identified ETFs: {leveraged_inverse_df[['TICKER', 'NAME']].head(3).to_dict('records')}")
+        
+        # Extract leverage type (leveraged or inverse)
+        def get_leverage_type(row):
+            # Check ticker first - Taiwan often uses L/R convention
+            ticker = row.get('TICKER', '')
+            if isinstance(ticker, str):
+                if 'L TT Equity' in ticker:
+                    return 'Leveraged'
+                elif 'R TT Equity' in ticker:
+                    return 'Inverse'
+            
+            # Check name and description
+            for field in ['SECURITY_DES', 'NAME', 'SHORT_NAME', 'LONG_COMP_NAME', 'FUND_OBJECTIVE']:
+                if field in row and isinstance(row[field], str):
+                    text = row[field].upper()
+                    
+                    if any(kw in text for kw in ['INVERSE', '-1X', '-2X', '-3X', '反向', 'BEAR']):
+                        return 'Inverse'
+                    if any(kw in text for kw in ['LEVERAGED', 'LEVERAGE', '2X', '3X', '槓桿', 'BULL']):
+                        return 'Leveraged'
+            
+            # Check leverage factor
+            if 'FUND_LEVERAGE_FACTOR' in row and pd.notna(row['FUND_LEVERAGE_FACTOR']):
+                try:
+                    factor = float(row['FUND_LEVERAGE_FACTOR'])
+                    if factor < 0:
+                        return 'Inverse'
+                    elif factor > 1:
+                        return 'Leveraged'
+                except:
+                    pass
+            
+            return 'Unknown'
+        
+        # Extract underlying index
+        def get_underlying_index(row):
+            # Check benchmark field
+            if 'FUND_BENCHMARK' in row and pd.notna(row['FUND_BENCHMARK']):
+                benchmark = row['FUND_BENCHMARK']
+                
+                # Map common Taiwanese benchmark names to standardized names
+                if isinstance(benchmark, str):
+                    if any(x in benchmark.upper() for x in ['TAIEX', 'TAIWAN WEIGHTED', 'TAIWAN STOCK EXCHANGE', 'TWSE']):
+                        return 'TWSE Index'
+                    elif any(x in benchmark.upper() for x in ['TAIWAN 50', 'FTSE TWSE50']):
+                        return 'FTSE TWSE50 Index'
+                    elif any(x in benchmark.upper() for x in ['MSCI TAIWAN']):
+                        return 'MSCI Taiwan Index'
+                    elif any(x in benchmark.upper() for x in ['ELECTRONICS', 'TWSE ELEC']):
+                        return 'TWSE ELEC Index'
+                
+                return benchmark
+            
+            # Extract from name or description
+            for field in ['SECURITY_DES', 'NAME', 'SHORT_NAME', 'LONG_COMP_NAME']:
+                if field in row and isinstance(row[field], str):
+                    text = row[field].upper()
+                    
+                    # Taiwan's main index is called TAIEX
+                    if 'TAIEX' in text:
+                        return 'TWSE Index'
+                    elif 'TAIWAN 50' in text or 'FTSE TWSE' in text or 'FTSE TW' in text:
+                        return 'FTSE TWSE50 Index'
+                    elif 'MSCI TAIWAN' in text:
+                        return 'MSCI Taiwan Index'
+                    elif 'ELECTRONICS' in text or 'ELEC' in text:
+                        return 'TWSE ELEC Index'
+                    elif 'SEMICONDUCTOR' in text:
+                        return 'Taiwan Semiconductor Index'
+                    elif 'FINANCIAL' in text:
+                        return 'Taiwan Financial Index'
+                    
+                    # Non-Taiwanese indices that are also popular in Taiwan
+                    elif 'S&P 500' in text or 'S&P500' in text:
+                        return 'S&P 500 Index'
+                    elif 'NASDAQ' in text:
+                        return 'NASDAQ Index'
+                    elif 'CSI 300' in text:
+                        return 'CSI300 Index'
+                    elif 'FANG+' in text:
+                        return 'NYSE FANG+ Index'
+                    elif 'NIFTY' in text:
+                        return 'NIFTY 50 Index'
+                    elif 'CHINA 50' in text or 'FTSE CHINA' in text:
+                        return 'FTSE China 50 Index'
+            
+            return 'Unknown'
+        
+        # Get Bloomberg underlying code
+        def get_underlying_code(underlying_name):
+            # Check if we have a direct mapping
+            if underlying_name in self.underlying_code_map:
+                return self.underlying_code_map[underlying_name]
+                
+            # If it's already in Bloomberg code format, return as is
+            if ' Index' in underlying_name:
+                return underlying_name
+                
+            # Map some common non-Taiwanese indices
+            if underlying_name == 'S&P 500 Index':
+                return 'SPX Index'
+            elif underlying_name == 'NASDAQ Index':
+                return 'NDX Index'
+            elif underlying_name == 'CSI300 Index':
+                return 'SHSZ300 Index'
+            elif underlying_name == 'NYSE FANG+ Index':
+                return 'NYFANG Index'
+            elif underlying_name == 'NIFTY 50 Index':
+                return 'NIFTY Index'
+            elif underlying_name == 'FTSE China 50 Index':
+                return 'XIN9I Index'
+                
+            # Try to extract from name
+            for known_name, code in self.underlying_code_map.items():
+                if known_name.replace(' Index', '').upper() in underlying_name.upper():
+                    return code
+                    
+            # Default fallback - return the original with Index appended if needed
+            if not ' Index' in underlying_name:
+                return underlying_name + ' Index'
+            return underlying_name
+        
+        # Extract leverage factor
+        def get_leverage_factor(row):
+            # Check leverage factor field
+            if 'FUND_LEVERAGE_FACTOR' in row and pd.notna(row['FUND_LEVERAGE_FACTOR']):
+                try:
+                    return float(row['FUND_LEVERAGE_FACTOR'])
+                except:
+                    # Try to extract from string
+                    if isinstance(row['FUND_LEVERAGE_FACTOR'], str):
+                        matches = re.findall(r'([+-]?\d+(?:\.\d+)?)', row['FUND_LEVERAGE_FACTOR'])
+                        if matches:
+                            return float(matches[0])
+            
+            # Extract from ticker
+            ticker = row.get('TICKER', '')
+            if isinstance(ticker, str):
+                # In Taiwan, L suffix typically means 2X leveraged
+                if 'L TT Equity' in ticker:
+                    return 2.0
+                # R suffix typically means -1X inverse
+                elif 'R TT Equity' in ticker:
+                    return -1.0
+            
+            # Extract from name or description
+            for field in ['SECURITY_DES', 'NAME', 'SHORT_NAME', 'LONG_COMP_NAME']:
+                if field in row and isinstance(row[field], str):
+                    text = row[field].upper()
+                    
+                    # Look for patterns like "2X" or "-1X"
+                    if '2X' in text:
+                        return 2.0
+                    elif '-2X' in text:
+                        return -2.0
+                    elif '-1X' in text:
+                        return -1.0
+                    
+                    # More general pattern
+                    matches = re.findall(r'([+-]?\d+(?:\.\d+)?)[Xx]', text)
+                    if matches:
+                        return float(matches[0])
+            
+            # Default based on type
+            leverage_type = get_leverage_type(row)
+            if leverage_type == 'Leveraged':
+                return 2.0  # Typical leverage in Taiwan
+            elif leverage_type == 'Inverse':
+                return -1.0  # Typical inverse in Taiwan
+            
+            return 1.0  # Default to standard exposure
+        
+        # Extract AUM (Assets Under Management)
+        def get_aum(row):
+            # Try different fields for AUM
+            for field in ['FUND_TOTAL_ASSETS', 'FUND_MKTCAP', 'FX_MARKET_CAP', 'FUND_NET_ASSET_VAL']:
+                if field in row and pd.notna(row[field]):
+                    try:
+                        return float(row[field])
+                    except:
+                        pass
+            
+            return 0.0  # Default
+        
+        # Extract currency
+        def get_currency(row):
+            if 'EQY_FUND_CRNCY' in row and pd.notna(row['EQY_FUND_CRNCY']):
+                return row['EQY_FUND_CRNCY']
+            
+            return 'TWD'  # Default for Taiwan
+        
+        # Extract issuer name
+        def get_issuer(row):
+            # Try to get issuer from name
+            ticker = row.get('TICKER', '')
+            name = row.get('NAME', '')
+            if pd.isna(name) or not isinstance(name, str):
+                name = row.get('SHORT_NAME', '')
+            
+            if pd.isna(name) or not isinstance(name, str):
+                name = row.get('SECURITY_DES', '')
+                
+            if isinstance(name, str):
+                name = name.upper()
+                
+                # Check for known Taiwanese ETF issuers
+                if 'YUANTA' in name:
+                    return 'Yuanta'
+                elif 'FUBON' in name:
+                    return 'Fubon'
+                elif 'CATHAY' in name:
+                    return 'Cathay'
+                elif 'CAPITAL' in name:
+                    return 'Capital'
+                elif 'NOMURA' in name:
+                    return 'Nomura'
+                elif 'CTBC' in name:
+                    return 'CTBC'
+                elif 'SINOPAC' in name:
+                    return 'SinoPac'
+                elif 'KGI' in name:
+                    return 'KGI'
+                elif 'FUH HWA' in name:
+                    return 'Fuh Hwa'
+                elif 'TAISHIN' in name:
+                    return 'Taishin'
+                
+                # Try to extract first word as issuer
+                parts = name.split()
+                if parts:
+                    return parts[0]
+            
+            # Try to extract from ticker
+            if isinstance(ticker, str):
+                # Yuanta tickers are typically 006xx without L/R suffix
+                if re.search(r'006[3-9]\d\s+TT', ticker):
+                    return 'Yuanta'
+                # Fubon often uses 006xx with L/R suffix
+                elif re.search(r'006[6-7]\d[LR]\s+TT', ticker):
+                    return 'Fubon'
+                # Cathay often uses 007xx with L/R suffix
+                elif re.search(r'007[0-1]\d[LR]\s+TT', ticker):
+                    return 'Cathay'
+            
+            return 'Unknown'
+        
+        # Apply functions to extract details
+        leveraged_inverse_df['ISSUER'] = leveraged_inverse_df.apply(get_issuer, axis=1)
+        leveraged_inverse_df['LEVERAGE_TYPE'] = leveraged_inverse_df.apply(get_leverage_type, axis=1)
+        leveraged_inverse_df['UNDERLYING'] = leveraged_inverse_df.apply(get_underlying_index, axis=1)
+        leveraged_inverse_df['UNDERLYING_CODE'] = leveraged_inverse_df['UNDERLYING'].apply(get_underlying_code)
+        leveraged_inverse_df['LEVERAGE_FACTOR'] = leveraged_inverse_df.apply(get_leverage_factor, axis=1)
+        leveraged_inverse_df['AUM'] = leveraged_inverse_df.apply(get_aum, axis=1)
+        leveraged_inverse_df['CURRENCY'] = leveraged_inverse_df.apply(get_currency, axis=1)
+        
+        logger.info(f"Processed {len(leveraged_inverse_df)} leveraged/inverse ETFs with details")
+        return leveraged_inverse_df
+    
+    def get_sample_li_etfs(self) -> pd.DataFrame:
+        """
+        Create a sample dataset of Taiwanese leveraged/inverse ETFs for testing.
+        
+        Returns:
+            DataFrame with sample leveraged/inverse ETF data
+        """
+        logger.info("Creating sample leveraged/inverse ETF data for analysis")
+        
+        # Create sample data for Taiwanese market
+        data = [
+            # Yuanta ETFs - Taiwan 50
+            {
+                'TICKER': '00631 TT Equity',
+                'NAME': 'Yuanta Daily Taiwan 50 Bull 2X',
+                'SECURITY_DES': 'Yuanta Daily Taiwan 50 Bull 2X ETF',
+                'SECURITY_TYP2': 'ETF',
+                'ISSUER': 'Yuanta',
+                'LEVERAGE_TYPE': 'Leveraged',
+                'UNDERLYING': 'FTSE TWSE50 Index',
+                'UNDERLYING_CODE': 'TWFIF50 Index',
+                'LEVERAGE_FACTOR': 2.0,
+                'AUM': 8200000000.0,
+                'CURRENCY': 'TWD'
+            },
+            {
+                'TICKER': '00632 TT Equity',
+                'NAME': 'Yuanta Daily Taiwan 50 Bear -1X',
+                'SECURITY_DES': 'Yuanta Daily Taiwan 50 Bear -1X ETF',
+                'SECURITY_TYP2': 'ETF',
+                'ISSUER': 'Yuanta',
+                'LEVERAGE_TYPE': 'Inverse',
+                'UNDERLYING': 'FTSE TWSE50 Index',
+                'UNDERLYING_CODE': 'TWFIF50 Index',
+                'LEVERAGE_FACTOR': -1.0,
+                'AUM': 5600000000.0,
+                'CURRENCY': 'TWD'
+            },
+            {
+                'TICKER': '00633 TT Equity',
+                'NAME': 'Yuanta Daily Taiwan 50 Bear -2X',
+                'SECURITY_DES': 'Yuanta Daily Taiwan 50 Bear -2X ETF',
+                'SECURITY_TYP2': 'ETF',
+                'ISSUER': 'Yuanta',
+                'LEVERAGE_TYPE': 'Inverse',
+                'UNDERLYING': 'FTSE TWSE50 Index',
+                'UNDERLYING_CODE': 'TWFIF50 Index',
+                'LEVERAGE_FACTOR': -2.0,
+                'AUM': 3500000000.0,
+                'CURRENCY': 'TWD'
+            },
+            
+            # Yuanta ETFs - TAIEX
+            {
+                'TICKER': '00635 TT Equity',
+                'NAME': 'Yuanta Daily TAIEX Bull 2X',
+                'SECURITY_DES': 'Yuanta Daily TAIEX Bull 2X ETF',
+                'SECURITY_TYP2': 'ETF',
+                'ISSUER': 'Yuanta',
+                'LEVERAGE_TYPE': 'Leveraged',
+                'UNDERLYING': 'TWSE Index',
+                'UNDERLYING_CODE': 'TWSE Index',
+                'LEVERAGE_FACTOR': 2.0,
+                'AUM': 9800000000.0,
+                'CURRENCY': 'TWD'
+            },
+            {
+                'TICKER': '00636 TT Equity',
+                'NAME': 'Yuanta Daily TAIEX Bear -1X',
+                'SECURITY_DES': 'Yuanta Daily TAIEX Bear -1X ETF',
+                'SECURITY_TYP2': 'ETF',
+                'ISSUER': 'Yuanta',
+                'LEVERAGE_TYPE': 'Inverse',
+                'UNDERLYING': 'TWSE Index',
+                'UNDERLYING_CODE': 'TWSE Index',
+                'LEVERAGE_FACTOR': -1.0,
+                'AUM': 6200000000.0,
+                'CURRENCY': 'TWD'
+            },
+            {
+                'TICKER': '00637 TT Equity',
+                'NAME': 'Yuanta Daily TAIEX Bear -2X',
+                'SECURITY_DES': 'Yuanta Daily TAIEX Bear -2X ETF',
+                'SECURITY_TYP2': 'ETF',
+                'ISSUER': 'Yuanta',
+                'LEVERAGE_TYPE': 'Inverse',
+                'UNDERLYING': 'TWSE Index',
+                'UNDERLYING_CODE': 'TWSE Index',
+                'LEVERAGE_FACTOR': -2.0,
+                'AUM': 3800000000.0,
+                'CURRENCY': 'TWD'
+            },
+            
+            # Fubon ETFs
+            {
+                'TICKER': '00663L TT Equity',
+                'NAME': 'Fubon TWSE Taiwan 50 2X Leveraged',
+                'SECURITY_DES': 'Fubon TWSE Taiwan 50 2X Leveraged ETF',
+                'SECURITY_TYP2': 'ETF',
+                'ISSUER': 'Fubon',
+                'LEVERAGE_TYPE': 'Leveraged',
+                'UNDERLYING': 'FTSE TWSE50 Index',
+                'UNDERLYING_CODE': 'TWFIF50 Index',
+                'LEVERAGE_FACTOR': 2.0,
+                'AUM': 7500000000.0,
+                'CURRENCY': 'TWD'
+            },
+            {
+                'TICKER': '00663R TT Equity',
+                'NAME': 'Fubon TWSE Taiwan 50 -1X Inverse',
+                'SECURITY_DES': 'Fubon TWSE Taiwan 50 -1X Inverse ETF',
+                'SECURITY_TYP2': 'ETF',
+                'ISSUER': 'Fubon',
+                'LEVERAGE_TYPE': 'Inverse',
+                'UNDERLYING': 'FTSE TWSE50 Index',
+                'UNDERLYING_CODE': 'TWFIF50 Index',
+                'LEVERAGE_FACTOR': -1.0,
+                'AUM': 4800000000.0,
+                'CURRENCY': 'TWD'
+            },
+            {
+                'TICKER': '00664L TT Equity',
+                'NAME': 'Fubon TAIEX Daily 2X Leveraged',
+                'SECURITY_DES': 'Fubon TAIEX Daily 2X Leveraged ETF',
+                'SECURITY_TYP2': 'ETF',
+                'ISSUER': 'Fubon',
+                'LEVERAGE_TYPE': 'Leveraged',
+                'UNDERLYING': 'TWSE Index',
+                'UNDERLYING_CODE': 'TWSE Index',
+                'LEVERAGE_FACTOR': 2.0,
+                'AUM': 8200000000.0,
+                'CURRENCY': 'TWD'
+            },
+            {
+                'TICKER': '00664R TT Equity',
+                'NAME': 'Fubon TAIEX Daily -1X Inverse',
+                'SECURITY_DES': 'Fubon TAIEX Daily -1X Inverse ETF',
+                'SECURITY_TYP2': 'ETF',
+                'ISSUER': 'Fubon',
+                'LEVERAGE_TYPE': 'Inverse',
+                'UNDERLYING': 'TWSE Index',
+                'UNDERLYING_CODE': 'TWSE Index',
+                'LEVERAGE_FACTOR': -1.0,
+                'AUM': 5100000000.0,
+                'CURRENCY': 'TWD'
+            },
+            
+            # Cathay ETFs
+            {
+                'TICKER': '00700L TT Equity',
+                'NAME': 'Cathay FTSE Taiwan 50 2X Daily Leveraged',
+                'SECURITY_DES': 'Cathay FTSE Taiwan 50 2X Daily Leveraged ETF',
+                'SECURITY_TYP2': 'ETF',
+                'ISSUER': 'Cathay',
+                'LEVERAGE_TYPE': 'Leveraged',
+                'UNDERLYING': 'FTSE TWSE50 Index',
+                'UNDERLYING_CODE': 'TWFIF50 Index',
+                'LEVERAGE_FACTOR': 2.0,
+                'AUM': 6800000000.0,
+                'CURRENCY': 'TWD'
+            },
+            {
+                'TICKER': '00700R TT Equity',
+                'NAME': 'Cathay FTSE Taiwan 50 -1X Daily Inverse',
+                'SECURITY_DES': 'Cathay FTSE Taiwan 50 -1X Daily Inverse ETF',
+                'SECURITY_TYP2': 'ETF',
+                'ISSUER': 'Cathay',
+                'LEVERAGE_TYPE': 'Inverse',
+                'UNDERLYING': 'FTSE TWSE50 Index',
+                'UNDERLYING_CODE': 'TWFIF50 Index',
+                'LEVERAGE_FACTOR': -1.0,
+                'AUM': 4200000000.0,
+                'CURRENCY': 'TWD'
+            },
+            
+            # Capital ETFs
+            {
+                'TICKER': '00733L TT Equity',
+                'NAME': 'Capital TAIEX Daily Leveraged 2X',
+                'SECURITY_DES': 'Capital TAIEX Daily Leveraged 2X ETF',
+                'SECURITY_TYP2': 'ETF',
+                'ISSUER': 'Capital',
+                'LEVERAGE_TYPE': 'Leveraged',
+                'UNDERLYING': 'TWSE Index',
+                'UNDERLYING_CODE': 'TWSE Index',
+                'LEVERAGE_FACTOR': 2.0,
+                'AUM': 5900000000.0,
+                'CURRENCY': 'TWD'
+            },
+            {
+                'TICKER': '00733R TT Equity',
+                'NAME': 'Capital TAIEX Daily Inverse -1X',
+                'SECURITY_DES': 'Capital TAIEX Daily Inverse -1X ETF',
+                'SECURITY_TYP2': 'ETF',
+                'ISSUER': 'Capital',
+                'LEVERAGE_TYPE': 'Inverse',
+                'UNDERLYING': 'TWSE Index',
+                'UNDERLYING_CODE': 'TWSE Index',
+                'LEVERAGE_FACTOR': -1.0,
+                'AUM': 3900000000.0,
+                'CURRENCY': 'TWD'
+            },
+            
+            # Other issuers
+            {
+                'TICKER': '00657L TT Equity',
+                'NAME': 'CTBC Taiwan Electronics 2X Daily Leveraged',
+                'SECURITY_DES': 'CTBC Taiwan Electronics 2X Daily Leveraged ETF',
+                'SECURITY_TYP2': 'ETF',
+                'ISSUER': 'CTBC',
+                'LEVERAGE_TYPE': 'Leveraged',
+                'UNDERLYING': 'TWSE ELEC Index',
+                'UNDERLYING_CODE': 'TWEEIND Index',
+                'LEVERAGE_FACTOR': 2.0,
+                'AUM': 4100000000.0,
+                'CURRENCY': 'TWD'
+            },
+            {
+                'TICKER': '00657R TT Equity',
+                'NAME': 'CTBC Taiwan Electronics -1X Daily Inverse',
+                'SECURITY_DES': 'CTBC Taiwan Electronics -1X Daily Inverse ETF',
+                'SECURITY_TYP2': 'ETF',
+                'ISSUER': 'CTBC',
+                'LEVERAGE_TYPE': 'Inverse',
+                'UNDERLYING': 'TWSE ELEC Index',
+                'UNDERLYING_CODE': 'TWEEIND Index',
+                'LEVERAGE_FACTOR': -1.0,
+                'AUM': 2800000000.0,
+                'CURRENCY': 'TWD'
+            },
+            {
+                'TICKER': '00713L TT Equity',
+                'NAME': 'SinoPac NASDAQ 100 2X Daily Leveraged',
+                'SECURITY_DES': 'SinoPac NASDAQ 100 2X Daily Leveraged ETF',
+                'SECURITY_TYP2': 'ETF',
+                'ISSUER': 'SinoPac',
+                'LEVERAGE_TYPE': 'Leveraged',
+                'UNDERLYING': 'NASDAQ Index',
+                'UNDERLYING_CODE': 'NDX Index',
+                'LEVERAGE_FACTOR': 2.0,
+                'AUM': 3300000000.0,
+                'CURRENCY': 'TWD'
+            },
+            
+            # International underlyings (Taiwan has many ETFs tracking int'l indices)
+            {
+                'TICKER': '00662 TT Equity',
+                'NAME': 'Yuanta Daily CSI 300 Bull 2X',
+                'SECURITY_DES': 'Yuanta Daily CSI 300 Bull 2X ETF',
+                'SECURITY_TYP2': 'ETF',
+                'ISSUER': 'Yuanta',
+                'LEVERAGE_TYPE': 'Leveraged',
+                'UNDERLYING': 'CSI300 Index',
+                'UNDERLYING_CODE': 'SHSZ300 Index',
+                'LEVERAGE_FACTOR': 2.0,
+                'AUM': 2900000000.0,
+                'CURRENCY': 'TWD'
+            },
+            {
+                'TICKER': '00663 TT Equity',
+                'NAME': 'Yuanta Daily CSI 300 Bear -1X',
+                'SECURITY_DES': 'Yuanta Daily CSI 300 Bear -1X ETF',
+                'SECURITY_TYP2': 'ETF',
+                'ISSUER': 'Yuanta',
+                'LEVERAGE_TYPE': 'Inverse',
+                'UNDERLYING': 'CSI300 Index',
+                'UNDERLYING_CODE': 'SHSZ300 Index',
+                'LEVERAGE_FACTOR': -1.0,
+                'AUM': 1800000000.0,
+                'CURRENCY': 'TWD'
+            },
+            {
+                'TICKER': '00645 TT Equity',
+                'NAME': 'Yuanta S&P Daily U.S. 500 2X Leveraged',
+                'SECURITY_DES': 'Yuanta S&P Daily U.S. 500 2X Leveraged ETF',
+                'SECURITY_TYP2': 'ETF',
+                'ISSUER': 'Yuanta',
+                'LEVERAGE_TYPE': 'Leveraged',
+                'UNDERLYING': 'S&P 500 Index',
+                'UNDERLYING_CODE': 'SPX Index',
+                'LEVERAGE_FACTOR': 2.0,
+                'AUM': 3500000000.0,
+                'CURRENCY': 'TWD'
+            },
+            
+            # Unknown examples
+            {
+                'TICKER': '00699L TT Equity',
+                'NAME': 'Unknown Issuer 2X Leveraged',
+                'SECURITY_DES': 'Unknown 2X Leveraged ETF',
+                'SECURITY_TYP2': 'ETF',
+                'ISSUER': 'Unknown',
+                'LEVERAGE_TYPE': 'Leveraged',
+                'UNDERLYING': 'Unknown',
+                'UNDERLYING_CODE': 'Unknown',
+                'LEVERAGE_FACTOR': 2.0,
+                'AUM': 1200000000.0,
+                'CURRENCY': 'TWD'
+            },
+            {
+                'TICKER': '00699R TT Equity',
+                'NAME': 'Unknown Issuer -1X Inverse',
+                'SECURITY_DES': 'Unknown -1X Inverse ETF',
+                'SECURITY_TYP2': 'ETF',
+                'ISSUER': 'Unknown',
+                'LEVERAGE_TYPE': 'Inverse',
+                'UNDERLYING': 'Unknown',
+                'UNDERLYING_CODE': 'Unknown',
+                'LEVERAGE_FACTOR': -1.0,
+                'AUM': 900000000.0,
+                'CURRENCY': 'TWD'
+            }
+        ]
+        
+        return pd.DataFrame(data)
+    
+    def aggregate_by_underlying(self, etf_df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Aggregate ETF data by underlying index.
+        
+        Args:
+            etf_df: DataFrame with ETF data
+            
+        Returns:
+            DataFrame with aggregated data by underlying
+        """
+        if etf_df.empty:
+            return pd.DataFrame()
+        
+        # Group by underlying and leverage type
+        grouped = etf_df.groupby(['UNDERLYING', 'UNDERLYING_CODE', 'LEVERAGE_TYPE'])
+        
+        # Aggregate
+        agg_data = grouped.agg({
+            'TICKER': 'count',
+            'AUM': 'sum'
+        }).reset_index()
+        
+        # Rename columns
+        agg_data = agg_data.rename(columns={
+            'TICKER': 'NUM_FUNDS',
+            'AUM': 'TOTAL_AUM'
+        })
+        
+        # Sort by underlying and leverage type
+        agg_data = agg_data.sort_values(['UNDERLYING', 'LEVERAGE_TYPE'])
+        
+        # Calculate percentage of total AUM
+        total_aum = agg_data['TOTAL_AUM'].sum()
+        agg_data['AUM_PCT'] = agg_data['TOTAL_AUM'] / total_aum * 100 if total_aum > 0 else 0
+        
+        return agg_data
+    
+    def aggregate_by_issuer(self, etf_df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Aggregate ETF data by issuer.
+        
+        Args:
+            etf_df: DataFrame with ETF data
+            
+        Returns:
+            DataFrame with aggregated data by issuer
+        """
+        if etf_df.empty:
+            return pd.DataFrame()
+        
+        # Group by issuer
+        grouped = etf_df.groupby('ISSUER')
+        
+        # Aggregate
+        agg_data = grouped.agg({
+            'TICKER': 'count',
+            'AUM': 'sum'
+        }).reset_index()
+        
+        # Rename columns
+        agg_data = agg_data.rename(columns={
+            'TICKER': 'NUM_FUNDS',
+            'AUM': 'TOTAL_AUM'
+        })
+        
+        # Sort by total AUM
+        agg_data = agg_data.sort_values('TOTAL_AUM', ascending=False)
+        
+        # Calculate percentage of total AUM
+        total_aum = agg_data['TOTAL_AUM'].sum()
+        agg_data['AUM_PCT'] = agg_data['TOTAL_AUM'] / total_aum * 100 if total_aum > 0 else 0
+        
+        return agg_data
+    
+    def aggregate_by_leverage_factor(self, etf_df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Aggregate ETF data by leverage factor.
+        
+        Args:
+            etf_df: DataFrame with ETF data
+            
+        Returns:
+            DataFrame with aggregated data by leverage factor
+        """
+        if etf_df.empty:
+            return pd.DataFrame()
+        
+        # Group by leverage factor
+        grouped = etf_df.groupby('LEVERAGE_FACTOR')
+        
+        # Aggregate
+        agg_data = grouped.agg({
+            'TICKER': 'count',
+            'AUM': 'sum'
+        }).reset_index()
+        
+        # Rename columns
+        agg_data = agg_data.rename(columns={
+            'TICKER': 'NUM_FUNDS',
+            'AUM': 'TOTAL_AUM'
+        })
+        
+        # Sort by leverage factor (descending)
+        agg_data = agg_data.sort_values('LEVERAGE_FACTOR', ascending=False)
+        
+        # Calculate percentage of total AUM
+        total_aum = agg_data['TOTAL_AUM'].sum()
+        agg_data['AUM_PCT'] = agg_data['TOTAL_AUM'] / total_aum * 100 if total_aum > 0 else 0
+        
+        return agg_data
+    
+    def aggregate_by_domestic_foreign(self, etf_df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Aggregate ETF data by domestic vs. foreign underlying.
+        
+        Args:
+            etf_df: DataFrame with ETF data
+            
+        Returns:
+            DataFrame with aggregated data by domestic/foreign
+        """
+        if etf_df.empty:
+            return pd.DataFrame()
+        
+        # Define function to classify as domestic or foreign
+        def classify_market(underlying):
+            if pd.isna(underlying) or underlying == 'Unknown':
+                return 'Unknown'
+                
+            # Taiwan domestic indices
+            if any(x in underlying for x in ['TWSE', 'Taiwan', 'TAIEX']):
+                return 'Domestic'
+            
+            # Foreign indices
+            return 'Foreign'
+        
+        # Add market classification
+        etf_df_with_market = etf_df.copy()
+        etf_df_with_market['MARKET'] = etf_df_with_market['UNDERLYING'].apply(classify_market)
+        
+        # Group by market and leverage type
+        grouped = etf_df_with_market.groupby(['MARKET', 'LEVERAGE_TYPE'])
+        
+        # Aggregate
+        agg_data = grouped.agg({
+            'TICKER': 'count',
+            'AUM': 'sum'
+        }).reset_index()
+        
+        # Rename columns
+        agg_data = agg_data.rename(columns={
+            'TICKER': 'NUM_FUNDS',
+            'AUM': 'TOTAL_AUM'
+        })
+        
+        # Sort by market first, then leverage type
+        agg_data = agg_data.sort_values(['MARKET', 'LEVERAGE_TYPE'])
+        
+        # Calculate percentage of total AUM
+        total_aum = agg_data['TOTAL_AUM'].sum()
+        agg_data['AUM_PCT'] = agg_data['TOTAL_AUM'] / total_aum * 100 if total_aum > 0 else 0
+        
+        return agg_data
+    
+    def track_li_funds(self) -> Dict[str, Any]:
+        """
+        Track leveraged and inverse funds in Taiwan.
+        
+        Returns:
+            Dictionary with fund data and analysis
+        """
+        # Find leveraged and inverse ETFs
+        li_etfs = self.get_tw_leveraged_inverse_funds()
+        
+        # Set latest update time
+        self.latest_update_time = datetime.datetime.now()
+        
+        # Aggregate by underlying
+        agg_by_underlying = self.aggregate_by_underlying(li_etfs)
+        
+        # Aggregate by issuer
+        agg_by_issuer = self.aggregate_by_issuer(li_etfs)
+        
+        # Aggregate by leverage factor
+        agg_by_leverage = self.aggregate_by_leverage_factor(li_etfs)
+        
+        # Aggregate by domestic vs foreign
+        agg_by_market = self.aggregate_by_domestic_foreign(li_etfs)
+        
+        # Store the results
+        self.li_fund_data = {
+            'Update_Time': self.latest_update_time,
+            'ETF_List': li_etfs.to_dict('records') if not li_etfs.empty else [],
+            'Agg_By_Underlying': agg_by_underlying.to_dict('records') if not agg_by_underlying.empty else [],
+            'Agg_By_Issuer': agg_by_issuer.to_dict('records') if not agg_by_issuer.empty else [],
+            'Agg_By_Leverage': agg_by_leverage.to_dict('records') if not agg_by_leverage.empty else [],
+            'Agg_By_Market': agg_by_market.to_dict('records') if not agg_by_market.empty else []
+        }
+        
+        return self.li_fund_data
+    
+    def format_aum(self, aum_value: float) -> str:
+        """
+        Format AUM value for display in TWD.
+        
+        Args:
+            aum_value: AUM value
+            
+        Returns:
+            Formatted AUM string
+        """
+        if aum_value >= 1e9:
+            return f"NT${aum_value/1e9:.2f}B"
+        elif aum_value >= 1e6:
+            return f"NT${aum_value/1e6:.2f}M"
+        elif aum_value >= 1e3:
+            return f"NT${aum_value/1e3:.2f}K"
+        else:
+            return f"NT${aum_value:.2f}"
+    
+    def highlight_unknown(self, value, ticker=""):
+        """
+        Highlight "Unknown" values in red with ticker where applicable.
+        
+        Args:
+            value: The value to check
+            ticker: Ticker to show alongside unknown value
+            
+        Returns:
+            Formatted string with highlighting if needed
+        """
+        if value == 'Unknown':
+            if ticker:
+                return f"{RED}{BOLD}{FLASH}Unknown ({ticker}){RESET}"
+            else:
+                return f"{RED}{BOLD}{FLASH}Unknown{RESET}"
+        return value
+    
+    def print_etf_list(self) -> None:
+        """Print a list of leveraged and inverse ETFs."""
+        if not self.li_fund_data or 'ETF_List' not in self.li_fund_data:
+            logger.error("No ETF data available. Run track_li_funds() first.")
+            return
+        
+        etf_list = self.li_fund_data.get('ETF_List', [])
+        if not etf_list:
+            logger.warning("No ETFs found to display.")
+            return
+        
+        print("\n" + "="*120)
+        print(f"LEVERAGED AND INVERSE ETFs IN TAIWAN - {self.latest_update_time.strftime('%Y-%m-%d %H:%M:%S')}")
+        print("="*120 + "\n")
+        
+        # Prepare table data
+        table_data = []
+        
+        for etf in etf_list:
+            ticker = etf.get('TICKER', '')
+            name = etf.get('NAME', '')
+            issuer = etf.get('ISSUER', '')
+            underlying = etf.get('UNDERLYING', '')
+            underlying_code = etf.get('UNDERLYING_CODE', '')
+            leverage_type = etf.get('LEVERAGE_TYPE', '')
+            leverage_factor = etf.get('LEVERAGE_FACTOR', '')
+            aum = etf.get('AUM', 0)
+            
+            # Extract ticker code for highlighting
+            ticker_code = ""
+            if isinstance(ticker, str):
+                ticker_match = re.search(r'^(\d+[LR]?)', ticker)
+                if ticker_match:
+                    ticker_code = ticker_match.group(1)
+            
+            # Highlight unknown underlying and issuer
+            highlighted_underlying = self.highlight_unknown(underlying, ticker_code)
+            highlighted_code = self.highlight_unknown(underlying_code, ticker_code)
+            highlighted_issuer = self.highlight_unknown(issuer, ticker_code)
+            
+            table_data.append([
+                ticker,
+                name,
+                highlighted_issuer,
+                highlighted_underlying,
+                highlighted_code,
+                leverage_type,
+                leverage_factor,
+                self.format_aum(aum)
+            ])
+        
+        # Sort by issuer, then underlying, then leverage type
+        try:
+            table_data.sort(key=lambda x: (str(x[2]) if RED not in str(x[2]) else "ZZZZ", 
+                                          str(x[3]) if RED not in str(x[3]) else "ZZZZ", 
+                                          str(x[5])))
+        except:
+            # Fallback if sorting fails
+            pass
+        
+        # Print the table
+        headers = ["Ticker", "Name", "Issuer", "Underlying", "Bloomberg Code", "Type", "Factor", "AUM"]
+        print(tabulate(table_data, headers=headers, tablefmt="psql"))
+        print("\n" + "="*120 + "\n")
+    
+    def print_aum_by_underlying(self) -> None:
+        """Print AUM aggregated by underlying index."""
+        if not self.li_fund_data or 'Agg_By_Underlying' not in self.li_fund_data:
+            logger.error("No aggregated data available. Run track_li_funds() first.")
+            return
+        
+        agg_data = self.li_fund_data.get('Agg_By_Underlying', [])
+        if not agg_data:
+            logger.warning("No aggregated data found to display.")
+            return
+        
+        print("\n" + "="*120)
+        print(f"AUM BY UNDERLYING INDEX - {self.latest_update_time.strftime('%Y-%m-%d %H:%M:%S')}")
+        print("="*120 + "\n")
+        
+        # Prepare table data
+        table_data = []
+        
+        for row in agg_data:
+            underlying = row.get('UNDERLYING', '')
+            underlying_code = row.get('UNDERLYING_CODE', '')
+            leverage_type = row.get('LEVERAGE_TYPE', '')
+            num_funds = row.get('NUM_FUNDS', 0)
+            total_aum = row.get('TOTAL_AUM', 0)
+            aum_pct = row.get('AUM_PCT', 0)
+            
+            # Highlight unknown underlying
+            highlighted_underlying = self.highlight_unknown(underlying)
+            highlighted_code = self.highlight_unknown(underlying_code)
+            
+            table_data.append([
+                highlighted_underlying,
+                highlighted_code,
+                leverage_type,
+                num_funds,
+                self.format_aum(total_aum),
+                f"{aum_pct:.1f}%"
+            ])
+        
+        # Print the table
+        headers = ["Underlying", "Bloomberg Code", "Type", "# of Funds", "Total AUM", "% of Total"]
+        print(tabulate(table_data, headers=headers, tablefmt="psql"))
+        
+        # Add a summary by underlying only (combining leveraged and inverse)
+        print("\n" + "-"*120)
+        print("SUMMARY BY UNDERLYING (ALL TYPES)")
+        print("-"*120 + "\n")
+        
+        # Group by underlying
+        underlying_summary = {}
+        for row in agg_data:
+            underlying = row.get('UNDERLYING', '')
+            underlying_code = row.get('UNDERLYING_CODE', '')
+            num_funds = row.get('NUM_FUNDS', 0)
+            total_aum = row.get('TOTAL_AUM', 0)
+            
+            if underlying not in underlying_summary:
+                underlying_summary[underlying] = {
+                    'UNDERLYING_CODE': underlying_code,
+                    'NUM_FUNDS': 0,
+                    'TOTAL_AUM': 0
+                }
+            
+            underlying_summary[underlying]['NUM_FUNDS'] += num_funds
+            underlying_summary[underlying]['TOTAL_AUM'] += total_aum
+        
+        # Calculate percentages
+        grand_total = sum(data['TOTAL_AUM'] for data in underlying_summary.values())
+        
+        # Prepare summary table
+        summary_data = []
+        for underlying, data in underlying_summary.items():
+            aum_pct = data['TOTAL_AUM'] / grand_total * 100 if grand_total > 0 else 0
+            
+            # Highlight unknown underlying
+            highlighted_underlying = self.highlight_unknown(underlying)
+            highlighted_code = self.highlight_unknown(data['UNDERLYING_CODE'])
+            
+            summary_data.append([
+                highlighted_underlying,
+                highlighted_code,
+                data['NUM_FUNDS'],
+                self.format_aum(data['TOTAL_AUM']),
+                f"{aum_pct:.1f}%"
+            ])
+        
+        # Sort by total AUM
+        try:
+            summary_data.sort(key=lambda x: float(str(x[3]).replace('NT$', '').replace('B', 'e9').replace('M', 'e6').replace('K', 'e3')), reverse=True)
+        except:
+            # Fallback if sorting fails
+            pass
+        
+        # Print the summary table
+        headers = ["Underlying", "Bloomberg Code", "# of Funds", "Total AUM", "% of Total"]
+        print(tabulate(summary_data, headers=headers, tablefmt="psql"))
+        print("\n" + "="*120 + "\n")
+    
+    def print_aum_by_issuer(self) -> None:
+        """Print AUM aggregated by issuer."""
+        if not self.li_fund_data or 'Agg_By_Issuer' not in self.li_fund_data:
+            logger.error("No aggregated data available. Run track_li_funds() first.")
+            return
+        
+        agg_data = self.li_fund_data.get('Agg_By_Issuer', [])
+        if not agg_data:
+            logger.warning("No aggregated data found to display.")
+            return
+        
+        print("\n" + "="*100)
+        print(f"AUM BY ISSUER - {self.latest_update_time.strftime('%Y-%m-%d %H:%M:%S')}")
+        print("="*100 + "\n")
+        
+        # Prepare table data
+        table_data = []
+        
+        for row in agg_data:
+            issuer = row.get('ISSUER', '')
+            num_funds = row.get('NUM_FUNDS', 0)
+            total_aum = row.get('TOTAL_AUM', 0)
+            aum_pct = row.get('AUM_PCT', 0)
+            
+            # Highlight unknown issuer
+            highlighted_issuer = self.highlight_unknown(issuer)
+            
+            table_data.append([
+                highlighted_issuer,
+                num_funds,
+                self.format_aum(total_aum),
+                f"{aum_pct:.1f}%"
+            ])
+        
+        # Print the table
+        headers = ["Issuer", "# of Funds", "Total AUM", "% of Total"]
+        print(tabulate(table_data, headers=headers, tablefmt="psql"))
+        print("\n" + "="*100 + "\n")
+    
+    def print_aum_by_leverage(self) -> None:
+        """Print AUM aggregated by leverage factor."""
+        if not self.li_fund_data or 'Agg_By_Leverage' not in self.li_fund_data:
+            logger.error("No aggregated data available. Run track_li_funds() first.")
+            return
+        
+        agg_data = self.li_fund_data.get('Agg_By_Leverage', [])
+        if not agg_data:
+            logger.warning("No aggregated data found to display.")
+            return
+        
+        print("\n" + "="*100)
+        print(f"AUM BY LEVERAGE FACTOR - {self.latest_update_time.strftime('%Y-%m-%d %H:%M:%S')}")
+        print("="*100 + "\n")
+        
+        # Prepare table data
+        table_data = []
+        
+        for row in agg_data:
+            leverage_factor = row.get('LEVERAGE_FACTOR', 0)
+            num_funds = row.get('NUM_FUNDS', 0)
+            total_aum = row.get('TOTAL_AUM', 0)
+            aum_pct = row.get('AUM_PCT', 0)
+            
+            # Format leverage factor
+            if leverage_factor > 0:
+                leverage_display = f"+{leverage_factor}x"
+            else:
+                leverage_display = f"{leverage_factor}x"
+            
+            table_data.append([
+                leverage_display,
+                num_funds,
+                self.format_aum(total_aum),
+                f"{aum_pct:.1f}%"
+            ])
+        
+        # Print the table
+        headers = ["Leverage Factor", "# of Funds", "Total AUM", "% of Total"]
+        print(tabulate(table_data, headers=headers, tablefmt="psql"))
+        print("\n" + "="*100 + "\n")
+    
+    def print_aum_by_market(self) -> None:
+        """Print AUM aggregated by domestic vs. foreign market."""
+        if not self.li_fund_data or 'Agg_By_Market' not in self.li_fund_data:
+            logger.error("No aggregated data available. Run track_li_funds() first.")
+            return
+        
+        agg_data = self.li_fund_data.get('Agg_By_Market', [])
+        if not agg_data:
+            logger.warning("No aggregated data found to display.")
+            return
+        
+        print("\n" + "="*100)
+        print(f"AUM BY MARKET (DOMESTIC vs FOREIGN) - {self.latest_update_time.strftime('%Y-%m-%d %H:%M:%S')}")
+        print("="*100 + "\n")
+        
+        # Prepare table data
+        table_data = []
+        
+        for row in agg_data:
+            market = row.get('MARKET', '')
+            leverage_type = row.get('LEVERAGE_TYPE', '')
+            num_funds = row.get('NUM_FUNDS', 0)
+            total_aum = row.get('TOTAL_AUM', 0)
+            aum_pct = row.get('AUM_PCT', 0)
+            
+            # Highlight unknown market
+            if market == 'Unknown':
+                market = self.highlight_unknown(market)
+            
+            table_data.append([
+                market,
+                leverage_type,
+                num_funds,
+                self.format_aum(total_aum),
+                f"{aum_pct:.1f}%"
+            ])
+        
+        # Print the table
+        headers = ["Market", "Type", "# of Funds", "Total AUM", "% of Total"]
+        print(tabulate(table_data, headers=headers, tablefmt="psql"))
+        
+        # Add a summary by market only (combining leveraged and inverse)
+        print("\n" + "-"*100)
+        print("SUMMARY BY MARKET (ALL TYPES)")
+        print("-"*100 + "\n")
+        
+        # Group by market
+        market_summary = {}
+        for row in agg_data:
+            market = row.get('MARKET', '')
+            num_funds = row.get('NUM_FUNDS', 0)
+            total_aum = row.get('TOTAL_AUM', 0)
+            
+            if market not in market_summary:
+                market_summary[market] = {
+                    'NUM_FUNDS': 0,
+                    'TOTAL_AUM': 0
+                }
+            
+            market_summary[market]['NUM_FUNDS'] += num_funds
+            market_summary[market]['TOTAL_AUM'] += total_aum
+        
+        # Calculate percentages
+        grand_total = sum(data['TOTAL_AUM'] for data in market_summary.values())
+        
+        # Prepare summary table
+        summary_data = []
+        for market, data in market_summary.items():
+            aum_pct = data['TOTAL_AUM'] / grand_total * 100 if grand_total > 0 else 0
+            
+            # Highlight unknown market
+            highlighted_market = self.highlight_unknown(market) if market == 'Unknown' else market
+            
+            summary_data.append([
+                highlighted_market,
+                data['NUM_FUNDS'],
+                self.format_aum(data['TOTAL_AUM']),
+                f"{aum_pct:.1f}%"
+            ])
+        
+        # Sort by total AUM
+        try:
+            summary_data.sort(key=lambda x: float(str(x[2]).replace('NT$', '').replace('B', 'e9').replace('M', 'e6').replace('K', 'e3')), reverse=True)
+        except:
+            # Fallback if sorting fails
+            pass
+        
+        # Print the summary table
+        headers = ["Market", "# of Funds", "Total AUM", "% of Total"]
+        print(tabulate(summary_data, headers=headers, tablefmt="psql"))
+        print("\n" + "="*100 + "\n")
+    
+    def save_results_to_csv(self, output_dir: str = None) -> None:
+        """
+        Save tracking results to CSV files.
+        
+        Args:
+            output_dir: Directory to save output files (optional)
+        """
+        if not self.li_fund_data or 'ETF_List' not in self.li_fund_data:
+            logger.error("No ETF data available. Run track_li_funds() first.")
+            return
+        
+        if not output_dir:
+            output_dir = './'
+        os.makedirs(output_dir, exist_ok=True)
+        
+        timestamp = self.latest_update_time.strftime("%Y%m%d_%H%M%S")
+        
+        # Save ETF list
+        etf_list = self.li_fund_data.get('ETF_List', [])
+        if etf_list:
+            etf_file = os.path.join(output_dir, f"tw_li_etfs_{timestamp}.csv")
+            
+            # Convert to DataFrame if it's a list of dictionaries
+            if isinstance(etf_list, list):
+                etf_df = pd.DataFrame(etf_list)
+            else:
+                etf_df = pd.DataFrame([])
+            
+            if not etf_df.empty:
+                # Save to CSV
+                etf_df.to_csv(etf_file, index=False)
+                logger.info(f"Saved ETF list to {etf_file}")
+            else:
+                logger.warning("No ETF data to save")
+        
+        # Save aggregated data by underlying
+        agg_underlying = self.li_fund_data.get('Agg_By_Underlying', [])
+        if agg_underlying:
+            agg_file = os.path.join(output_dir, f"tw_li_agg_by_underlying_{timestamp}.csv")
+            
+            # Convert to DataFrame if it's a list of dictionaries
+            if isinstance(agg_underlying, list):
+                agg_df = pd.DataFrame(agg_underlying)
+            else:
+                agg_df = pd.DataFrame([])
+            
+            if not agg_df.empty:
+                # Save to CSV
+                agg_df.to_csv(agg_file, index=False)
+                logger.info(f"Saved aggregated data by underlying to {agg_file}")
+            else:
+                logger.warning("No aggregated data by underlying to save")
+        
+        # Save aggregated data by issuer
+        agg_issuer = self.li_fund_data.get('Agg_By_Issuer', [])
+        if agg_issuer:
+            agg_file = os.path.join(output_dir, f"tw_li_agg_by_issuer_{timestamp}.csv")
+            
+            # Convert to DataFrame if it's a list of dictionaries
+            if isinstance(agg_issuer, list):
+                agg_df = pd.DataFrame(agg_issuer)
+            else:
+                agg_df = pd.DataFrame([])
+            
+            if not agg_df.empty:
+                # Save to CSV
+                agg_df.to_csv(agg_file, index=False)
+                logger.info(f"Saved aggregated data by issuer to {agg_file}")
+            else:
+                logger.warning("No aggregated data by issuer to save")
+        
+        # Save aggregated data by leverage factor
+        agg_leverage = self.li_fund_data.get('Agg_By_Leverage', [])
+        if agg_leverage:
+            agg_file = os.path.join(output_dir, f"tw_li_agg_by_leverage_{timestamp}.csv")
+            
+            # Convert to DataFrame if it's a list of dictionaries
+            if isinstance(agg_leverage, list):
+                agg_df = pd.DataFrame(agg_leverage)
+            else:
+                agg_df = pd.DataFrame([])
+            
+            if not agg_df.empty:
+                # Save to CSV
+                agg_df.to_csv(agg_file, index=False)
+                logger.info(f"Saved aggregated data by leverage factor to {agg_file}")
+            else:
+                logger.warning("No aggregated data by leverage factor to save")
+        
+        # Save aggregated data by market (domestic/foreign)
+        agg_market = self.li_fund_data.get('Agg_By_Market', [])
+        if agg_market:
+            agg_file = os.path.join(output_dir, f"tw_li_agg_by_market_{timestamp}.csv")
+            
+            # Convert to DataFrame if it's a list of dictionaries
+            if isinstance(agg_market, list):
+                agg_df = pd.DataFrame(agg_market)
+            else:
+                agg_df = pd.DataFrame([])
+            
+            if not agg_df.empty:
+                # Save to CSV
+                agg_df.to_csv(agg_file, index=False)
+                logger.info(f"Saved aggregated data by market to {agg_file}")
+            else:
+                logger.warning("No aggregated data by market to save")
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Track and analyze Leveraged and Inverse ETFs in Taiwan')
+    parser.add_argument('--host', default='127.0.0.1', help='Bloomberg server host')
+    parser.add_argument('--port', type=int, default=8194, help='Bloomberg server port')
+    parser.add_argument('--output-dir', default='./tw_li_funds', help='Directory to save output files')
+    parser.add_argument('--sample', action='store_true', 
+                        help='Use sample data instead of Bloomberg data')
+    
+    args = parser.parse_args()
+    
+    # Create output directory if needed
+    if args.output_dir:
+        os.makedirs(args.output_dir, exist_ok=True)
+    
+    # Initialize tracker
+    tracker = TWLeverageFundsTracker(host=args.host, port=args.port, use_sample_data=args.sample)
+    
+    try:
+        # Start session
+        if tracker.start_session():
+            # Track leveraged and inverse funds
+            logger.info("Tracking leveraged and inverse funds in Taiwan...")
+            tracker.track_li_funds()
+            
+            # Print ETF list
+            tracker.print_etf_list()
+            
+            # Print AUM by underlying
+            tracker.print_aum_by_underlying()
+            
+            # Print AUM by issuer
+            tracker.print_aum_by_issuer()
+            
+            # Print AUM by leverage factor
+            tracker.print_aum_by_leverage()
+            
+            # Print AUM by market (domestic vs foreign)
+            tracker.print_aum_by_market()
+            
+            # Save results
+            logger.info("Saving results to CSV...")
+            tracker.save_results_to_csv(output_dir=args.output_dir)
+            
+            logger.info("Leveraged and inverse funds tracking completed.")
+    
+    except KeyboardInterrupt:
+        logger.info("Tracking interrupted by user")
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+    finally:
+        # Always stop the session
+        tracker.stop_session()
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,19 @@
+2025-04-13 12:55:57,869 - JPLeverageFundsTracker - INFO - Connecting to Bloomberg at 127.0.0.1:8194
+2025-04-13 12:55:58,327 - JPLeverageFundsTracker - INFO - Bloomberg session started successfully
+2025-04-13 12:55:58,327 - JPLeverageFundsTracker - INFO - Tracking leveraged and inverse funds in Japan...
+2025-04-13 12:55:58,328 - JPLeverageFundsTracker - INFO - Checking 293 potential ETF tickers
+2025-04-13 12:55:58,328 - JPLeverageFundsTracker - INFO - Requesting data for 100 securities (chunk 1)
+2025-04-13 12:55:59,437 - JPLeverageFundsTracker - INFO - Requesting data for 100 securities (chunk 2)
+2025-04-13 12:56:00,462 - JPLeverageFundsTracker - INFO - Requesting data for 93 securities (chunk 3)
+2025-04-13 12:56:01,395 - JPLeverageFundsTracker - INFO - Retrieved data for 293 securities
+2025-04-13 12:56:01,404 - JPLeverageFundsTracker - INFO - Identified 29 leveraged/inverse ETFs
+2025-04-13 12:56:01,405 - JPLeverageFundsTracker - INFO - Sample of identified ETFs: [{'TICKER': '1356 JT Equity', 'NAME': 'SIMPLEX TOPIX BEAR -2X ETF'}, {'TICKER': '1579 JT Equity', 'NAME': 'SIMPLEX NKY225 BULL 2X ETF'}, {'TICKER': '1580 JT Equity', 'NAME': 'SIMPLEX NKY225 BEAR -1X ETF'}]
+2025-04-13 12:56:01,412 - JPLeverageFundsTracker - INFO - Processed 29 leveraged/inverse ETFs with details
+2025-04-13 12:56:01,461 - JPLeverageFundsTracker - INFO - Saving results to CSV...
+2025-04-13 12:56:01,467 - JPLeverageFundsTracker - INFO - Saved ETF list to ./jp_li_funds\jp_li_etfs_20250413_125601.csv
+2025-04-13 12:56:01,471 - JPLeverageFundsTracker - INFO - Saved aggregated data by underlying to ./jp_li_funds\jp_li_agg_by_underlying_20250413_125601.csv
+2025-04-13 12:56:01,475 - JPLeverageFundsTracker - INFO - Saved aggregated data by issuer to ./jp_li_funds\jp_li_agg_by_issuer_20250413_125601.csv
+2025-04-13 12:56:01,478 - JPLeverageFundsTracker - INFO - Saved aggregated data by leverage factor to ./jp_li_funds\jp_li_agg_by_leverage_20250413_125601.csv
+2025-04-13 12:56:01,482 - JPLeverageFundsTracker - INFO - Saved aggregated data by index family to ./jp_li_funds\jp_li_agg_by_index_family_20250413_125601.csv
+2025-04-13 12:56:01,482 - JPLeverageFundsTracker - INFO - Leveraged and inverse funds tracking completed.
+2025-04-13 12:56:01,487 - JPLeverageFundsTracker - INFO - Bloomberg session stopped
