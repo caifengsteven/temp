@@ -1,0 +1,14 @@
+2025-04-13 13:41:34,182 - VolumeMonitor - INFO - Connecting to Bloomberg at 127.0.0.1:8194
+2025-04-13 13:41:34,698 - VolumeMonitor - INFO - Bloomberg session started successfully
+2025-04-13 13:41:34,699 - VolumeMonitor - INFO - Detecting abnormal trading volume in HK stocks...
+2025-04-13 13:41:34,699 - VolumeMonitor - INFO - Getting stock list for HK market
+2025-04-13 13:41:34,699 - VolumeMonitor - WARNING - Using sample stock list for HK market
+2025-04-13 13:41:34,699 - VolumeMonitor - INFO - Getting historical price and volume data for 26 stocks
+2025-04-13 13:41:34,700 - VolumeMonitor - INFO - Requesting historical data for 26 tickers (chunk 1)
+2025-04-13 13:41:35,611 - VolumeMonitor - INFO - Retrieved 1742 historical data points for 26 tickers
+2025-04-13 13:41:35,625 - VolumeMonitor - WARNING - No abnormal volume detected
+2025-04-13 13:41:35,626 - VolumeMonitor - WARNING - No abnormal volume detected.
+2025-04-13 13:41:35,627 - VolumeMonitor - INFO - Saving results to CSV...
+2025-04-13 13:41:35,627 - VolumeMonitor - WARNING - No abnormal volume data to save.
+2025-04-13 13:41:35,627 - VolumeMonitor - INFO - Abnormal volume detection completed.
+2025-04-13 13:41:35,628 - VolumeMonitor - INFO - Bloomberg session stopped
