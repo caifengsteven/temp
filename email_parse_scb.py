@@ -5,7 +5,8 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 from datetime import datetime
 import extract_msg  # Library to extract .msg files
-import tempfile
+import random
+import string
 
 class FXTradeEmailParser:
     """Parse FX trade confirmation emails and convert to CSV format."""
@@ -21,6 +22,10 @@ class FXTradeEmailParser:
             'fixing_date': r'Fixing Date:\s+(\d{4}-\w+-\d{2})',
             'transaction': r'([A-Z\s]+)\s+(?:Buy|Sell)\s+([A-Z]{3})\s+([\d,]+(?:\.\d+)?)\s+and\s+(?:Buy|Sell)\s+([A-Z]{3})\s+([\d,]+(?:\.\d+)?)'
         }
+    
+    def generate_random_string(self, length=6):
+        """Generate random alphanumeric string for reference numbers."""
+        return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
     
     def parse_email(self, email_text):
         """
@@ -117,10 +122,14 @@ class FXTradeEmailParser:
         # Create timestamp for reference number
         timestamp = datetime.now().strftime('%Y%m%d%H%M')
         
+        # Generate random strings for reference numbers
+        random_ref1 = self.generate_random_string()
+        random_ref2 = self.generate_random_string()
+        
         # Map the extracted data to first CSV row (main trade)
         main_row = {
             'ACTION': 'Add',
-            'REFERENCE_NUMBER': f"{timestamp}-cal1",
+            'REFERENCE_NUMBER': f"{timestamp}-cal1-{random_ref1}",
             'FX_TYPE': trade_data.get('fx_type', 'NDF'),
             'COUNTERPARTY': 'SCBL',  # Standard Chartered Bank Limited
             'TRADER': trade_data.get('trader', 'JHKLFX'),
@@ -129,6 +138,7 @@ class FXTradeEmailParser:
             'COUNTER': trade_data.get('counter', 'USD'),
             'POSITION_RATE': trade_data.get('position_amount', ''),
             'TERMS': trade_data.get('trade_rate', ''),
+            'EMPTY_COLUMN': '',  # New empty column after TERMS
             'TRANSACTION_DATE': datetime.now().strftime('%Y%m%d'),
             'VALUE_DATE': trade_data.get('value_date', ''),
             'PORTFOLIO': 'JBFSI',  # From example
@@ -143,7 +153,7 @@ class FXTradeEmailParser:
         back_to_back_row = main_row.copy()
         
         # Modify the back-to-back specific fields
-        back_to_back_row['REFERENCE_NUMBER'] = f"{timestamp}-cal2"
+        back_to_back_row['REFERENCE_NUMBER'] = f"{timestamp}-cal2-{random_ref2}"
         back_to_back_row['COUNTERPARTY'] = 'FXN99041'  # Back-to-back counterparty from example
         
         # Flip the buy/sell direction for the back-to-back trade
@@ -289,10 +299,11 @@ class FXTradeConverterApp:
         
         try:
             with open(csv_file, 'w', newline='') as f:
-                # Get all possible field names from an example row or define manually
+                # Define fieldnames with the new empty column
                 fieldnames = [
                     'ACTION', 'REFERENCE_NUMBER', 'FX_TYPE', 'COUNTERPARTY', 'TRADER', 
                     'BS', 'POSITION', 'COUNTER', 'POSITION_RATE', 'TERMS', 
+                    'EMPTY_COLUMN',  # New empty column after TERMS
                     'TRANSACTION_DATE', 'VALUE_DATE', 'PORTFOLIO', 'FIXING_DATE',
                     'AUXILIARY_DATA#1.FIELD', 'AUXILIARY_DATA#1.VALUE',
                     'AUXILIARY_DATA#2.FIELD', 'AUXILIARY_DATA#2.VALUE'
