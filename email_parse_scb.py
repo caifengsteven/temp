@@ -101,23 +101,26 @@ class FXTradeEmailParser:
         
         return trade_data
     
-    def format_to_csv_row(self, trade_data):
+    def format_to_csv_rows(self, trade_data):
         """
-        Format parsed trade data into CSV row format.
+        Format parsed trade data into two CSV rows - main and back-to-back.
         
         Args:
             trade_data (dict): Parsed trade information
             
         Returns:
-            dict: CSV row with properly mapped fields
+            list: List of two dictionaries (CSV rows) - main trade and back-to-back trade
         """
         if not trade_data:
-            return None
+            return []
             
-        # Map the extracted data to CSV fields
-        csv_row = {
+        # Create timestamp for reference number
+        timestamp = datetime.now().strftime('%Y%m%d%H%M')
+        
+        # Map the extracted data to first CSV row (main trade)
+        main_row = {
             'ACTION': 'Add',
-            'REFERENCE_NUMBER': datetime.now().strftime('%Y%m%d%H%M-cal'),
+            'REFERENCE_NUMBER': f"{timestamp}-cal1",
             'FX_TYPE': trade_data.get('fx_type', 'NDF'),
             'COUNTERPARTY': 'SCBL',  # Standard Chartered Bank Limited
             'TRADER': trade_data.get('trader', 'JHKLFX'),
@@ -136,7 +139,20 @@ class FXTradeEmailParser:
             'AUXILIARY_DATA#2.VALUE': '33206'   # From example
         }
         
-        return csv_row
+        # Create the back-to-back row (second line)
+        back_to_back_row = main_row.copy()
+        
+        # Modify the back-to-back specific fields
+        back_to_back_row['REFERENCE_NUMBER'] = f"{timestamp}-cal2"
+        back_to_back_row['COUNTERPARTY'] = 'FXN99041'  # Back-to-back counterparty from example
+        
+        # Flip the buy/sell direction for the back-to-back trade
+        if main_row['BS'] == 'B':
+            back_to_back_row['BS'] = 'S'
+        else:
+            back_to_back_row['BS'] = 'B'
+        
+        return [main_row, back_to_back_row]
 
 
 class FXTradeConverterApp:
@@ -298,12 +314,14 @@ class FXTradeConverterApp:
                         # Parse email
                         trade_data = self.parser.parse_email(email_text)
                         
-                        # Convert to CSV row
+                        # Convert to CSV rows (main and back-to-back)
                         if trade_data:
-                            csv_row = self.parser.format_to_csv_row(trade_data)
-                            if csv_row:
-                                writer.writerow(csv_row)
+                            csv_rows = self.parser.format_to_csv_rows(trade_data)
+                            if csv_rows:
+                                for row in csv_rows:
+                                    writer.writerow(row)
                                 successful += 1
+                                self.status_var.set(f"Processed {os.path.basename(msg_file)} successfully - created main trade and back-to-back entries")
                         else:
                             self.status_var.set(f"No trade data found in {os.path.basename(msg_file)}")
                             self.root.update()
