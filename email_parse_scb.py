@@ -4,6 +4,8 @@ import csv
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 from datetime import datetime
+import extract_msg  # Library to extract .msg files
+import tempfile
 
 class FXTradeEmailParser:
     """Parse FX trade confirmation emails and convert to CSV format."""
@@ -159,18 +161,23 @@ class FXTradeConverterApp:
         main_frame.pack(fill=tk.BOTH, expand=True)
         
         # Email selection area
-        select_frame = ttk.LabelFrame(main_frame, text="Select Email Files", padding="10")
+        select_frame = ttk.LabelFrame(main_frame, text="Select Outlook Message Files", padding="10")
         select_frame.pack(fill=tk.X, pady=5)
         
-        ttk.Button(select_frame, text="Select Email Files", command=self.select_email_files).pack(side=tk.LEFT, padx=5)
+        ttk.Button(select_frame, text="Select .msg Files", command=self.select_msg_files).pack(side=tk.LEFT, padx=5)
         ttk.Button(select_frame, text="Select Output Directory", command=self.select_output_dir).pack(side=tk.LEFT, padx=5)
         
         # Display selected files
         list_frame = ttk.LabelFrame(main_frame, text="Selected Files", padding="10")
         list_frame.pack(fill=tk.BOTH, expand=True, pady=5)
         
-        self.file_list = tk.Listbox(list_frame)
-        self.file_list.pack(fill=tk.BOTH, expand=True)
+        # Add scrollbar to listbox
+        list_scroll = ttk.Scrollbar(list_frame)
+        list_scroll.pack(side=tk.RIGHT, fill=tk.Y)
+        
+        self.file_list = tk.Listbox(list_frame, yscrollcommand=list_scroll.set)
+        self.file_list.pack(fill=tk.BOTH, expand=True, side=tk.LEFT)
+        list_scroll.config(command=self.file_list.yview)
         
         # Output path display
         output_frame = ttk.Frame(main_frame, padding="5")
@@ -192,22 +199,21 @@ class FXTradeConverterApp:
         status_frame.pack(fill=tk.X, pady=5)
         
         self.status_var = tk.StringVar(value="Ready")
-        ttk.Label(status_frame, textvariable=self.status_var).pack(fill=tk.X)
+        ttk.Label(status_frame, textvariable=self.status_var, wraplength=780).pack(fill=tk.X)
         
         # Progress bar
         self.progress_var = tk.DoubleVar(value=0.0)
         self.progress = ttk.Progressbar(main_frame, variable=self.progress_var, maximum=100)
         self.progress.pack(fill=tk.X, pady=5)
         
-    def select_email_files(self):
-        """Open file dialog to select email files."""
+    def select_msg_files(self):
+        """Open file dialog to select Outlook .msg files."""
         filetypes = [
-            ("Text files", "*.txt"),
-            ("Email files", "*.eml"),
+            ("Outlook Message files", "*.msg"),
             ("All files", "*.*")
         ]
         files = filedialog.askopenfilenames(
-            title="Select Email Files",
+            title="Select Outlook Message Files",
             filetypes=filetypes
         )
         
@@ -242,9 +248,9 @@ class FXTradeConverterApp:
         self.progress_var.set(0)
         
     def process_emails(self):
-        """Process selected email files and convert to CSV."""
+        """Process selected Outlook .msg files and convert to CSV."""
         if not self.email_files:
-            messagebox.showwarning("No Files", "Please select email files to process.")
+            messagebox.showwarning("No Files", "Please select Outlook message files to process.")
             return
             
         # Check if output directory exists
@@ -279,16 +285,16 @@ class FXTradeConverterApp:
                 writer = csv.DictWriter(f, fieldnames=fieldnames)
                 writer.writeheader()
                 
-                # Process each email file
-                for email_file in self.email_files:
-                    self.status_var.set(f"Processing: {os.path.basename(email_file)}")
+                # Process each Outlook msg file
+                for msg_file in self.email_files:
+                    self.status_var.set(f"Processing: {os.path.basename(msg_file)}")
                     self.root.update()
                     
                     try:
-                        # Read email content
-                        with open(email_file, 'r', encoding='utf-8') as email_f:
-                            email_text = email_f.read()
-                            
+                        # Use extract_msg to read the .msg file
+                        msg = extract_msg.Message(msg_file)
+                        email_text = msg.body
+                        
                         # Parse email
                         trade_data = self.parser.parse_email(email_text)
                         
@@ -298,9 +304,12 @@ class FXTradeConverterApp:
                             if csv_row:
                                 writer.writerow(csv_row)
                                 successful += 1
+                        else:
+                            self.status_var.set(f"No trade data found in {os.path.basename(msg_file)}")
+                            self.root.update()
                                 
                     except Exception as e:
-                        self.status_var.set(f"Error processing {os.path.basename(email_file)}: {e}")
+                        self.status_var.set(f"Error processing {os.path.basename(msg_file)}: {e}")
                         self.root.update()
                         
                     # Update progress
