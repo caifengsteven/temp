@@ -14,13 +14,17 @@ class FXTradeEmailParser:
     def __init__(self):
         """Initialize the parser with regex patterns for extracting trade data."""
         self.patterns = {
-            'currency_pair': r'Currency Pair:\s+([A-Z]{3}/[A-Z]{3})',
-            'trade_rate': r'Trade Rate:\s+([\d.]+)',
-            'spot_rate': r'Spot Rate:\s+([\d.]+)',
-            'fwd_pts': r'Fwd Pts:\s+([-\d.]+)',
-            'value_date': r'Value Date:\s+(\d{4}-\w+-\d{2})',
-            'fixing_date': r'Fixing Date:\s+(\d{4}-\w+-\d{2})',
-            'transaction': r'([A-Z\s]+)\s+(?:Buy|Sell)\s+([A-Z]{3})\s+([\d,]+(?:\.\d+)?)\s+and\s+(?:Buy|Sell)\s+([A-Z]{3})\s+([\d,]+(?:\.\d+)?)'
+            'currency_pair': r'Currency Pair\s*:\s*([A-Z]{3,}[/]?[A-Z]{3,})',
+            'tenor': r'Tenor\s*:\s*(\w+)',
+            'trade_rate': r'Trade Rate\s*:\s*([\d.]+)',
+            'spot_rate': r'Spot Rate\s*:\s*([\d.]+)',
+            'fwd_pts': r'Fwd Pts\s*:\s*([-\d.]+)',
+            'value_date': r'Value Date\s*:\s*(\d{4}-\w+-\d{1,2})',
+            'fixing_date': r'Fixing Date\s*:\s*(\d{4}-\w+-\d{1,2})',
+            'fixing_mechanism': r'Fixing Mechanism\s*:\s*([A-Z0-9\s]+)',
+            # Updated patterns for transaction details
+            'jefferies_transaction': r'(?:Jefferies|JEFFERIES).*(?:Buys|Sells)[^:]*:\s*([\d,]+(?:\.\d+)?)\s+([A-Z]{3})\s+and\s+(?:Buys|Sells)[^:]*:\s*([\d,]+(?:\.\d+)?)\s+([A-Z]{3})',
+            'scb_transaction': r'SCB\s+(?:Buys|Sells)[^:]*:\s*([\d,]+(?:\.\d+)?)\s+([A-Z]{3})\s+and\s+(?:Buys|Sells)[^:]*:\s*([\d,]+(?:\.\d+)?)\s+([A-Z]{3})'
         }
     
     def generate_random_string(self, length=6):
@@ -41,55 +45,58 @@ class FXTradeEmailParser:
         if "Thank you for the trade" not in email_text:
             return None
             
-        # Check for SC.com source (could be from domain or other identifier)
-        if not any(source in email_text for source in ["SC.COM", "SC.com", "STANDARD CHARTERED", "Standard Chartered"]):
-            # For this example, we'll still process but in production you might want to filter
-            pass
-            
         trade_data = {}
         
         # Extract basic trade information
         for key, pattern in self.patterns.items():
-            if key != 'transaction':  # Handle transaction separately
+            if key not in ['jefferies_transaction', 'scb_transaction']:  # Handle transactions separately
                 match = re.search(pattern, email_text)
                 if match:
                     trade_data[key] = match.group(1)
         
-        # Extract transaction details (party, direction, amounts)
-        transaction_match = re.search(self.patterns['transaction'], email_text)
-        if transaction_match:
-            party = transaction_match.group(1).strip()
+        # Extract Jefferies transaction details
+        jefferies_match = re.search(self.patterns['jefferies_transaction'], email_text)
+        scb_match = re.search(self.patterns['scb_transaction'], email_text)
+        
+        if jefferies_match and scb_match:
+            # Get Jefferies transaction details
+            jeff_amount1 = jefferies_match.group(1).replace(',', '')
+            jeff_ccy1 = jefferies_match.group(2)  # Usually USD
+            jeff_amount2 = jefferies_match.group(3).replace(',', '')
+            jeff_ccy2 = jefferies_match.group(4)  # Usually TWD
             
-            # Determine buy/sell direction and currencies
-            currency1 = transaction_match.group(2)
-            amount1 = transaction_match.group(3).replace(',', '')
-            currency2 = transaction_match.group(4)
-            amount2 = transaction_match.group(5).replace(',', '')
+            # Get SCB transaction details
+            scb_amount1 = scb_match.group(1).replace(',', '')
+            scb_ccy1 = scb_match.group(2)  # Usually TWD
+            scb_amount2 = scb_match.group(3).replace(',', '')
+            scb_ccy2 = scb_match.group(4)  # Usually USD
             
-            # Determine buy/sell direction
-            if "Buy" in email_text and currency1 == "TWD":
-                direction = "B"  # Buy TWD
-                trade_data['bs'] = "B"
-            elif "Sell" in email_text and currency1 == "USD":
-                direction = "S"  # Sell USD
-                trade_data['bs'] = "S"
+            # Jefferies is the counterparty we're focused on
+            if "Buys" in email_text.split("Jefferies")[1].split("and")[0]:
+                # If Jefferies is buying USD, we're selling USD to them (S)
+                if jeff_ccy1 == "USD":
+                    trade_data['bs'] = "S"
+                else:
+                    trade_data['bs'] = "B"
             else:
-                # Fallback logic
-                direction = "B" if "Buy" in email_text.split(party)[1].split("and")[0] else "S"
-                trade_data['bs'] = direction
+                # If Jefferies is selling USD, we're buying USD from them (B)
+                if jeff_ccy1 == "USD":
+                    trade_data['bs'] = "B"
+                else:
+                    trade_data['bs'] = "S"
             
-            trade_data['party'] = party
-            trade_data['position'] = "TWD"  # Based on the example
-            trade_data['counter'] = "USD"   # Based on the example
-            
-            # Set the correct amounts based on the currencies
-            if currency1 == "TWD":
-                trade_data['position_amount'] = amount1
-                trade_data['counter_amount'] = amount2
+            # Always use the TWD and USD from SCB's side for consistency
+            if scb_ccy1 == "TWD":
+                trade_data['position'] = "TWD"
+                trade_data['position_amount'] = scb_amount1
+                trade_data['counter'] = "USD"
+                trade_data['counter_amount'] = scb_amount2
             else:
-                trade_data['position_amount'] = amount2
-                trade_data['counter_amount'] = amount1
-                
+                trade_data['position'] = "TWD"
+                trade_data['position_amount'] = scb_amount2
+                trade_data['counter'] = "USD"
+                trade_data['counter_amount'] = scb_amount1
+        
         # Convert dates to required format (if needed)
         for date_field in ['value_date', 'fixing_date']:
             if date_field in trade_data:
@@ -97,12 +104,17 @@ class FXTradeEmailParser:
                     date_obj = datetime.strptime(trade_data[date_field], '%Y-%b-%d')
                     trade_data[date_field] = date_obj.strftime('%Y%m%d')
                 except ValueError:
-                    # Keep original format if parsing fails
-                    pass
+                    try:
+                        # Try alternative format with single-digit day
+                        date_obj = datetime.strptime(trade_data[date_field], '%Y-%b-%d')
+                        trade_data[date_field] = date_obj.strftime('%Y%m%d')
+                    except ValueError:
+                        # Keep original format if parsing fails
+                        pass
                     
         # Set additional fields based on example
         trade_data['fx_type'] = "NDF"  # Assuming NDF from the example
-        trade_data['trader'] = "JHKLFX"  # From example, in reality might be extracted
+        trade_data['trader'] = "JHKLFX"  # From example
         
         return trade_data
     
@@ -333,6 +345,11 @@ class FXTradeConverterApp:
                                     writer.writerow(row)
                                 successful += 1
                                 self.status_var.set(f"Processed {os.path.basename(msg_file)} successfully - created main trade and back-to-back entries")
+                                
+                                # Debug information - print parsed data
+                                print(f"Successfully parsed {os.path.basename(msg_file)}:")
+                                for key, value in trade_data.items():
+                                    print(f"  {key}: {value}")
                         else:
                             self.status_var.set(f"No trade data found in {os.path.basename(msg_file)}")
                             self.root.update()
@@ -356,6 +373,24 @@ class FXTradeConverterApp:
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {e}")
             self.status_var.set(f"Error: {e}")
+
+    def test_parsing(self, email_text):
+        """Debug function to test parsing of email text directly."""
+        trade_data = self.parser.parse_email(email_text)
+        if trade_data:
+            print("Parsed trade data:")
+            for key, value in trade_data.items():
+                print(f"  {key}: {value}")
+            
+            csv_rows = self.parser.format_to_csv_rows(trade_data)
+            if csv_rows:
+                print("\nGenerated CSV rows:")
+                for i, row in enumerate(csv_rows):
+                    print(f"Row {i+1}:")
+                    for key, value in row.items():
+                        print(f"  {key}: {value}")
+        else:
+            print("No trade data found in email text.")
 
 
 def main():
