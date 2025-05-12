@@ -1,0 +1,5 @@
+G:/dropbox/Dropbox/Dropbox/project folder from my asua computer/Project/backtest engineering c++/backtest Engineering/out/build/x64-Debug/CMakeFiles/edit_cache.dir
+G:/dropbox/Dropbox/Dropbox/project folder from my asua computer/Project/backtest engineering c++/backtest Engineering/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir
+G:/dropbox/Dropbox/Dropbox/project folder from my asua computer/Project/backtest engineering c++/backtest Engineering/out/build/x64-Debug/backtest Engineering/CMakeFiles/CMakeTarget.dir
+G:/dropbox/Dropbox/Dropbox/project folder from my asua computer/Project/backtest engineering c++/backtest Engineering/out/build/x64-Debug/backtest Engineering/CMakeFiles/edit_cache.dir
+G:/dropbox/Dropbox/Dropbox/project folder from my asua computer/Project/backtest engineering c++/backtest Engineering/out/build/x64-Debug/backtest Engineering/CMakeFiles/rebuild_cache.dir

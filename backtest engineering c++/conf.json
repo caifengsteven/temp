@@ -1,0 +1,17 @@
+{
+	"order_quantity":100,
+	"return_term":"CNNLSTM",
+	"significant_return": 0.001,
+	"max_absolute_position": 90000000000,
+	"max_absolute_value": 99999999999,
+	"max_buy_traded_quantity":90000000000,
+	"max_buy_traded_value":99999999999,
+	"max_sell_traded_quantity":90000000000,
+	"max_sell_traded_value":99999999999,
+	"max_traded_value":99999999999,
+	"max_volume": 90000000000,
+	"order_ack_and_trade_delay_ns":10000000,
+	"order_sending_delay_ns":10000000,
+	"market_data_file":"C:\\000001.SZ.SHZ.2019-09-27.hdf",
+	"trading_indicator_file": "C:\\000001.SZ.SHZ.2019-09-27.alpha.hdf"
+}
