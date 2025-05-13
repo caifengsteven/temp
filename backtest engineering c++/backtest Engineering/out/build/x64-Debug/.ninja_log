@@ -1,5 +1,0 @@
-# ninja log v5
-1	3731	595299922	build.ninja	5c46778ab02f4cc9
-1	2892	595299928	backtest Engineering/CMakeFiles/CMakeTarget.dir/backtest_Engineering.cpp.obj	37d2f7cf2dd07954
-2892	9925	595299935	backtest Engineering/CMakeTarget.exe	91efebdaa936ef80
-0	2165	595300267	build.ninja	5c46778ab02f4cc9
