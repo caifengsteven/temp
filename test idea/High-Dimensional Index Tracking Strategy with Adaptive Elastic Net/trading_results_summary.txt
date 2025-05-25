@@ -1,0 +1,71 @@
+Summary Statistics:
+==================
+
+Quantile 25%:
+---------------
+Unconditioned Ensemble:
+  Annual Return: 18.15%
+  Sharpe Ratio: 1.32
+  Win Rate: 25.38%
+  Average Trade Return: 2.74 bp
+  Number of Trades: 1316
+
+Conditioned Ensemble (3 points):
+  Annual Return: 12.25%
+  Sharpe Ratio: 0.93
+  Win Rate: 25.37%
+  Average Trade Return: 2.13 bp
+  Number of Trades: 1218
+
+GJR-GARCH:
+  Annual Return: 17.56%
+  Sharpe Ratio: 1.30
+  Win Rate: 24.84%
+  Average Trade Return: 2.85 bp
+  Number of Trades: 1224
+
+Quantile 10%:
+---------------
+Unconditioned Ensemble:
+  Annual Return: 10.95%
+  Sharpe Ratio: 1.26
+  Win Rate: 28.82%
+  Average Trade Return: 3.87 bp
+  Number of Trades: 583
+
+Conditioned Ensemble (3 points):
+  Annual Return: 15.63%
+  Sharpe Ratio: 1.22
+  Win Rate: 27.80%
+  Average Trade Return: 2.97 bp
+  Number of Trades: 1061
+
+GJR-GARCH:
+  Annual Return: 11.20%
+  Sharpe Ratio: 1.28
+  Win Rate: 30.76%
+  Average Trade Return: 3.87 bp
+  Number of Trades: 595
+
+Quantile 5%:
+---------------
+Unconditioned Ensemble:
+  Annual Return: 6.49%
+  Sharpe Ratio: 1.17
+  Win Rate: 36.94%
+  Average Trade Return: 5.15 bp
+  Number of Trades: 268
+
+Conditioned Ensemble (3 points):
+  Annual Return: 11.66%
+  Sharpe Ratio: 1.06
+  Win Rate: 28.11%
+  Average Trade Return: 2.70 bp
+  Number of Trades: 900
+
+GJR-GARCH:
+  Annual Return: 8.14%
+  Sharpe Ratio: 1.26
+  Win Rate: 32.60%
+  Average Trade Return: 4.68 bp
+  Number of Trades: 365

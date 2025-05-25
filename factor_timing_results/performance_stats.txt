@@ -1,0 +1,26 @@
+
+Benchmark Strategy:
+  annualized_return: 0.0517
+  annualized_volatility: 0.0293
+  sharpe_ratio: 1.7636
+  maximum_drawdown: -0.0286
+
+Timing Strategy:
+  annualized_return: 0.0317
+  annualized_volatility: 0.0393
+  sharpe_ratio: 0.8060
+  maximum_drawdown: -0.0615
+  tracking_error: 0.0280
+  information_ratio: -0.6620
+  t_statistic: -7.8886
+  annualized_turnover: 7.1696
+
+Tilting Strategy:
+  annualized_return: 0.0549
+  annualized_volatility: 0.0394
+  sharpe_ratio: 1.3924
+  maximum_drawdown: -0.0438
+  tracking_error: 0.0220
+  information_ratio: 0.1847
+  t_statistic: 2.2013
+  annualized_turnover: 2.9823

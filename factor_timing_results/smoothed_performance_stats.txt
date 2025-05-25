@@ -1,0 +1,20 @@
+
+Timing Strategy (Smoothed):
+  annualized_return: 0.0458
+  annualized_volatility: 0.0305
+  sharpe_ratio: 1.5008
+  maximum_drawdown: -0.0413
+  tracking_error: 0.0103
+  information_ratio: -0.4963
+  t_statistic: -5.9142
+  annualized_turnover: 7.1696
+
+Tilting Strategy (Smoothed):
+  annualized_return: 0.0581
+  annualized_volatility: 0.0338
+  sharpe_ratio: 1.7191
+  maximum_drawdown: -0.0354
+  tracking_error: 0.0144
+  information_ratio: 0.4894
+  t_statistic: 5.8324
+  annualized_turnover: 2.9823
