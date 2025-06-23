@@ -1,0 +1,264 @@
+Ai全自动编写策略：牛起指标，收益率326%，年化73%，胜
+率63%
+已关注
+8 人赞同了该文章 
+公号：松鼠Quant 量化交易知识分享
+松鼠Quant
+工具推荐
+·
+Ai编写策略是量化领域的新常态，松鼠Quant在早些时候推出了开源项目 《git ee官方推荐，
+松鼠QuantAi+回测框架详细版教程(图文) 》让Ai自动编写策略，自动回测，给出总结和迭代
+意见。
+现在我们将 通达信 指标：牛起指标，让Ai自动完成py thon编写，然后自动回测总结。· 参数筛选工具
+mp.w eixin.qq.com/s?__biz=MjM5MzE5NzUxNw==&m …
+Ai帮你编写策略
+mp.w eixin.qq.com/s?__biz=MjM5MzE5NzUxNw==&m …
+· 订单流图表
+mp.w eixin.qq.com/s?__biz=MjM5MzE5NzUxNw==&m …
+· 加入2025俱乐部
+mp.w eixin.qq.com/s?__biz=MjM5MzE5NzUxNw==&m …
+· Ai投研助手课程
+mp.w eixin.qq.com/s?__biz=MjM5MzE5NzUxNw==&m …关于作者
+松鼠Quant  
+公号：松鼠Quant 量
+AI创新屋 、宽客与人生 、Cha
+注了他
+回答
+354文章
+347关
+11
+已关注  发
+赞同 8   1 条评论  喜欢  收藏  申请转载  分享  首页 知乎直答焕新知乎知学堂 等你来答消息27
+私信99+
+创作提问2025/6/22 晚上 7:57 (99+ 封私信  / 27 条消息 ) Ai 全⾃动编写策略：⽜起指标，收益率 326% ，年化 73% ，胜率 63% - 知乎
+https://zhuanlan.zhihu.com/p/1916446292218999479 1/8
+ 
+通达信：
+VAR1:=MA(V,5);
+VAR2:=MA(V,10);
+VAR3:=V>REF(HHV(V,2),1) AND RANGE(VAR1,VAR2,V) AND UPNDAY(VAR1,2) AND UPNDAY(VAR
+VAR4:=H>REF(HHV(H,2),1);VAR8:=MAX(C,O);
+VAR5:=VAR8>REF(HHV(VAR8,2),1);
+历史大底:=VAR3 AND VAR4 AND VAR5;
+VAR6:=BARSLAST( 历史大底 =1);
+VAR7:=REF(REF(H,1),VAR6);
+DB:=IF( 历史大底 ,0,IF(C< VAR7,1,0));
+LJ:=REF(HHV(H,VAR6+1),BARSLAST(DB));
+NOTEXT:LJ COLORLIMAGENTA;
+STICKLINE(IF(C>LJ,IF(REF(VAR8< LJ,1),1,0),0),O,C,2.2,0),COLORYELLOW;
+DRAWICON(IF(C>LJ,IF(REF(VAR8< LJ,1),1,0),0),L,25);
+接下来让Ai帮我们转化到 松鼠Quant回测框架 内，我们不需要写一行代码！！！
+github地址(国外)：
+github.com/songshuquant ...
+gitee地址(国内):
+gitee.com/ssquant/ssqua ...
+如何使用，手把手教程： 《git ee官方推荐，松鼠QuantAi+回测框架详细版教程(图文) 》
+Python源码：
+import pandas as pd
+import numpy as np
+from ssquant.backtest.multi_source_backtest import MultiSourceBacktester
+from ssquant.api.strategy_api import StrategyAPI2025/6/22 晚上 7:57 (99+ 封私信  / 27 条消息 ) Ai 全⾃动编写策略：⽜起指标，收益率 326% ，年化 73% ，胜率 63% - 知乎
+https://zhuanlan.zhihu.com/p/1916446292218999479 2/8
+def initialize(api: StrategyAPI)
+:    api.log(" 成交量突破 + 价格突破策略初始化 ")
+    api.entry_price = 0  # 添加入场价格变量
+def strategy_function(api: StrategyAPI):
+    # 参数和数据验证
+    current_idx = api.get_idx()
+    if current_idx < 20:  # 确保有足够的数据计算指标
+        return 
+# 获取数据
+    close = api.get_close()
+    high = api.get_high()
+    low = api.get_low()
+    open_ = api.get_open()
+    volume = api.get_volume()
+    current_pos = api.get_pos()
+    # 增强数据验证
+    if any(data is None or len(data) == 0 for data in [close, high, low, open_, vo
+        api.log(" 警告 : 数据为空 ") 
+       return
+    if current_idx >= len(close):
+        api.log(" 警告 : 索引超出数据范围 ")
+        return
+       # 计算指标
+    # VAR1: 5 日成交量均线
+    var1 = volume.rolling(5).mean()
+    # VAR2: 10 日成交量均线
+    var2 = volume.rolling(10).mean()
+    # VAR3: 成交量突破条件  - 进一步简化
+    var3 = volume > volume.rolling(3).mean()
+  # 改为 3 日均量，不要求突破最大值
+    # VAR4: 价格突破 2 日最高价
+    var4 = high > high.rolling(2).max().shift(1)
+    # VAR8: 当日 K 线实体高点
+    var8 = np.maximum(close, open_)
+    # VAR5: K 线实体高点突破 2 日最高  
+   var5 = var8 > var8.rolling(2).max().shift(1)
+    # 历史大底信号
+    history_bottom = var3 & var4 & var5
+        # 添加调试日志
+    if current_idx % 20 == 0:  # 每 20 个周期打印一次日志
+        api.log(f"===== 调试信息  [idx={current_idx}] =====")
+        api.log(f" 成交量突破 (var3): {var3.iloc[current_idx]}") 
+          api.log(f" 价格突破 (var4): {var4.iloc[current_idx]}")
+        api.log(f" 实体高点突破 (var5): {var5.iloc[current_idx]}")
+        api.log(f" 历史大底信号 : {history_bottom.iloc[current_idx]}")
+        api.log(f" 当前成交量 : {volume.iloc[current_idx]}")
+        api.log(f"5 日均量 : {var1.iloc[current_idx]}") 
+       api.log(f"10 日均量 : {var2.iloc[current_idx]}") 
+       api.log(f"2 日最高价 : {high.rolling(2).max().shift(1).iloc[current_idx]}") 
+       # 计算最近的历史大底位置2025/6/22 晚上 7:57 (99+ 封私信  / 27 条消息 ) Ai 全⾃动编写策略：⽜起指标，收益率 326% ，年化 73% ，胜率 63% - 知乎
+https://zhuanlan.zhihu.com/p/1916446292218999479 3/8
+    recent_history = history_bottom.iloc[max(0, current_idx-5):current_idx+1]  # 改
+    var6 = 0
+    if recent_history.any()
+:        var6 = len(recent_history) - 1 - recent_history[::-1].values.argmax()
+        # 添加 var6 调试日志
+    if current_idx % 20 == 0:
+        api.log(f" 历史大底距离 (var6): {var6}")
+        # 修改 lj 的计算逻辑
+    lj = 0
+    if var6 > 0
+:        # 从历史大底到当前的最高价
+        start_idx = current_idx - var6
+        lj = high.iloc[start_idx:current_idx+1].max()
+        # 添加 lj 调试日志
+    if current_idx % 20 == 0:
+        api.log(f" 历史大底高点 (lj): {lj}") 
+       api.log("========================") 
+   # 交易信号
+    if lj > 0:
+        current_close = close.iloc[current_idx]
+        current_high = high.iloc[current_idx]
+        prev_close = close.iloc[current_idx-1] 
+              
+           # 进一步放宽买入条件：
+           # 1. 当日最高价接近历史高点（允许 10% 的差距）
+        # 2. 收盘价站稳在历史高点附近（允许 15% 的回撤）
+        # 3. 相对前一日有上涨  
+       price_threshold = lj * 0.85  # 允许 15% 的回撤
+        high_threshold = lj * 0.90   # 允许 10% 的差距
+        buy_signal = (current_high > high_threshold) and \ 
+                   (current_close > price_threshold) and \
+                    (current_close > prev_close * 1.005)  # 要求至少 0.5% 的涨幅
+         # 添加买入条件的详细日志
+        if current_idx % 5 == 0 or buy_signal:  # 每 5 个周期或有买入信号时打印
+            api.log(f" 买入条件检查  [idx={current_idx}]:")
+            api.log(f" 当日最高价 : {current_high:.2f}")
+            api.log(f" 当前收盘价 : {current_close:.2f}")
+            api.log(f" 前一日收盘价 : {prev_close:.2f}")
+            api.log(f" 历史高点 (lj): {lj:.2f}")  
+          api.log(f" 价格阈值 (85%): {price_threshold:.2f}")
+            api.log(f" 最高价阈值 (90%): {high_threshold:.2f}")
+            api.log(f" 条件 1( 最高价 > 阈值 ): {current_high > high_threshold}")
+            api.log(f" 条件 2( 收盘价 > 阈值 ): {current_close > price_threshold}") 
+           api.log(f" 条件 3( 上涨 >0.5%): {current_close > prev_close * 1.005}")
+            api.log(f" 买入信号 : {buy_signal}")
+    else:
+        buy_signal = False
+        current_close = close.iloc[current_idx]
+        prev_close = close.iloc[current_idx-1]
+    # 执行交易
+    if current_pos > 0:  # 已有持仓，检查平仓条件
+        # 计算当前持仓的盈亏比例2025/6/22 晚上 7:57 (99+ 封私信  / 27 条消息 ) Ai 全⾃动编写策略：⽜起指标，收益率 326% ，年化 73% ，胜率 63% - 知乎
+https://zhuanlan.zhihu.com/p/1916446292218999479 4/8
+        if api.entry_price > 0:  # 确保有入场价格
+            profit_ratio = (current_close - api.entry_price) / api.entry_price
+     # 平仓条件：
+            # 1. 止损：跌破历史高点 15%
+            # 2. 止盈：盈利超过 8%
+            # 3. 破位：收盘价跌破 5 日均线且跌幅超过 2%
+            ma5 = close.rolling(5).mean() 
+           sell_signal = (current_close < lj * 0.85) or \ 
+                        (profit_ratio > 0.08) or \ 
+                        ((current_close < ma5.iloc[current_idx]) and \
+                          (current_close < prev_close * 0.98))  # 破位
+     if sell_signal:
+         api.close_all(order_type='next_bar_open')
+                if current_close < lj * 0.85:
+                    api.log(f" 止损平仓，当前价 : {current_close:.2f}")
+                elif profit_ratio > 0.08:
+                    api.log(f" 止盈平仓，盈利 : {profit_ratio*100:.1f}%")
+                else: 
+                   api.log(f" 破位平仓，当前价 : {current_close:.2f}")
+                api.entry_price = 0  # 重置入场价格
+        elif buy_signal and current_pos <= 0:  # 没有持仓且有买入信号
+        api.close_all(order_type='next_bar_open')
+        api.buy(volume=1, order_type='next_bar_open')
+        api.entry_price = current_close  # 记录入场价格
+        api.log(f" 买入信号触发，价格接近历史高点 : {lj:.2f}")
+if __name__ == "__main__":
+    # 导入 API 认证信息  
+   try: 
+       from ssquant.config.auth_config import get_api_auth
+        API_USERNAME, API_PASSWORD = get_api_auth()
+    except ImportError:
+        print(" 警告：未找到  auth_config.py 文件，请在下方填写您的认证信息： API_USERNAME
+        API_USERNAME = "your_username"  # 替换为您的实际用户名
+        API_PASSWORD = "your_password"  # 替换为您的实际密码
+    # 回测配置
+    backtester = MultiSourceBacktester()
+    backtester.set_base_config({
+        'username': API_USERNAME,  # 添加用户名
+        'password': API_PASSWORD,  # 添加密码
+        'use_cache': True,
+        'save_data': True,
+        'debug': True 
+   }) 
+       backtester.add_symbol_config( 
+       symbol='au888',
+        config={ 
+           'start_date': '2021-01-01', 
+           'end_date': '2025-12-31', 
+           'initial_capital': 100000.0, 
+           'commission': 0.0002,  # 手续费万分之 0.2 
+           'margin_rate': 0.08,   # 保证金率 8%  
+          'contract_multiplier': 1000,  # 沪金一手 1000 克
+            'periods': [ 
+               {'kline_period': '1d', 'adjust_type': '1'},
+            ]2025/6/22 晚上 7:57 (99+ 封私信  / 27 条消息 ) Ai 全⾃动编写策略：⽜起指标，收益率 326% ，年化 73% ，胜率 63% - 知乎
+https://zhuanlan.zhihu.com/p/1916446292218999479 5/8
+        } 
+   )
+        results = backtester.run( 
+       strategy=strategy_function, 
+       initialize=initialize,
+        strategy_params={}, 
+   )
+回测绩效
+2025/6/22 晚上 7:57 (99+ 封私信  / 27 条消息 ) Ai 全⾃动编写策略：⽜起指标，收益率 326% ，年化 73% ，胜率 63% - 知乎
+https://zhuanlan.zhihu.com/p/1916446292218999479 6/8
+2025/6/22 晚上 7:57 (99+ 封私信  / 27 条消息 ) Ai 全⾃动编写策略：⽜起指标，收益率 326% ，年化 73% ，胜率 63% - 知乎
+https://zhuanlan.zhihu.com/p/1916446292218999479 7/8
+发布于 2025-06-12 11:02 ・山西没错，整个开发过程我们没有手写一行代码，松鼠QuantAi助手会编写，回测，分析，修
+改。基于松鼠Quant的MCP服务器+Deepseek开启全新量化学习的路径，即使0基础也能完
+成策略的编写与验证！
+如果你喜欢这个系列，请点赞，转发，在看三连。我们根据受欢迎程度决定是否继续更新，
+感谢您的支持。
+交易策略 AI 期货
+理性发言，友善互动
+1 条评论 默认 最新
+ai怎么解决漂移
+06-14  · 吉林  回复  喜欢
+博者不知
+推荐阅读
+基于py thon的用户行为分析
+今天咱们先介绍一下，几个指标，
+从几个维度进行分析？到了具体的
+模型会给大家介绍其原理。 此项目
+数源是来源于阿里天池数据集，我
+的这个有12256906条数据，是
+2014.11.18-2014.12.18；在分…
+我叫武月 发表于数据分析那...
+量化投资入门系列（九）——
+TabNet解析与使用
+李浩然 发表于量化投资从...Python之营销预测模型
+本文讲解如何使用Py thon工具制作
+会员营销预测的模型，希望能通过
+数据预测在下一次营销活动时，响
+应活动会员的具体名单和响应概
+率，以此来制定针对性的营销策
+略。当然了，也可以基于现有的 …
+大米糕糕2025/6/22 晚上 7:57 (99+ 封私信  / 27 条消息 ) Ai 全⾃动编写策略：⽜起指标，收益率 326% ，年化 73% ，胜率 63% - 知乎
+https://zhuanlan.zhihu.com/p/1916446292218999479 8/8
