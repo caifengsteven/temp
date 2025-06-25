@@ -1,0 +1,378 @@
+
+# coding: utf-8
+
+# # 前言
+# 本帖研究了国信证券量化择时系列报告之二 ---- <国信投资者情绪指数择时模型> （作者:李忠谦、林晓明） 并进行了复现与对比。
+
+# # **一、投资者情绪指数构建**
+# 
+# 报告在借鉴A. D.Persaud 风险偏好指数的基础上，根据中国股市特点，将该方法完善改进后移植到A 股市场，构建了国信投资者情绪指数GSISI（以下简称GSISI）。
+# 
+# 基本思路是：
+# 首先，计算28 个申万一级行业周收益率以及其相对沪深300 指数的周Beta 系数；
+# 
+# 然后测算28 个申万一级行业周收益率与其周Beta 系数的Spearman 秩相关系数；
+# 
+# 最后以Spearman 秩相关系数为基础构建国信投资者情绪指数GSISI。
+
+# ## **1.1 Spearman 秩相关系数简介**
+# 
+# 一般而言，对于双变量(X,Y)相关分析，通常的方法为Pearson 矩相关系数和Spearman 秩相关系数等。
+# 
+# Pearson 矩相关常常用于双变量正态分布的数据，Spearman 秩相关适用于等级数据、非双变量正态分布的数据以及分布不确定的数据。
+# 
+# ### **1.1.1 Pearson矩相关系数**
+# 
+# Pearson 矩相关系数，又叫相关系数或线性相关系数，但是Pearson 矩相关系数有它的局限性：
+# 
+# 第一，它只能度量变量之间的线性相关性；
+# 
+# 第二，对于来自正态总体的随机变量(X,Y)，它们相关和独立是等价的，所以相关系数常常用来检验正态总体之间的独立性。**若总体非正态，采用此方法就会得到错误的结论**。
+# 
+# ### **1.1.2 Spearman 秩相关系数**
+# 秩相关系数是一种**非参数统计量**，度量的是两组定序变量(X,Y)之间的等级相关程度与方向。
+# 
+# 即秩相关系数度量的是当一个变量X的所有项{x1,x2,x3...xn}按照一定的规则(比如数值大小)排序后，另一个变量Y 的排序能保持与X 排序一致性的程度和方向，排序后两个变量(X,Y)中的所有元素分别形成的序列号称为秩。秩相关系数计算公式如下：
+# $$\Large \rho = \frac{\Sigma{(R_{x_i}-R_{\bar{x}})((R_{y_i}-R_{\bar{y}})}}{\sqrt{\Sigma{(R_{x_i}-R_{\bar{x}})^{2}((R_{y_i}-R_{\bar{y}})^{2}}}} $$
+
+# 从上式看，秩相关系数的计算方法与简单线性相关系数相同。其中Rxi为xi在{x1,x2,x3...xn}中的秩，Ryi为yi在{y1,y2...yn}中的秩。
+# 
+# 英国统计学家C.E.Spearman 从上式中推导出简捷式，称Spearman 秩相关系数：
+# $$\large \rho_s = 1 - \frac{6\Sigma{d_i^{2}}}{n(n^2 -1)} \\ \large d_i = R_{x_i} -R_{y_i}  $$
+
+# Spearman 秩相关系数性质：
+# (1)若两个变量(X,Y)的排序是完美的，即两个排序是完全相同的，则Spearman秩相关系数为1；
+# 
+# (2)若两个变量(X,Y)的排序是完全分歧， 即一个排序是扭转其它排序，则Spearman 秩相关系数为-1；
+# 
+# (3)若Spearman 秩相关系数的值属于(-1,1)之间，则其绝对值增加意味着排序程度在增加；
+# 
+# (4)若两个变量(X,Y)的排序是完全独立的，则Spearman 秩相关系数为0。
+# 
+# **Spearman 秩相关系数显著性检验**
+# 
+# 原假设H0：X和Y相互独立，H1：X和Y正相关；<br>
+# 原假设H0 ：X和Y相互独立，H1：X和Y负相关；
+# 
+# 因此，假设检验的拒绝域分别为：
+# $$\large W = \{ \rho_s \geqslant c_\alpha \}  \\ \large W = \{ \rho_s \leqslant d_\alpha \} $$
+# α为显著水平，不等号右边为临界值。
+
+# ## **1.2 Beta 系数的计算**
+# 
+# 在研报中，计算Beta采用的是CAPM模型，也就是$$ E(R_i) - R_f = \beta_i(E(R_m)- R_f)$$ 
+# E(Ri) 是资产i 的预期回报率 ;
+# Rf 是无风险利率 ;
+# E(Rm) 是市场m的预期市场回报率则; βi为资产 i 的系统性风险
+
+# 而我们通常会使用另一种计算方法：$$ \large \beta = \frac{Cov(ra,rm)}{\sigma_m^2} = \rho_{am}\sigma_a\sigma_m$$
+# 其中Cov(ra,rm)是证券 a 的收益与市场收益的协方差；σm是市场收益标准差；σa是证券a收益标准差；ρam为证券a与市场的相关系数。
+# 
+# 在本文中采用了第二种方法。（第一种方法也计算过，与第二种方法结果有一些差异；原因在于Rf无风险利率的选取是个问题，同一年发行的1年期国债利率也有些许浮动，如何选取Rf比较合适希望Uqer的大神们指教指教）
+
+# ### **1.2.1 数据准备**
+# 
+# 基础数据：计算28 个申万一级行业周收益率序列和沪深300 指数每周收益率序列。
+# 
+# 时间周期：从2004 年01 月01 至2016 年07 月01 日。
+# 
+# 计算beta的时间窗口：100周（这里以5个交易日为1周，为500个交易日）
+# 
+# 对每个行业，我们取**行业指数**作为计算基础
+# 
+# 首先取数据，代码如下：
+
+# In[ ]:
+
+# 取数据
+from __future__ import division
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from CAL.PyCAL import *
+
+cal = Calendar('China.SSE')
+# 日期相关
+data=DataAPI.TradeCalGet(exchangeCD=u"XSHE",beginDate=u"20040101",endDate=u"20160701",field=['calendarDate','isWeekEnd'],pandas="1")   ## 得到日期列表
+data = data[data['isWeekEnd'] == 1]
+date_list = data['calendarDate'].values.tolist()
+startDate = date_list[0]
+endDate = date_list[-1]
+
+# 行业代码、数目 
+industrySW = DataAPI.IndustryGet(industryVersion=u"SW",industryVersionCD=u"",industryLevel=u"1",isNew=u"1",field=u"industryID,industryName,indexSymbol",pandas="1")
+industrySW = industrySW.set_index(industrySW['industryName'])
+industryIndexSymbol = industrySW['indexSymbol'].to_dict()
+industryName = industryIndexSymbol.keys()  
+numOfIndustry = len(industryIndexSymbol)
+print numOfIndustry
+
+
+# ## **注意：**
+# **由于通联的行业指数部分年份数据缺失，这里用的是恒生聚源的API。**
+# 
+# 若没有恒生聚源API的权限，就用免费的API（回测时间长度可以取短一些）： **DataAPI.MktIdxdGet**  （土豪就直接买买买吧！）
+# 
+# **将下面代码块第4行改为：indexValue = DataAPI.MktIdxdGet(indexID=ID,beginDate=startDate,endDate=endDate,field="",pandas="1")**
+# 
+# **第7行改为： CHGpct = indexValue['chgPct']**
+# 
+# **同时需自行对缺失的部分数据进行处理**
+
+# In[ ]:
+
+# 取行业指数数据（日收益率）
+DayCHGBook={}
+for industry in industryName:
+    ID = str(industryIndexSymbol[industry])+'.ZICN'
+    #indexValue = DataAPI.JY.MktIdxdJYGet(indexID=ID,secIDSrc="",startDate=startDate,endDate=endDate,field="",pandas="1")
+    #indexValue = DataAPI.MktIdxGet(indexID=ID,secIDSrc="",startDate=startDate,endDate=endDate,field="",pandas="1")
+    indexValue = DataAPI.MktIdxdGet(indexID=ID, beginDate=startDate,endDate=endDate,field="",pandas="1")
+    indexValue = indexValue.set_index(indexValue['tradeDate'])
+    indexValue = indexValue.sort_index()
+    CHGpct = indexValue['CHGPct']/100
+    DayCHGBook.update({industry:CHGpct})
+    
+# HS300指数数据（日收益率）
+hs300 = DataAPI.MktIdxdGet(indexID=u"",ticker=u"000300",beginDate=startDate,endDate=endDate,field=u"",pandas="1")
+hs300 = hs300.set_index(hs300['tradeDate'])
+HS300CHGpct = hs300['CHGPct']
+
+
+# ### **1.2.2 计算28个申万一级行业周Beta序列（100周窗口）、各行业周收益率序列**
+
+# In[ ]:
+
+# 计算beta序列
+def Pearson(x,y):
+    upside = ((x-x.mean())*(y-y.mean())).sum()
+    downside = np.sqrt((np.square(x-x.mean()).sum())*(np.square(y-y.mean()).sum()))
+    return upside/downside
+
+# 计算Beta
+def CalcBeta(Rp,Rm):
+    n = len(Rp)
+    cov = Pearson(Rp,Rm)*Rp.std()*Rm.std()
+    return cov/Rm.var()
+
+# 根据n天的日收益计算这n天总的收益。例如：已知一周5天日收益率为0.1,0.1,0.1,0.1,0.1。则一周周收益为 （1+ 0.1)(1+0.1)(1+0.1)(1+0.1)(1+0.1) -1 
+def CalcTotalCHGpct(CHGpct):
+    n = len(CHGpct)
+    ret =1
+    for i in range(n):
+        ret *= (1+CHGpct[i])
+    return ret-1
+
+WeekCHGBook = {}  #保存各行业周收益率序列
+BetaBook = {}    # 保存各行业周Beta序列
+allDate = HS300CHGpct.index   #总共用到的日期
+
+for industry in DayCHGBook.keys():
+    WeekCHGSeries = pd.Series()
+    BetaSeries = pd.Series()
+    for i in range(500,len(allDate),5):   #5天即1周为一个采样点
+        today = allDate[i]    # 当前日期
+        CHGlist = np.array(DayCHGBook[industry][i-500:i])  #窗口数据，前500天行业日收益率，用于计算行业周Beta
+        fivedaylist = np.array(DayCHGBook[industry][i-5:i]) # 前1周，即5天的行业日收益率，用于计算行业周收益率
+        HS300CHGlist = np.array(HS300CHGpct[i-500:i])      #窗口数据，前500天HS300指数日收益率，用于计算行业周Beta
+        WeekCHGSeries[today] = CalcTotalCHGpct(fivedaylist)  # 计算行业周收益率
+        BetaSeries[today] = CalcBeta(CHGlist,HS300CHGlist)  # 计算行业周Beta
+    WeekCHGBook.update({industry:WeekCHGSeries})
+    BetaBook.update({industry:BetaSeries})
+print len(BetaBook['汽车'])
+
+
+# ## **1.3 计算Spearman秩相关系数**
+# 在给定样本区间内，运用前面测算的28 个申万一级行业周收益率与其周Beta系数，计算其Spearman 秩相关系数，考察两者之间的联系。
+# 
+# Spearman 秩相关系数计算如下：<br>
+# (1) 设t 周时，28 个申万一级行业周收益率为$$ r_{ij}^t$$，i为周期数，i=1,2,3,...507 ， j为行业数，j= 1，2，3...28 。
+# 
+# (2) 设t 周时，28 个申万一级行业周Beta 系数为$$ \beta_{ij}^t$$ i为周期数，i=1,2,3,...507 ， j为行业数，j= 1，2，3...28 。
+# 
+# (3) 设t 周时，利用公式计算rij 和 βij之间的Spearman 秩相关系数 $$ \rho_{ij}^t$$i为周期数，i=1,2,3,...507 ， j为行业数，j= 1，2，3...28 。
+# 
+# 
+# 代码如下
+
+# In[ ]:
+
+def Spearman(A,B):  # A,B 类型为pandas series 或array
+    n = len(A)
+    delta = A-B
+    return 1 - (6*(delta**2).sum())/(n*(n**2 -1))
+
+dateUsed = WeekCHGBook['银行'].index  # 采样点日期
+industryList = BetaBook.keys()     # 行业名
+num = len(industryList)
+spearmanArray = pd.Series()    # 保存spearman
+for date in dateUsed:
+    betaSeries = pd.Series()
+    CHGpctSeries = pd.Series()
+    for i in range(num):    # 构成以行业数为元素数的序列 即序列长度应该为 28
+        key = industryList[i]
+        betaSeries[key] = BetaBook[key][date] #载入该日期该行业周Beta
+        CHGpctSeries[key] = WeekCHGBook[key][date]  #载入该日期该行业周收益率
+    sp = Spearman(betaSeries.rank(),CHGpctSeries.rank()) # 计算该日期 spearman秩相关系数。
+    spearmanArray[date] = 100*sp  # 扩大100倍，方便构建指数
+
+
+# 先来看看秩相关系数图
+
+# In[ ]:
+
+spearmanArray.plot(figsize=(80,5),kind='bar',title=u'Spearman',)
+
+
+# ## **1.4 投资者情绪指数设计**
+# 
+# Beta 系数衡量申万一级行业相对沪深300 指数的波动性，而Spearman 秩相关系数度量申万一级行业的Beta 系数和其收益率之间的等级相关性。
+# 
+# 即Spearman 秩相关系数度量的是当所有申万一级行业的Beta 系数按照大小排序(即行业Beta 轮动)时，其收益率的大小排序(即行业收益率轮动)能保持与Beta 系数排序(即行业Beta 轮动)**一致性的程度和方向**。**这种一致性的程度和方向体现投资者悲观或乐观程度，即投资者情绪**。因此，我们发现以下规律：
+# 
+# （1）当两个变量(申万一级行业的Beta 系数和收益率)排序一致性程度上升，方向相同，**秩相关系数 ρs>=0** ，表示投资乐观情绪上扬；
+# 
+# （2）当两个变量(申万一级行业的Beta 系数和收益率)排序一致性程度上升，方向相反，**秩相关系数 ρs<=0**  ，表示投资悲观情绪蔓延。
+# 
+# 对Spearman 秩相关系数进行显著性检验，显著性水平 α=0.05，n=28，查表可知，得Spearman 秩相关系数 ρs 的临界值为0.317。（图片显示总是失败。。这里就给出前面几种情况，大家可以验证下：）
+
+# n = 5, α=0.1 时： 临界 0.8<br>
+# n = 5, α=0.05 时： 临界 0.9<br>
+# n = 5, α=0.0025 时： 临界 1<br>
+# 
+# n = 6, α=0.1 时： 临界 0.657<br>
+# n = 6, α=0.05 时： 临界 0.829<br>
+# n = 6, α=0.0025 时： 临界 0.886<br>
+# 
+# n = 28, α=0.1 时： 临界 0.25<br>
+# **n = 28, α=0.05 时： 临界 0.317<br>**
+# n = 28, α=0.0025 时： 临界 0.375<br>
+# 
+# 对经过显著性检验的Spearman 秩相关系数设计国信投资者情绪指数GSISI：$$ GSISI = 100 * \rho_s^{\alpha}$$
+# 
+# 在之前秩相关系数图上加上两条临界线：
+
+# In[ ]:
+
+df = pd.DataFrame()
+df['spearman'] = spearmanArray
+df['upper'] = pd.Series(31.7,index=spearmanArray.index)
+df['lower'] = pd.Series(-31.7,index=spearmanArray.index)
+df['spearman'].plot(figsize=(100,5),kind='bar')
+df['upper'].plot(figsize=(80,5),color='red')   
+df['lower'].plot(figsize=(80,5),color='red') 
+
+
+# # **二、GSISI择时模型**
+
+# 为了使得国信投资者情绪指数GSISI 对沪深300 指数有更加良好的预判效果，我们设计了基于GSISI 的择时模型。
+# 
+# 基本思路是：若GSISI **连续两次**发出看多(或看空)信号，则看多(或看空)沪深300 指数，且保持这个判断，直到连续两次看空(或看多)信号出现，则发生看空(或看多)沪深300
+# 指数的反转判断；若GSISI 发出多空交叉互现信号，则除最新信号外，前面的交叉信号作废，以最新信号为判断起点，按照前面两条准则重新分析后面的信号。
+# 
+# 具体步骤是：<br>
+# (1)若国信投资者情绪指数 GSISI>= 31.7，则作为看多沪深300的一次警示信号。若紧接着再次 GSISI>= 31.7，则作为看多沪深300的确认信号，正式看多沪深
+# 300，一次判断完成，且保持此判断，直到有相反的判断出现。<br>
+# (2)类似地，若国信投资者情绪指数GSISI<=-31.7 ，则作为看空沪深300的一次警示信号。若紧接着再次GSISI<=-31.7，则作为看空沪深300的确认信号，正式看空沪深
+# 300，一次判断完成，且保持此判断，直到有相反的判断出现。<br>
+# (3)按照步骤(1)(2)循环判断，产生一系列关于沪深300 的多空观点。
+
+# ## **2.1 实证效果**
+# 
+# 我们先计算所有的看多看空点：
+
+# In[ ]:
+
+Long = {} # 存放看多点
+Short = {} # 存放看空点
+flag = ['ini'] # 存放上次看多看空；若这次看多看空情况和之前类似，则不记录
+for i in range(1,len(dateUsed)):
+    yesterday = dateUsed[i-1]
+    today = dateUsed[i]
+    if spearmanArray[yesterday]>31.7 and spearmanArray[today]>31.7 and flag[-1]!='red':
+        Long.update({i:hs300['closeIndex'][today]})
+        flag.append('red')
+    elif spearmanArray[yesterday]<-31.7 and spearmanArray[today]<-31.7 and flag[-1]!='green':
+        Short.update({i:hs300['closeIndex'][today]})
+        flag.append('green')
+
+
+# 将看多点看空点在HS300指数图上标出，红色代表看多点，绿色代表看空点。
+
+# In[ ]:
+
+hs300plot = hs300['closeIndex'][dateUsed[0]:dateUsed[-1]]
+hs300plot.plot(figsize=(20,5))
+for key in Long.keys():
+    plt.plot(5*key,Long[key],'.r',markersize=15)
+for key in Short.keys():
+    plt.plot(5*key,Short[key],'.g',markersize=15)
+
+
+# **与研报结果的对比**
+
+# （1）可以发现，总共发出20次看多信号，其中正确的判断有 9 次； 看空信号20次，其中正确判断 15次。 看多正确率为45%， 看空正确率为75%。 **总的正确率为 60%**
+# 远远不如研报中的82.35%!  
+# 
+# （2）研报04-13，9年发出了18次信号；而本贴06-16，10年发出了40次信号；比研报中多了1倍多！因为其中夹杂了很多错误信号。
+# 
+# （3）在07年大牛市中（包括前期），多次判断了看多，但也有一次错误判断看空，而在顶部成功看空！ 然而在14年下半年开始的大牛市，却没有发出看多信号，并且在第一次股灾中也没有响应。可以看出，该信号不是很稳定，比研报中多了很多干扰信号。
+# 
+# （4）在震荡市中，频繁的看多看空，这和原文结果相似。
+
+# ** 最后来看下，每一对买入、卖出操作的收益情况**
+
+# In[ ]:
+
+buy = Long.keys()
+sell = Short.keys()
+buy.sort()
+sell.sort()
+
+BuyDate=[]
+SellDate = []
+Profit = []
+NetValue = []
+netValue = 1
+
+if buy[0]>sell[0]:
+    numOfPair = len(sell)-1
+else:
+    numOfPair = len(sell)
+
+for i in range(numOfPair):
+    buyDate = dateUsed[buy[i]]
+    BuyDate.append(buyDate)
+    if sell[i]>buy[i]:
+        sellDate = dateUsed[sell[i]]
+        Gain = (Short[sell[i]]- Long[buy[i]])/Long[buy[i]]
+    if sell[i]<buy[i]:
+        sellDate = dateUsed[sell[i+1]]
+        Gain = (Short[sell[i+1]]- Long[buy[i]])/Long[buy[i]]
+    SellDate.append(sellDate)
+    Profit.append(Gain)
+    netValue = netValue*(1+Gain)
+    NetValue.append(netValue)
+output = pd.DataFrame()
+output['BuyDate']=BuyDate
+output['SellDate']=SellDate
+output['Profit']=Profit
+output['NetValue']=NetValue
+   
+
+
+# In[ ]:
+
+output
+
+
+# # 结论
+# 
+# **可以看出，由于干扰信号的影响，在大牛市错过了大半收益、且震荡市反复进出，收益未显著增长；14年下半年开始的牛市则完全踏空。。。** 
+# 
+# 因此，直接使用该信号无疑是危险的，**需要对信号进行再判断**。当然，也许在复现的过程中有错误，希望大家能探讨一下~
+
+# In[ ]:
+
+
+

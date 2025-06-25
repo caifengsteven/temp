@@ -1,0 +1,334 @@
+
+# coding: utf-8
+
+# # 1 多因子模型简单介绍
+# 预测未来哪支股表现好回报率高，往往需要一个或多个我们可以获得的指标，将它们与未来的股票表现建立联系，进而引导我们的投资。其实质是用变量对股价的波动情况进行拟合，一般而言一个因子是远远不够的。因此今天我们选取多个因子，给它们配以一定的权重合成一个终极因子，用此终极因子来与股票未来收益率建立某种联系，制定出我们的策略，并用历史数据进行检测。
+# 指定多因子策略，我所理解的核心问题就只有两个: <1>哪些因子？<2>因子的权重？
+# # ----------------------------------------------------------
+# # 2 因子的选取 
+# 根据影响市场的情况，我们为了赋予因子可解释的意义，将因子分为以下N类(可能会不全):
+# <1>估值类因子:PB,PE,PS...代表着市场对于公司价值和表现的预估
+# <2>盈利类因子:ROA,ROE,Gross Margin...代表着公司的盈利能力
+# <3>成长类因子:Profit_Growth_Rate,Asset_Growth_Rate...代表着公司的成长能力
+# <4>波动类因子:股价收益率在一定时间内的标准差...代表着股价的波动情况
+# <5>情绪类因子:换手率...代表着市场对这支股票的‘情绪’
+# <6>动量类因子...
+# <7>分析师类因子...
+# <8>价值类因子...
+# 在此，我们分别选择EP(市盈率倒数),ROE,TotalProfitGrowRate作为我们的因子(可自行选择)，来进行演示。
+# # ----------------------------------------------------------
+# # 3 因子的权重
+# 因子的权重有多种分配方式(等权，按照近期IC的平均值，按照线性回归系数，人为分配...)根据你想实现的目的而异。
+# 想追求高收益，低风险，最大回撤小...都有着不同的因子权重分配方式，而且有高人不断探索中...
+# 在此，我们探索目前市场上人们都说的表现极好的一种多因子加权方式:
+# 基于IC的IR最大化(究极因子的IC在过去一段时间的平均值除以IC的方差最大)。
+# 什么意思？假设有n个因子:
+# 在某一时刻,
+# 记各因子向量为$\vec{x}=(X_1,X_2,...,X_n)^T$,
+# 各因子IC向量为$\vec{IC}=(IC_1,IC_2,...,IC_n)^T$
+# 各因子IC的均指向量为$\vec{\overline{IC}}=(\overline{IC_1},\overline{IC_2},...,\overline{IC_n})^T$,
+# IC的协方差矩阵(covariance matrix)是$\sum$,
+# 各因子的权重为:$\vec{v}=(\overline{V_1},\overline{V_2},...,\overline{V_n})^T$,
+# 则终极因子$F={v}^T\vec{x}$,$IC_F={v}^T\vec{IC}$。
+# 则$F$的IC_IR可以表示为:
+# $$ICIR_F=\dfrac{\overline{IC_F}}{\sigma_{IC_F}}=\dfrac{v^T\vec{\overline{IC}}}{\sqrt{v^T * \sum * v}}$$
+# 优化$ICIR_F$，对于每个变量$\overline{V_1},\overline{V_2},...,\overline{V_n}$求偏导，使之等于0，可以得到最优权重向量:
+# $$\vec{v*}=\delta * {\sum}^{-1} * \vec{\overline{IC}} (\text{使合为1})$$ 
+# 
+# 这样得到的多因子权重，可以使得终极因子对于未来收益率的相关性保持比较高而且比较稳的性质。
+# 由于我们本次的策略是月度调仓，所以选择过去六个月(120天)来进行某因子IC均值的计算，这样可以保证：
+# 时间不短，协方差矩阵有效反映事实；
+# 时间不长，对于未来不长的时间也有较准确的预测作用。
+# 
+# 因此我们来看看代码用这种方法来实现多因子权重的确定以及回测过程。
+
+# In[ ]:
+
+#提前输入包裹，以便后面使用
+import pandas as pd
+import numpy as np
+from numpy import *
+import statsmodels.api as sm
+
+
+# # 3.1多因子的提取(EP,ROE,TotalProfitGrowRate)
+# # 时间时长为2012-06-12到2017-06-12这五年
+# # 月度调仓,但是IC按照日度进行计算
+
+# In[ ]:
+
+#获取交易日历
+calendar=DataAPI.TradeCalGet(exchangeCD=u"XSHG,XSHE",beginDate=u"20120612",endDate=u"20170612",field=u"calendarDate,isOpen,isMonthEnd",pandas="1")
+daycalendarslash=np.unique(np.array(calendar[calendar['isOpen']==1]['calendarDate'])).tolist()
+daycalendar=[i.replace('-','') for i in daycalendarslash]
+monthcalendar=np.unique(np.array(calendar[(calendar['isMonthEnd']==1) & (calendar['isOpen']==1)]['calendarDate'])).tolist()
+
+
+# In[ ]:
+
+#得到日度和月度因子数据
+dayfactor=pd.DataFrame()
+for td in daycalendar:
+    dayfactor=dayfactor.append(DataAPI.MktStockFactorsOneDayGet(tradeDate=td,secID=u"",ticker=u"",field=u"tradeDate,secID,PE,ROE,TotalProfitGrowRate",pandas="1"))
+dayfactor['EP']=1.0/dayfactor['PE']
+del dayfactor['PE']
+dayfactor.dropna(inplace=True)
+monthfactor=dayfactor[dayfactor['tradeDate'].isin(monthcalendar)]
+
+
+# In[ ]:
+
+#因为不管是调仓还是算相关性，都是研究因子与下一期收益率，所以后移一期因子
+for f in ['EP','ROE','TotalProfitGrowRate']:
+    dayfactor[f]=dayfactor.groupby('secID')[f].shift(1)
+dayfactor.dropna(inplace=True)
+for f in ['EP','ROE','TotalProfitGrowRate']:
+    monthfactor[f]=monthfactor.groupby('secID')[f].shift(1)
+monthfactor.dropna(inplace=True)
+
+
+# In[ ]:
+
+#收益率的时间和股票代码编号
+retdaycal=daycalendar[1:]
+retmonthcal=[i.replace('-','') for i in monthcalendar[1:]]
+secIDlist=np.unique(dayfactor['secID']).tolist()
+
+
+# In[ ]:
+
+#获取日度收益率
+dayret=pd.DataFrame()
+for day in retdaycal:
+    dayret=dayret.append(DataAPI.MktEqudGet(secID=u"",ticker=u"",tradeDate=day,beginDate=u"",endDate=u"",isOpen="1",field=u"tradeDate,secID,openPrice,closePrice",pandas="1"))
+dayret['return']=dayret['closePrice']/dayret['openPrice']-1
+dayfactor=pd.merge(dayfactor,dayret,on=['tradeDate','secID'])
+
+
+# In[ ]:
+
+#获取月度收益率
+monthret=pd.DataFrame()
+for month in retmonthcal:
+    monthret=monthret.append(DataAPI.MktEqumGet(secID=u"",ticker=u"",monthEndDate=month,beginDate=u"",endDate=u"",isOpen=u"1",field=u"endDate,secID,openPrice,closePrice",pandas="1"))
+monthret['return']=monthret['closePrice']/monthret['openPrice']-1
+monthret.rename(columns={'endDate':'tradeDate'},inplace=True)
+monthfactor=pd.merge(monthfactor,monthret,how='inner',on=['tradeDate','secID']) 
+
+
+# # 3.2多因子IC(相关系数)的相关计算(pearson系数，按照rank计算)
+
+# In[ ]:
+
+#对于日度的DataFrame，对于某一天，计算每种因子的IC，定义一个函数
+def one_day_corr(dfoftoday):
+    df=dfoftoday.copy()
+    daycorrframe=pd.DataFrame({'EP_corr':[df['EP'].rank().corr(df['return'].rank())],'ROE_corr':[df['ROE'].rank().corr(df['return'].rank())],'GrowRate_corr':[df['TotalProfitGrowRate'].rank().corr(df['return'].rank())]},index=df.tradeDate.unique())
+    
+    return daycorrframe
+
+
+# In[ ]:
+
+#拿取每天所有的IC
+def get_IC_frame(dfofalldays):
+    df=dfofalldays.copy()
+    allICframe=df.groupby('tradeDate').apply(one_day_corr)
+    return allICframe
+
+
+# In[ ]:
+
+allICframe=get_IC_frame(dayfactor)
+allICframe.head()
+
+
+# In[ ]:
+
+retdaycalslash=daycalendarslash[1:]
+
+
+# In[ ]:
+
+#计算月度某天，计算前120天的平均IC权重向量和协方差矩阵
+def meanandcov_120_IC(dfofallICframe,today,order):
+    df=dfofallICframe.copy()
+    meanIClist=[]
+    ep=[]
+    roe=[]
+    rate=[]
+    if retdaycalslash.index(today)<120:
+        begindateindex=0
+    else:
+        begindateindex=retdaycalslash.index(today)-120
+    for d in retdaycalslash[begindateindex:retdaycalslash.index(today)]:
+        ep.append(float(df.loc[d,'EP_corr'].values))
+        roe.append(float(df.loc[d,'ROE_corr'].values))
+        rate.append(float(df.loc[d,'GrowRate_corr'].values))
+    cov=mat(np.cov(np.vstack((ep,roe,rate))))
+    meanIClist.append(np.mean(ep))
+    meanIClist.append(np.mean(roe))
+    meanIClist.append(np.mean(rate))
+    meanICmat=mat(meanIClist).T
+    if order=='mean':
+        return meanICmat
+    if order=='cov':
+        return cov
+
+
+# In[ ]:
+
+#对于月度Frame，算出某天的多因子权重
+def factor_weight(dfofallICframe,hhtoday):
+    df=dfofallICframe.copy()
+    weight=np.array(meanandcov_120_IC(df,hhtoday,'cov').I*meanandcov_120_IC(df,hhtoday,'mean')).tolist()
+    weightframe=pd.DataFrame({'EP_weight':weight[0],'ROE_weight':weight[1],'Rate_weight':weight[2]})
+    return weightframe
+
+
+# In[ ]:
+
+#对于月度Frame，计算每天多因子的权重
+monthweight=pd.DataFrame()
+for date in monthcalendar[1:]:
+    todayweight=pd.DataFrame()
+    todayweight=factor_weight(allICframe,date)
+    todayweight.index=[date]
+    monthweight=monthweight.append(todayweight)
+
+
+# In[ ]:
+
+#合并月度DataFrame的因子值和当天因子权重
+monthfactor=pd.merge(monthfactor,monthweight,how='left',left_on='tradeDate',right_index=True)
+monthfactor.head()
+
+
+# In[ ]:
+
+#把月度调仓的DataFrame的每天的每种因子都标准化,在此定义一个函数
+def standard(dfofday,fieldlist):
+    df=dfofday.copy()
+    for f in fieldlist:
+        df[f]=(df[f]-df[f].mean())/df[f].std()
+    return df
+
+
+# In[ ]:
+
+#得到标准化之后的DataFrame
+monthfactor=monthfactor.groupby('tradeDate').apply(standard,['EP','ROE','TotalProfitGrowRate']).reset_index(drop=True)
+#计算每天每股的究极因子
+monthfactor['ultimate_factor']=monthfactor['EP']*monthfactor['EP_weight']+monthfactor['ROE']*monthfactor['ROE_weight']+monthfactor['TotalProfitGrowRate']*monthfactor['Rate_weight']
+monthfactor.head()
+
+
+# # 3.3制定投资策略
+# ## 将每天的终极因子归1化
+# 即转化为$$\dfrac{x-min}{max-min}$$
+# ## 然后按照因子值施加权重
+
+# In[ ]:
+
+#为了使ultimate_factor都大于0,对每天的ultimate_factor实现(0,1)的标准化([x-min]/[max-min])
+def manminnormalize(dfoftoday):
+    df=dfoftoday.copy()
+    df['ultimate_factor']=(df['ultimate_factor']-df['ultimate_factor'].min())/(df['ultimate_factor'].max()-df['ultimate_factor'].min())
+    return df
+monthfactor=monthfactor.groupby('tradeDate').apply(manminnormalize).reset_index(drop=True)
+monthfactor.head()
+
+
+# In[ ]:
+
+#对于定义选股函数，获取portfolio收益率比，为了方便，需要输入的参数有:当天的DataFrame，选取的因子的分位数是第几组的,然后选择该分位数前10的股票，按照因子值投资
+def get_one_day_ret(dfofoneday,group):
+    df=dfofoneday.copy()
+    df=df.sort_values('ultimate_factor',ascending=False)
+    df=df[(df['ultimate_factor']>=df['ultimate_factor'].quantile(1-group/5)) & (df['ultimate_factor']<=df['ultimate_factor'].quantile(1-(group-1)/5))].head(10)
+    weight=df['ultimate_factor']/df['ultimate_factor'].sum()
+    return (df['return']*weight).sum()
+
+
+# In[ ]:
+
+#获取某分位数组所有天的收益率
+def get_all_days_return(dfofallday,hgroup):
+    df=dfofallday.copy()
+    ret=df.groupby('tradeDate').apply(get_one_day_ret,hgroup)
+    ret=pd.Series({monthcalendar[0]:0}).append(ret)
+    ret=ret+1
+    ret=ret.to_frame(str(hgroup)+' group_portfolio_return')
+    return ret
+
+
+# In[ ]:
+
+#获取收益率阵
+return1=get_all_days_return(monthfactor,1)
+return2=get_all_days_return(monthfactor,2)
+return3=get_all_days_return(monthfactor,3)
+return4=get_all_days_return(monthfactor,4)
+return5=get_all_days_return(monthfactor,5)
+final1=return1.cumprod()
+final2=return2.cumprod()
+final3=return3.cumprod()
+final4=return4.cumprod()
+final5=return5.cumprod()
+
+
+# In[ ]:
+
+#获取上证综合指数benchmark收益率以便对比
+benchret=DataAPI.MktIdxmGet(beginDate=monthcalendar[1],endDate=monthcalendar[-1],indexID="000001.ZICN",ticker="",field=u"endDate,chgPct",pandas="1")
+benchret=benchret.sort_values('endDate',ascending=True)
+benchret=pd.concat([pd.DataFrame({'endDate':monthcalendar[0],'chgPct':0},index=[0]),benchret])
+benchret=benchret.reset_index(drop=True)
+benchret=benchret.set_index('endDate')
+benchret=benchret+1
+benchret.columns=['benchmark_return']
+finalbenchret=benchret.cumprod()
+finalbenchret.head()
+
+
+# In[ ]:
+
+#可视化plot，做分位数回测
+ax = (final1).plot(figsize=(16,6),label='group1')
+ax = (final2).plot(figsize=(16,6), ax=ax,label='group2')
+ax = (final3).plot(figsize=(16,6), ax=ax,label='group3')
+ax = (final4).plot(figsize=(16,6), ax=ax,label='group4')
+ax = (final5).plot(figsize=(16,6), ax=ax,label='group5')
+ax = (finalbenchret).plot(figsize=(16,6), color='grey', ax=ax,style='--', label='index_return')
+ax.legend(loc='upper left')
+plt.title('Backtest for 5 groups', fontproperties=font, fontsize=18)
+plt.show()
+
+
+# ## 3.4计算alpha和beta
+
+# In[ ]:
+
+#计算return5这一组的月度收益率和benchmark相比的超额收益alpha以及受市场影响的beta(根据CAPM模型)
+#定无风险年化收益率rf为5%
+rfmonth=(1+0.05)**(1.0/12)-1
+y=(return5['5 group_portfolio_return']-1-rfmonth).values
+x=(benchret['benchmark_return']-1-rfmonth).values
+model=sm.OLS(y,sm.add_constant(x)).fit()
+print(model.summary())
+
+
+# In[ ]:
+
+annualized_alpha=(1+0.0173)**12-1
+beta=1.0839
+print('annualized alpha is '+str(annualized_alpha),'beta is '+str(beta))
+
+
+# ## 结论：
+# 可以看出，表现最好的是第五组分位数测试，证明这组因子构成的终极因子与未来收益率呈反比关系。
+# 除了第五组和第一组之外，其余组数表现较为接近，还是可以一定程度说明此多因子模型具有比较好的单调性。
+# 对于把因子归1化并按照因子进行投资的方式，只是我为了保证因子在0到1的范围内的一种方法。也可以对因子进行不同角度的处理，从而确定投资权重。
+# 从alpha和beta的计算可以看出,alpha为22%,很大,beta为1.0839,受市场有一定程度的影响。和图像反应给我们的信息是一致的。(alpha很大，而且策略的收益和市场收益很相似。)
+# 总而言之，按照这种加权方式的多因子策略，可能随着因子选择的不同而差异比较大。
+# 但是总得来说，这种加权方式是根据历史最近一段时间内的真实情况给出的权重，对于较短的将来有不小的借鉴意义，表现不会太差。
