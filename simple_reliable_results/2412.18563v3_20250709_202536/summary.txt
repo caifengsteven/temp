@@ -1,0 +1,6 @@
+PDF: 2412.18563v3.pdf
+Size: 2,164,398 bytes
+Processing time: 72.3 seconds
+Response length: 18,778 characters
+Code length: 18,515 characters
+Generated: 2025-07-09 20:26:50

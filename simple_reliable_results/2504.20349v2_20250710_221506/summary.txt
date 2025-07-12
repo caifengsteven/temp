@@ -1,0 +1,6 @@
+PDF: 2504.20349v2.pdf
+Size: 4,596,915 bytes
+Processing time: 99.8 seconds
+Response length: 24,946 characters
+Code length: 24,630 characters
+Generated: 2025-07-10 22:16:47

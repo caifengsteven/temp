@@ -1,0 +1,6 @@
+PDF: 2412.10692v1.pdf
+Size: 1,668,342 bytes
+Processing time: 48.2 seconds
+Response length: 9,855 characters
+Code length: 9,472 characters
+Generated: 2025-07-09 20:10:19

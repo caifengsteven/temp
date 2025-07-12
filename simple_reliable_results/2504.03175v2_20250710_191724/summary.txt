@@ -1,0 +1,6 @@
+PDF: 2504.03175v2.pdf
+Size: 1,154,139 bytes
+Processing time: 80.5 seconds
+Response length: 20,494 characters
+Code length: 19,268 characters
+Generated: 2025-07-10 19:18:46

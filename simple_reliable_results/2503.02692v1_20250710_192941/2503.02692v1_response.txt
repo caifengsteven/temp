@@ -1,0 +1,626 @@
+Claude-Sonnet-3.7 Response for 2503.02692v1
+Generated: 2025-07-10 19:31:12
+Time: 88.9s
+==================================================
+
+I'll create a Python test strategy to evaluate the FinArena framework described in the paper. The code will simulate the framework's performance with synthetic data across multiple financial instruments.
+
+```python
+import numpy as np
+import pandas as pd
+import random
+from datetime import datetime, timedelta
+import matplotlib.pyplot as plt
+from sklearn.metrics import accuracy_score, f1_score
+from sklearn.cluster import KMeans
+import warnings
+warnings.filterwarnings('ignore')
+
+class TimeSeriesAgent:
+    """Simulates the Time Series Agent that processes historical stock prices"""
+    
+    def __init__(self, name="TimeGPT"):
+        self.name = name
+        
+    def predict(self, historical_data, horizon=1):
+        """
+        Simulates prediction of stock price movement based on historical data
+        Returns 1 for upward movement, 0 for downward movement
+        """
+        # Simple simulation of prediction based on recent momentum
+        # Real implementation would use the TimeGPT model
+        if len(historical_data) < 5:
+            return random.choice([0, 1])
+        
+        # Calculate recent momentum (last 5 days)
+        recent_changes = np.diff(historical_data[-5:])
+        momentum = np.sum(recent_changes)
+        
+        # Add some randomness to simulate model uncertainty
+        noise = np.random.normal(0, 0.3)
+        
+        return 1 if momentum + noise > 0 else 0
+
+
+class NewsAgent:
+    """Simulates the News Agent that processes financial news articles"""
+    
+    def __init__(self, use_rag=True, name="DeepSeek-v2"):
+        self.use_rag = use_rag
+        self.name = name
+        
+    def predict(self, news_data, horizon=1):
+        """
+        Simulates prediction based on news sentiment
+        Returns 1 for upward movement, 0 for downward movement
+        """
+        # Simulate sentiment analysis with randomness
+        # Real implementation would use the DeepSeek-v2 model with RAG
+        
+        if not news_data or len(news_data) == 0:
+            return random.choice([0, 1])
+        
+        # Simulate extracting sentiment from news
+        # In real implementation, this would involve LLM-based text analysis
+        sentiments = []
+        for news in news_data:
+            # Simulate sentiment from news text length and random component
+            base_sentiment = 0.5  # neutral
+            
+            # Add randomness based on news length (longer news has more impact)
+            text_length_factor = min(len(news['text']) / 1000, 1.0) * 0.4
+            
+            # RAG improves prediction accuracy if enabled
+            rag_factor = 0.2 if self.use_rag else -0.1
+            
+            # Random component
+            random_factor = np.random.normal(0, 0.2)
+            
+            sentiment = base_sentiment + text_length_factor + rag_factor + random_factor
+            sentiments.append(sentiment)
+        
+        # Average sentiment
+        avg_sentiment = np.mean(sentiments)
+        
+        return 1 if avg_sentiment > 0.5 else 0
+
+
+class StatementAgent:
+    """Simulates the Statement Agent that analyzes financial statements"""
+    
+    def __init__(self, name="DeepSeek-v2"):
+        self.name = name
+        
+    def predict(self, financial_statements, horizon=1):
+        """
+        Simulates prediction based on financial statement analysis
+        Returns 1 for upward movement, 0 for downward movement and a confidence score
+        """
+        # Simulate financial analysis with some randomness
+        # Real implementation would use the DeepSeek-v2 model with iterative reasoning
+        
+        if not financial_statements or 'metrics' not in financial_statements:
+            return random.choice([0, 1]), 0.5
+        
+        metrics = financial_statements['metrics']
+        
+        # Simulate basic financial analysis
+        # Higher revenue growth and profit margins are generally positive
+        revenue_growth = metrics.get('revenue_growth', 0)
+        profit_margin = metrics.get('profit_margin', 0)
+        debt_ratio = metrics.get('debt_ratio', 0)
+        
+        # Combine metrics with weights to get a score
+        score = (revenue_growth * 0.4 + profit_margin * 0.4 - debt_ratio * 0.2)
+        
+        # Add randomness to simulate model uncertainty
+        noise = np.random.normal(0, 0.2)
+        final_score = score + noise
+        
+        # Calculate confidence (distance from 0.5)
+        confidence = min(0.5 + abs(final_score) * 0.5, 0.95)
+        
+        return 1 if final_score > 0 else 0, confidence
+
+
+class ReportAgent:
+    """Simulates the AI Expert that combines analysis and incorporates risk preferences"""
+    
+    def __init__(self, name="GPT-4o-mini"):
+        self.name = name
+        
+    def make_decision(self, time_series_pred, news_pred, statement_pred, risk_preference):
+        """
+        Combines predictions from all agents and risk preference to make a final decision
+        Returns: decision (1 for buy, 0 for hold, -1 for sell) and confidence
+        """
+        # Extract statement confidence
+        statement_result, statement_confidence = statement_pred
+        
+        # Weighted combination based on risk preference
+        weights = {
+            'conservative': {'time_series': 0.2, 'news': 0.3, 'statement': 0.5},
+            'moderately_conservative': {'time_series': 0.3, 'news': 0.3, 'statement': 0.4},
+            'moderately_aggressive': {'time_series': 0.4, 'news': 0.3, 'statement': 0.3},
+            'aggressive': {'time_series': 0.5, 'news': 0.3, 'statement': 0.2}
+        }
+        
+        w = weights.get(risk_preference, weights['moderately_conservative'])
+        
+        # Combine predictions with weights
+        combined_score = (
+            w['time_series'] * (time_series_pred * 2 - 1) +  # Convert 0/1 to -1/1
+            w['news'] * (news_pred * 2 - 1) +                # Convert 0/1 to -1/1
+            w['statement'] * (statement_result * 2 - 1) * statement_confidence
+        )
+        
+        # Determine confidence based on agreement and statement confidence
+        agent_agreement = 1 - (abs(time_series_pred - news_pred) + 
+                             abs(news_pred - statement_result) + 
+                             abs(statement_result - time_series_pred)) / 3
+        
+        confidence = (agent_agreement * 0.6 + statement_confidence * 0.4)
+        
+        # Decision thresholds depend on risk preference
+        thresholds = {
+            'conservative': {'buy': 0.3, 'sell': -0.3},
+            'moderately_conservative': {'buy': 0.2, 'sell': -0.2},
+            'moderately_aggressive': {'buy': 0.1, 'sell': -0.1},
+            'aggressive': {'buy': 0.05, 'sell': -0.05}
+        }
+        
+        t = thresholds.get(risk_preference, thresholds['moderately_conservative'])
+        
+        # Make decision
+        if combined_score > t['buy']:
+            return 1, confidence  # Buy
+        elif combined_score < t['sell']:
+            return -1, confidence  # Sell
+        else:
+            return 0, confidence  # Hold
+
+
+class FinArena:
+    """Main framework that coordinates all agents"""
+    
+    def __init__(self, use_rag=True, time_series_model="TimeGPT", text_model="DeepSeek-v2"):
+        self.time_series_agent = TimeSeriesAgent(name=time_series_model)
+        self.news_agent = NewsAgent(use_rag=use_rag, name=text_model)
+        self.statement_agent = StatementAgent(name=text_model)
+        self.report_agent = ReportAgent()
+        
+    def predict_movement(self, data):
+        """Predicts stock movement (up/down) without considering risk preference"""
+        time_series_pred = self.time_series_agent.predict(data['prices'])
+        news_pred = self.news_agent.predict(data['news'])
+        statement_pred = self.statement_agent.predict(data['financial_statements'])
+        
+        # Simple majority voting for movement prediction
+        votes = [time_series_pred, news_pred, statement_pred[0]]
+        return 1 if sum(votes) >= 2 else 0
+    
+    def make_investment_decision(self, data, risk_preference):
+        """Makes investment decision based on all data and risk preference"""
+        time_series_pred = self.time_series_agent.predict(data['prices'])
+        news_pred = self.news_agent.predict(data['news'])
+        statement_pred = self.statement_agent.predict(data['financial_statements'])
+        
+        decision, confidence = self.report_agent.make_decision(
+            time_series_pred, news_pred, statement_pred, risk_preference
+        )
+        
+        return decision, confidence
+
+
+def generate_synthetic_data(num_companies=5, days=90, seed=42):
+    """Generates synthetic data for testing"""
+    np.random.seed(seed)
+    random.seed(seed)
+    
+    start_date = datetime(2023, 1, 1)
+    
+    companies = []
+    for i in range(num_companies):
+        # Company characteristics
+        volatility = np.random.uniform(0.01, 0.03)
+        trend = np.random.uniform(-0.0005, 0.001)
+        
+        # Generate prices
+        prices = [100]
+        for day in range(1, days):
+            change = trend + np.random.normal(0, volatility) * prices[-1]
+            prices.append(max(prices[-1] + change, 1))  # Ensure price is positive
+        
+        # Generate true movements (will be used for evaluation)
+        true_movements = [1 if prices[i] < prices[i+1] else 0 for i in range(len(prices)-1)]
+        
+        # Generate news data
+        news_data = []
+        for day in range(days-1):  # One news per day for simplicity
+            date = start_date + timedelta(days=day)
+            
+            # News sentiment correlates somewhat with next day's movement
+            sentiment = true_movements[day] * 0.7 + np.random.normal(0, 0.3)
+            
+            # Generate dummy text with length proportional to sentiment
+            text_length = int(200 + abs(sentiment) * 800)
+            text = f"{'Positive' if sentiment > 0 else 'Negative'} news about company {i}: " + "X" * text_length
+            
+            news_data.append({
+                'date': date.strftime('%Y-%m-%d'),
+                'title': f"News {day} for Company {i}",
+                'text': text
+            })
+        
+        # Generate financial statements (quarterly)
+        statements = []
+        for quarter in range((days // 30) + 1):
+            revenue_growth = np.random.normal(0.05, 0.02) + trend * 1000
+            profit_margin = np.random.normal(0.15, 0.05) + trend * 500
+            debt_ratio = np.random.normal(0.3, 0.1) - trend * 200
+            
+            statements.append({
+                'date': (start_date + timedelta(days=quarter*30)).strftime('%Y-%m-%d'),
+                'metrics': {
+                    'revenue_growth': revenue_growth,
+                    'profit_margin': profit_margin,
+                    'debt_ratio': debt_ratio
+                }
+            })
+        
+        companies.append({
+            'name': f"Company_{i}",
+            'prices': prices,
+            'true_movements': true_movements,
+            'news': news_data,
+            'financial_statements': statements[-1]  # Use the latest statement
+        })
+    
+    return companies
+
+
+class BacktestSimulator:
+    """Simulates backtesting of trading strategies"""
+    
+    def __init__(self, initial_capital=100000):
+        self.initial_capital = initial_capital
+        
+    def simulate(self, prices, decisions, risk_profile):
+        """
+        Simulates trading based on decisions and risk profile
+        Returns: final capital, returns, drawdowns
+        """
+        capital = self.initial_capital
+        position = 0  # Shares held
+        trades = []
+        equity_curve = [capital]
+        
+        # Define risk profile parameters
+        risk_params = {
+            'conservative': {'buy_pct': 0.5, 'sell_pct': 1.0},
+            'moderately_conservative': {'buy_pct': 0.7, 'sell_pct': 1.0},
+            'moderately_aggressive': {'buy_pct': 1.0, 'sell_pct': 0.5},
+            'aggressive': {'buy_pct': 1.0, 'sell_pct': 0.3}
+        }
+        
+        params = risk_params.get(risk_profile, risk_params['moderately_conservative'])
+        
+        for i in range(len(decisions)):
+            decision = decisions[i]
+            price = prices[i]
+            next_price = prices[i+1] if i < len(prices)-1 else price
+            
+            if decision == 1:  # Buy
+                # Calculate amount to invest
+                amount_to_invest = capital * params['buy_pct']
+                if amount_to_invest > 0:
+                    shares_to_buy = amount_to_invest / price
+                    position += shares_to_buy
+                    capital -= shares_to_buy * price
+                    trades.append(('BUY', price, shares_to_buy))
+            
+            elif decision == -1:  # Sell
+                # Calculate amount to sell
+                shares_to_sell = position * params['sell_pct']
+                if shares_to_sell > 0:
+                    position -= shares_to_sell
+                    capital += shares_to_sell * price
+                    trades.append(('SELL', price, shares_to_sell))
+            
+            # Update equity at end of day
+            equity = capital + position * next_price
+            equity_curve.append(equity)
+        
+        # Calculate returns and drawdowns
+        returns = [(equity_curve[i] - equity_curve[i-1]) / equity_curve[i-1] 
+                   for i in range(1, len(equity_curve))]
+        
+        cumulative_returns = [equity / self.initial_capital - 1 for equity in equity_curve]
+        
+        # Calculate drawdowns
+        peak = equity_curve[0]
+        drawdowns = []
+        
+        for equity in equity_curve:
+            if equity > peak:
+                peak = equity
+            drawdown = (peak - equity) / peak
+            drawdowns.append(drawdown)
+        
+        final_capital = equity_curve[-1]
+        annualized_return = ((final_capital / self.initial_capital) ** (252 / len(prices)) - 1) if len(prices) > 0 else 0
+        max_drawdown = max(drawdowns) if drawdowns else 0
+        
+        # Calculate Sharpe ratio (assuming risk-free rate = 0 for simplicity)
+        daily_returns = returns
+        sharpe_ratio = (np.mean(daily_returns) / np.std(daily_returns) * np.sqrt(252)) if len(daily_returns) > 0 and np.std(daily_returns) > 0 else 0
+        
+        results = {
+            'final_capital': final_capital,
+            'annualized_return': annualized_return,
+            'max_drawdown': max_drawdown,
+            'sharpe_ratio': sharpe_ratio,
+            'equity_curve': equity_curve,
+            'trades': trades
+        }
+        
+        return results
+
+
+def test_stock_movement_prediction(framework, test_data):
+    """Tests the framework's ability to predict stock movements"""
+    predictions = []
+    actual = []
+    
+    for company in test_data:
+        # Use the first 60 days for prediction
+        test_days = 30
+        train_size = len(company['prices']) - test_days - 1
+        
+        for day in range(train_size, len(company['prices']) - 1):
+            # Prepare data for the day
+            day_data = {
+                'prices': company['prices'][:day],
+                'news': [news for news in company['news'] if datetime.strptime(news['date'], '%Y-%m-%d') < 
+                        datetime(2023, 1, 1) + timedelta(days=day)],
+                'financial_statements': company['financial_statements']
+            }
+            
+            # Get prediction
+            prediction = framework.predict_movement(day_data)
+            predictions.append(prediction)
+            actual.append(company['true_movements'][day])
+    
+    # Calculate metrics
+    accuracy = accuracy_score(actual, predictions)
+    f1 = f1_score(actual, predictions)
+    
+    return {
+        'accuracy': accuracy,
+        'f1_score': f1,
+        'predictions': predictions,
+        'actual': actual
+    }
+
+
+def test_trading_simulation(framework, test_data, risk_profiles):
+    """Tests the framework's trading performance with different risk profiles"""
+    results = {}
+    
+    for profile in risk_profiles:
+        profile_results = []
+        
+        for company in test_data:
+            # Use the first 60 days for prediction
+            test_days = 30
+            train_size = len(company['prices']) - test_days - 1
+            
+            decisions = []
+            for day in range(train_size, len(company['prices']) - 1):
+                # Prepare data for the day
+                day_data = {
+                    'prices': company['prices'][:day],
+                    'news': [news for news in company['news'] if datetime.strptime(news['date'], '%Y-%m-%d') < 
+                            datetime(2023, 1, 1) + timedelta(days=day)],
+                    'financial_statements': company['financial_statements']
+                }
+                
+                # Get decision
+                decision, confidence = framework.make_investment_decision(day_data, profile)
+                decisions.append(decision)
+            
+            # Simulate trading
+            simulator = BacktestSimulator()
+            trading_results = simulator.simulate(
+                company['prices'][train_size:], 
+                decisions,
+                profile
+            )
+            
+            profile_results.append({
+                'company': company['name'],
+                'trading_results': trading_results
+            })
+        
+        results[profile] = profile_results
+    
+    return results
+
+
+def compare_with_baselines(test_data, risk_profiles):
+    """Compares FinArena with baseline strategies"""
+    baseline_strategies = {
+        'random': lambda prices, day: random.choice([-1, 0, 1]),
+        'buy_and_hold': lambda prices, day: 1 if day == 0 else 0,
+        'brsf': lambda prices, day: 1 if all(prices[day-i] > prices[day-i-1] for i in range(3)) else 
+                               -1 if all(prices[day-i] < prices[day-i-1] for i in range(3)) else 0
+    }
+    
+    results = {}
+    
+    for strategy_name, strategy_func in baseline_strategies.items():
+        strategy_results = {}
+        
+        for profile in risk_profiles:
+            profile_results = []
+            
+            for company in test_data:
+                test_days = 30
+                train_size = len(company['prices']) - test_days - 1
+                
+                # Generate decisions based on strategy
+                decisions = []
+                for day in range(train_size, len(company['prices']) - 1):
+                    day_index = day - train_size  # Index within the test period
+                    decision = strategy_func(company['prices'][:day], day_index)
+                    decisions.append(decision)
+                
+                # Simulate trading
+                simulator = BacktestSimulator()
+                trading_results = simulator.simulate(
+                    company['prices'][train_size:],
+                    decisions,
+                    profile
+                )
+                
+                profile_results.append({
+                    'company': company['name'],
+                    'trading_results': trading_results
+                })
+            
+            strategy_results[profile] = profile_results
+        
+        results[strategy_name] = strategy_results
+    
+    return results
+
+
+def main():
+    print("FinArena: Human-Agent Collaboration Framework Test")
+    print("=" * 50)
+    
+    # Generate synthetic data
+    print("Generating synthetic test data...")
+    test_data = generate_synthetic_data(num_companies=5, days=90)
+    print(f"Generated data for {len(test_data)} companies over 90 days")
+    
+    # Initialize FinArena with different configurations
+    frameworks = {
+        'FinArena_with_RAG': FinArena(use_rag=True),
+        'FinArena_without_RAG': FinArena(use_rag=False)
+    }
+    
+    # Test stock movement prediction
+    print("\nTesting stock movement prediction...")
+    prediction_results = {}
+    
+    for name, framework in frameworks.items():
+        print(f"\nEvaluating {name}...")
+        results = test_stock_movement_prediction(framework, test_data)
+        prediction_results[name] = results
+        print(f"Accuracy: {results['accuracy']:.4f}")
+        print(f"F1 Score: {results['f1_score']:.4f}")
+    
+    # Test trading simulation with different risk profiles
+    risk_profiles = ['conservative', 'moderately_conservative', 'moderately_aggressive', 'aggressive']
+    print("\nTesting trading simulation with different risk profiles...")
+    
+    trading_results = {}
+    for name, framework in frameworks.items():
+        print(f"\nEvaluating {name} for trading...")
+        results = test_trading_simulation(framework, test_data, risk_profiles)
+        trading_results[name] = results
+    
+    # Compare with baseline strategies
+    print("\nComparing with baseline strategies...")
+    baseline_results = compare_with_baselines(test_data, risk_profiles)
+    
+    # Display trading results summary
+    print("\nTrading Results Summary:")
+    print("=" * 50)
+    
+    # Print comparison table
+    comparison_table = {
+        'Strategy': [],
+        'Risk Profile': [],
+        'Avg. Ann. Return': [],
+        'Avg. Sharpe': [],
+        'Avg. Max Drawdown': []
+    }
+    
+    # Add FinArena results
+    for framework_name, results in trading_results.items():
+        for profile, profile_results in results.items():
+            # Calculate averages
+            avg_return = np.mean([r['trading_results']['annualized_return'] for r in profile_results])
+            avg_sharpe = np.mean([r['trading_results']['sharpe_ratio'] for r in profile_results])
+            avg_drawdown = np.mean([r['trading_results']['max_drawdown'] for r in profile_results])
+            
+            comparison_table['Strategy'].append(framework_name)
+            comparison_table['Risk Profile'].append(profile)
+            comparison_table['Avg. Ann. Return'].append(avg_return)
+            comparison_table['Avg. Sharpe'].append(avg_sharpe)
+            comparison_table['Avg. Max Drawdown'].append(avg_drawdown)
+    
+    # Add baseline results
+    for strategy_name, results in baseline_results.items():
+        for profile, profile_results in results.items():
+            # Calculate averages
+            avg_return = np.mean([r['trading_results']['annualized_return'] for r in profile_results])
+            avg_sharpe = np.mean([r['trading_results']['sharpe_ratio'] for r in profile_results])
+            avg_drawdown = np.mean([r['trading_results']['max_drawdown'] for r in profile_results])
+            
+            comparison_table['Strategy'].append(strategy_name)
+            comparison_table['Risk Profile'].append(profile)
+            comparison_table['Avg. Ann. Return'].append(avg_return)
+            comparison_table['Avg. Sharpe'].append(avg_sharpe)
+            comparison_table['Avg. Max Drawdown'].append(avg_drawdown)
+    
+    # Convert to DataFrame and display
+    df = pd.DataFrame(comparison_table)
+    print(df.to_string(index=False, float_format=lambda x: f"{x:.4f}"))
+    
+    # Visualize results for one company
+    company_idx = 0
+    company_name = test_data[company_idx]['name']
+    print(f"\nVisualizing equity curves for {company_name}...")
+    
+    try:
+        plt.figure(figsize=(12, 6))
+        
+        # Plot FinArena with RAG, moderately aggressive profile
+        finarena_equity = trading_results['FinArena_with_RAG']['moderately_aggressive'][company_idx]['trading_results']['equity_curve']
+        plt.plot(finarena_equity, label='FinArena with RAG (M.Agg)')
+        
+        # Plot random strategy
+        random_equity = baseline_results['random']['moderately_aggressive'][company_idx]['trading_results']['equity_curve']
+        plt.plot(random_equity, label='Random Strategy')
+        
+        # Plot BRSF strategy
+        brsf_equity = baseline_results['brsf']['moderately_aggressive'][company_idx]['trading_results']['equity_curve']
+        plt.plot(brsf_equity, label='BRSF Strategy')
+        
+        plt.title(f'Equity Curves for {company_name}')
+        plt.xlabel('Trading Days')
+        plt.ylabel('Portfolio Value')
+        plt.legend()
+        plt.grid(True)
+        
+        # Save the figure instead of showing it (for non-interactive environments)
+        plt.savefig(f'{company_name}_equity_curves.png')
+        print(f"Equity curve visualization saved as '{company_name}_equity_curves.png'")
+    
+    except Exception as e:
+        print(f"Error generating visualization: {str(e)}")
+    
+    print("\nTest completed successfully!")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as e:
+        print(f"Error in main execution: {str(e)}")
+```
+
+Would you like me to explain how this code simulates the FinArena framework described in the paper?

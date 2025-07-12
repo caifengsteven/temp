@@ -1,0 +1,6 @@
+PDF: 2503.08697v1.pdf
+Size: 1,060,202 bytes
+Processing time: 72.0 seconds
+Response length: 18,316 characters
+Code length: 18,000 characters
+Generated: 2025-07-10 19:12:32

@@ -1,0 +1,6 @@
+PDF: 2502.11310v2.pdf
+Size: 3,990,008 bytes
+Processing time: 86.6 seconds
+Response length: 21,485 characters
+Code length: 19,865 characters
+Generated: 2025-07-10 20:03:31

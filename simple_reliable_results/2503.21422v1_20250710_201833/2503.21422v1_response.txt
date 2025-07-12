@@ -1,0 +1,744 @@
+Claude-Sonnet-3.7 Response for 2503.21422v1
+Generated: 2025-07-10 20:20:21
+Time: 106.1s
+==================================================
+
+I'll create a Python test strategy based on the deep learning and LLMs concepts discussed in the quantitative investment survey paper. This will simulate an alpha strategy pipeline with various components.
+
+```python
+#!/usr/bin/env python3
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+import datetime
+import random
+from typing import Dict, List, Tuple, Optional
+
+class FinancialDataGenerator:
+    """Generates synthetic financial data for testing quantitative investment strategies"""
+    
+    def __init__(self, n_assets: int = 10, n_days: int = 500, seed: int = 42):
+        """
+        Initialize the data generator
+        
+        Args:
+            n_assets: Number of assets to simulate
+            n_days: Number of days to simulate
+            seed: Random seed for reproducibility
+        """
+        self.n_assets = n_assets
+        self.n_days = n_days
+        self.seed = seed
+        np.random.seed(seed)
+        random.seed(seed)
+        
+    def generate_price_data(self) -> pd.DataFrame:
+        """Generate synthetic price data with trends, seasonality, and noise"""
+        dates = pd.date_range(start='2024-01-01', periods=self.n_days)
+        assets = [f'ASSET_{i}' for i in range(self.n_assets)]
+        
+        # Initialize DataFrame
+        price_data = pd.DataFrame(index=dates, columns=assets)
+        
+        # Generate price movements with different characteristics for each asset
+        for i, asset in enumerate(assets):
+            # Base price starting between 50 and 200
+            base_price = np.random.uniform(50, 200)
+            
+            # Generate component signals
+            trend = np.linspace(0, np.random.uniform(-0.5, 0.5), self.n_days)
+            seasonality = np.sin(np.linspace(0, np.random.randint(3, 8) * np.pi, self.n_days))
+            noise = np.random.normal(0, 0.01, self.n_days)
+            
+            # Generate asset-specific price movements
+            if i % 3 == 0:  # Trending assets
+                price_data[asset] = base_price * (1 + np.cumsum(0.001 + trend + 0.001 * seasonality + noise))
+            elif i % 3 == 1:  # Cyclical assets
+                price_data[asset] = base_price * (1 + np.cumsum(0.0005 + 0.0005 * trend + 0.002 * seasonality + noise))
+            else:  # Volatile assets
+                price_data[asset] = base_price * (1 + np.cumsum(0.0008 + 0.0003 * trend + 0.001 * seasonality + noise * 2))
+        
+        return price_data
+    
+    def generate_fundamental_data(self) -> pd.DataFrame:
+        """Generate quarterly fundamental data for assets"""
+        # Create quarterly dates
+        quarterly_dates = pd.date_range(start='2024-01-01', periods=self.n_days // 90 + 1, freq='Q')
+        assets = [f'ASSET_{i}' for i in range(self.n_assets)]
+        
+        # Metrics to generate
+        metrics = ['Revenue', 'NetIncome', 'Assets', 'Liabilities', 'Cash']
+        
+        # Initialize MultiIndex DataFrame
+        index = pd.MultiIndex.from_product([quarterly_dates, assets], names=['Date', 'Asset'])
+        fundamental_data = pd.DataFrame(index=index, columns=metrics)
+        
+        # Generate fundamental data
+        for asset in assets:
+            asset_id = int(asset.split('_')[1])
+            
+            # Base values
+            base_revenue = np.random.uniform(1e6, 1e9)
+            profit_margin = np.random.uniform(0.05, 0.3)
+            asset_turnover = np.random.uniform(0.5, 2.0)
+            
+            for i, date in enumerate(quarterly_dates):
+                # Add trend and seasonality to fundamentals
+                trend_factor = 1 + 0.05 * i + np.random.normal(0, 0.02)
+                seasonal_factor = 1 + 0.1 * np.sin(i * np.pi/2)  # Quarterly seasonality
+                
+                # Calculate revenue with growth, trend and seasonality
+                revenue = base_revenue * trend_factor * seasonal_factor
+                
+                # Calculate other metrics based on revenue
+                net_income = revenue * profit_margin * (1 + np.random.normal(0, 0.1))
+                assets_val = revenue * asset_turnover * (1 + np.random.normal(0, 0.05))
+                liabilities = assets_val * np.random.uniform(0.3, 0.7)
+                cash = assets_val * np.random.uniform(0.05, 0.2)
+                
+                # Add to DataFrame
+                fundamental_data.loc[(date, asset), 'Revenue'] = revenue
+                fundamental_data.loc[(date, asset), 'NetIncome'] = net_income
+                fundamental_data.loc[(date, asset), 'Assets'] = assets_val
+                fundamental_data.loc[(date, asset), 'Liabilities'] = liabilities
+                fundamental_data.loc[(date, asset), 'Cash'] = cash
+        
+        return fundamental_data
+    
+    def generate_news_sentiment(self) -> pd.DataFrame:
+        """Generate synthetic news sentiment data"""
+        # Create random news events (not every day has news for every asset)
+        dates = pd.date_range(start='2024-01-01', periods=self.n_days)
+        assets = [f'ASSET_{i}' for i in range(self.n_assets)]
+        
+        # Generate approximately 20% of possible asset-day combinations
+        n_news = int(self.n_days * self.n_assets * 0.2)
+        random_days = np.random.choice(range(self.n_days), n_news)
+        random_assets = np.random.choice(assets, n_news)
+        
+        # Create news DataFrame
+        news_data = pd.DataFrame({
+            'Date': [dates[day] for day in random_days],
+            'Asset': random_assets,
+            'Sentiment': np.random.normal(0, 1, n_news),
+            'Volume': np.random.randint(1, 10, n_news)  # News importance/volume
+        })
+        
+        return news_data
+
+class FactorGenerator:
+    """Generates alpha factors from financial data"""
+    
+    def __init__(self, price_data: pd.DataFrame, fundamental_data: pd.DataFrame, sentiment_data: pd.DataFrame):
+        """
+        Initialize with financial data
+        
+        Args:
+            price_data: DataFrame of daily prices
+            fundamental_data: DataFrame of fundamental data
+            sentiment_data: DataFrame of news sentiment
+        """
+        self.price_data = price_data
+        self.fundamental_data = fundamental_data
+        self.sentiment_data = sentiment_data
+    
+    def calculate_momentum_factor(self, window: int = 20) -> pd.DataFrame:
+        """Calculate momentum factor based on past returns"""
+        returns = self.price_data.pct_change()
+        momentum = returns.rolling(window=window).sum()
+        return momentum
+    
+    def calculate_mean_reversion_factor(self, window: int = 10) -> pd.DataFrame:
+        """Calculate mean reversion factor"""
+        returns = self.price_data.pct_change()
+        z_score = (returns - returns.rolling(window=window).mean()) / returns.rolling(window=window).std()
+        mean_reversion = -1 * z_score  # Negative z-score for mean reversion
+        return mean_reversion
+    
+    def calculate_value_factor(self) -> pd.DataFrame:
+        """Calculate value factor based on fundamental data"""
+        # Resample fundamental data to daily frequency (forward fill)
+        assets = self.price_data.columns
+        dates = self.price_data.index
+        
+        # Initialize value factor DataFrame
+        value_factor = pd.DataFrame(index=dates, columns=assets)
+        
+        # For each asset, calculate P/E ratio
+        for asset in assets:
+            # Get the latest fundamental data for each date
+            for date in dates:
+                # Find the most recent fundamental data before this date
+                prev_quarter = self.fundamental_data.index.get_level_values(0).asof(date)
+                if pd.notna(prev_quarter):
+                    price = self.price_data.loc[date, asset]
+                    earnings = self.fundamental_data.loc[(prev_quarter, asset), 'NetIncome']
+                    # P/E ratio (inverted so higher values = more value)
+                    if earnings > 0:
+                        value_factor.loc[date, asset] = earnings / price
+                    else:
+                        value_factor.loc[date, asset] = 0
+        
+        # Normalize by cross-section
+        value_factor = value_factor.apply(lambda x: (x - x.mean()) / x.std(), axis=1)
+        return value_factor
+    
+    def calculate_sentiment_factor(self, window: int = 5) -> pd.DataFrame:
+        """Calculate sentiment factor based on news sentiment"""
+        # Initialize sentiment factor DataFrame
+        assets = self.price_data.columns
+        dates = self.price_data.index
+        sentiment_factor = pd.DataFrame(index=dates, columns=assets, data=0)
+        
+        # For each news item, add sentiment to the factor
+        for _, row in self.sentiment_data.iterrows():
+            date = row['Date']
+            asset = row['Asset']
+            if date in dates and asset in assets:
+                # Weight sentiment by volume
+                sentiment_factor.loc[date, asset] = row['Sentiment'] * row['Volume']
+        
+        # Apply exponential decay to spread sentiment effect over window days
+        result = sentiment_factor.copy()
+        for i in range(1, window):
+            shifted = sentiment_factor.shift(i) * (0.8 ** i)  # Decay factor
+            result = result.add(shifted, fill_value=0)
+        
+        # Normalize by cross-section
+        result = result.apply(lambda x: (x - x.mean()) / x.std(), axis=1)
+        return result
+    
+    def combine_factors(self) -> pd.DataFrame:
+        """Combine all factors with weights"""
+        momentum = self.calculate_momentum_factor()
+        mean_reversion = self.calculate_mean_reversion_factor()
+        value = self.calculate_value_factor()
+        sentiment = self.calculate_sentiment_factor()
+        
+        # Combine factors with weights
+        combined = (
+            0.3 * momentum.fillna(0) + 
+            0.2 * mean_reversion.fillna(0) + 
+            0.3 * value.fillna(0) + 
+            0.2 * sentiment.fillna(0)
+        )
+        
+        return combined
+
+class DeepLearningPredictor:
+    """Simple simulation of a deep learning predictor for alpha research"""
+    
+    def __init__(self, factors: pd.DataFrame, returns: pd.DataFrame, prediction_horizon: int = 1):
+        """
+        Initialize with factor data and actual returns
+        
+        Args:
+            factors: DataFrame of alpha factors
+            returns: DataFrame of asset returns
+            prediction_horizon: Days ahead to predict
+        """
+        self.factors = factors
+        self.returns = returns
+        self.prediction_horizon = prediction_horizon
+        self.future_returns = returns.shift(-prediction_horizon)
+        
+        # Create features and target
+        self.X = factors.dropna().values
+        self.y = self.future_returns.loc[factors.dropna().index].values
+        
+        # Standardize features
+        self.scaler = StandardScaler()
+        self.X = self.scaler.fit_transform(self.X)
+    
+    def simulate_predictions(self) -> pd.DataFrame:
+        """Simulate deep learning predictions with noise"""
+        # Split data for training and testing
+        X_train, X_test, y_train, y_test = train_test_split(self.X, self.y, test_size=0.3, random_state=42)
+        
+        # Simulate deep learning predictions (with realistic accuracy)
+        # In reality, this would be a trained neural network
+        
+        # Calculate correlation between factors and future returns in training data
+        # This simulates how well our model has learned the relationship
+        correlations = np.zeros(y_train.shape[1])
+        for i in range(y_train.shape[1]):
+            valid_idx = ~np.isnan(y_train[:, i])
+            if np.sum(valid_idx) > 0:
+                correlations[i] = np.corrcoef(X_train[valid_idx, i], y_train[valid_idx, i])[0, 1]
+                if np.isnan(correlations[i]):
+                    correlations[i] = 0
+        
+        # Use these correlations to make predictions (with added noise)
+        test_predictions = np.zeros_like(y_test)
+        for i in range(y_test.shape[1]):
+            # Simulate prediction as correlation * factor + noise
+            test_predictions[:, i] = correlations[i] * X_test[:, i] + np.random.normal(0, 0.02, X_test.shape[0])
+        
+        # Create DataFrame with predictions
+        predictions_df = pd.DataFrame(
+            index=self.factors.iloc[-len(X_test):].index,
+            columns=self.factors.columns,
+            data=test_predictions
+        )
+        
+        return predictions_df
+
+class PortfolioOptimizer:
+    """Portfolio optimizer that converts predictions to positions"""
+    
+    def __init__(self, predictions: pd.DataFrame, risk_aversion: float = 1.0, max_position: float = 0.2):
+        """
+        Initialize with return predictions
+        
+        Args:
+            predictions: DataFrame of return predictions
+            risk_aversion: Risk aversion parameter (higher = more risk-averse)
+            max_position: Maximum allowed position size as percentage
+        """
+        self.predictions = predictions
+        self.risk_aversion = risk_aversion
+        self.max_position = max_position
+    
+    def optimize(self) -> pd.DataFrame:
+        """Generate optimized portfolio weights"""
+        # Simplified Markowitz-inspired optimization:
+        # 1. Rank assets based on predicted returns
+        # 2. Apply position limits
+        # 3. Ensure dollar neutrality (sum of weights = 0)
+        
+        # Initialize portfolio weights
+        weights = pd.DataFrame(index=self.predictions.index, columns=self.predictions.columns, data=0.0)
+        
+        for date, row in self.predictions.iterrows():
+            # Rank assets by predicted returns
+            ranked = row.sort_values(ascending=False)
+            
+            # Assign weights based on ranks (proportional to prediction)
+            n_assets = len(ranked)
+            top_assets = ranked.iloc[:n_assets//4]  # Top 25%
+            bottom_assets = ranked.iloc[-n_assets//4:]  # Bottom 25%
+            
+            # Assign long positions to top assets
+            for asset, pred in top_assets.items():
+                if pred > 0:
+                    weights.loc[date, asset] = min(pred * 0.5, self.max_position)
+            
+            # Assign short positions to bottom assets
+            for asset, pred in bottom_assets.items():
+                if pred < 0:
+                    weights.loc[date, asset] = max(pred * 0.5, -self.max_position)
+            
+            # Normalize to ensure dollar neutrality
+            total_long = weights.loc[date][weights.loc[date] > 0].sum()
+            total_short = abs(weights.loc[date][weights.loc[date] < 0].sum())
+            
+            if total_long > 0 and total_short > 0:
+                # Adjust to make dollar neutral
+                scale_long = 1.0
+                scale_short = 1.0
+                
+                if total_long > total_short:
+                    scale_long = total_short / total_long
+                else:
+                    scale_short = total_long / total_short
+                
+                for asset in weights.columns:
+                    if weights.loc[date, asset] > 0:
+                        weights.loc[date, asset] *= scale_long
+                    elif weights.loc[date, asset] < 0:
+                        weights.loc[date, asset] *= scale_short
+        
+        return weights
+
+class OrderExecutor:
+    """Simulates order execution for portfolio rebalancing"""
+    
+    def __init__(self, positions: pd.DataFrame, price_data: pd.DataFrame, transaction_cost: float = 0.001):
+        """
+        Initialize with target positions and price data
+        
+        Args:
+            positions: DataFrame of target portfolio positions
+            price_data: DataFrame of asset prices
+            transaction_cost: Cost per transaction as percentage
+        """
+        self.positions = positions
+        self.price_data = price_data
+        self.transaction_cost = transaction_cost
+    
+    def execute(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
+        """
+        Execute portfolio rebalancing and calculate actual positions and costs
+        
+        Returns:
+            Tuple of (actual positions, transaction costs)
+        """
+        # Initialize actual positions and costs
+        actual_positions = pd.DataFrame(index=self.positions.index, columns=self.positions.columns, data=0.0)
+        transaction_costs = pd.DataFrame(index=self.positions.index, columns=['Cost'], data=0.0)
+        
+        # Start with zero positions
+        current_positions = {col: 0.0 for col in self.positions.columns}
+        
+        # For each date, execute orders and calculate costs
+        for i, date in enumerate(self.positions.index):
+            if i == 0:
+                # First day, just take positions
+                for asset in self.positions.columns:
+                    current_positions[asset] = self.positions.loc[date, asset]
+            else:
+                # Calculate changes from previous positions
+                for asset in self.positions.columns:
+                    target = self.positions.loc[date, asset]
+                    current = current_positions[asset]
+                    
+                    # Calculate trade size
+                    trade_size = abs(target - current)
+                    
+                    # Calculate cost
+                    cost = trade_size * self.transaction_cost
+                    transaction_costs.loc[date, 'Cost'] += cost
+                    
+                    # Update position (reduced by transaction cost)
+                    if target > current:
+                        current_positions[asset] = target - cost
+                    elif target < current:
+                        current_positions[asset] = target + cost
+                    else:
+                        current_positions[asset] = target
+            
+            # Record actual positions
+            for asset in self.positions.columns:
+                actual_positions.loc[date, asset] = current_positions[asset]
+        
+        return actual_positions, transaction_costs
+
+class BacktestEngine:
+    """Engine for backtesting alpha strategies"""
+    
+    def __init__(self, positions: pd.DataFrame, price_data: pd.DataFrame, transaction_costs: pd.DataFrame):
+        """
+        Initialize with positions, price data, and transaction costs
+        
+        Args:
+            positions: DataFrame of portfolio positions
+            price_data: DataFrame of asset prices
+            transaction_costs: DataFrame of transaction costs
+        """
+        self.positions = positions
+        self.price_data = price_data
+        self.transaction_costs = transaction_costs
+    
+    def calculate_returns(self) -> pd.DataFrame:
+        """Calculate daily returns of the strategy"""
+        # Calculate asset returns
+        asset_returns = self.price_data.pct_change()
+        
+        # Calculate portfolio returns (dot product of positions and returns)
+        portfolio_returns = pd.DataFrame(index=self.positions.index, columns=['Return'], data=0.0)
+        
+        for date in portfolio_returns.index:
+            if date in asset_returns.index and not asset_returns.loc[date].isna().all():
+                # Skip first day
+                if date == portfolio_returns.index[0]:
+                    continue
+                
+                # Calculate return as dot product of positions and asset returns
+                pos = self.positions.loc[date]
+                ret = asset_returns.loc[date]
+                
+                # Handling any NaN values
+                valid_assets = ~ret.isna()
+                if any(valid_assets):
+                    portfolio_returns.loc[date, 'Return'] = np.sum(pos[valid_assets] * ret[valid_assets])
+        
+        # Subtract transaction costs
+        portfolio_returns['Return'] -= self.transaction_costs['Cost']
+        
+        return portfolio_returns
+    
+    def calculate_statistics(self, returns: pd.DataFrame) -> Dict[str, float]:
+        """Calculate performance statistics"""
+        # Skip first 20 days as warm-up period
+        returns = returns.iloc[20:]
+        
+        # Annualization factor (assuming 252 trading days)
+        annual_factor = 252
+        
+        # Calculate statistics
+        total_return = (1 + returns['Return']).prod() - 1
+        annual_return = (1 + total_return) ** (annual_factor / len(returns)) - 1
+        annual_volatility = returns['Return'].std() * np.sqrt(annual_factor)
+        sharpe_ratio = annual_return / annual_volatility if annual_volatility > 0 else 0
+        
+        # Calculate maximum drawdown
+        cum_returns = (1 + returns['Return']).cumprod()
+        max_drawdown = (cum_returns / cum_returns.cummax() - 1).min()
+        
+        # Calculate win rate
+        win_rate = (returns['Return'] > 0).mean()
+        
+        return {
+            'Total Return': total_return,
+            'Annual Return': annual_return,
+            'Annual Volatility': annual_volatility,
+            'Sharpe Ratio': sharpe_ratio,
+            'Maximum Drawdown': max_drawdown,
+            'Win Rate': win_rate
+        }
+    
+    def plot_performance(self, returns: pd.DataFrame) -> None:
+        """Plot cumulative returns of the strategy"""
+        # Calculate cumulative returns
+        cum_returns = (1 + returns['Return']).cumprod()
+        
+        # Plot
+        plt.figure(figsize=(12, 6))
+        plt.plot(cum_returns.index, cum_returns.values)
+        plt.title('Cumulative Returns of Alpha Strategy')
+        plt.xlabel('Date')
+        plt.ylabel('Cumulative Return')
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
+
+class LLMSentimentSimulator:
+    """Simulates LLM-based sentiment analysis for financial news"""
+    
+    def __init__(self, news_data: pd.DataFrame, accuracy: float = 0.75):
+        """
+        Initialize with news data
+        
+        Args:
+            news_data: DataFrame of news data with sentiment scores
+            accuracy: Accuracy level of the LLM sentiment analysis
+        """
+        self.news_data = news_data
+        self.accuracy = accuracy
+    
+    def analyze_sentiment(self) -> pd.DataFrame:
+        """Simulate LLM sentiment analysis"""
+        # Copy the original data
+        llm_sentiment = self.news_data.copy()
+        
+        # Simulate LLM sentiment analysis (correlation with true sentiment)
+        for idx, row in llm_sentiment.iterrows():
+            # With probability 'accuracy', sentiment is close to true value
+            if np.random.random() < self.accuracy:
+                # Add small noise to true sentiment
+                llm_sentiment.loc[idx, 'LLM_Sentiment'] = row['Sentiment'] + np.random.normal(0, 0.2)
+            else:
+                # Otherwise, sentiment is random
+                llm_sentiment.loc[idx, 'LLM_Sentiment'] = np.random.normal(0, 1)
+        
+        return llm_sentiment
+
+class AlphaFactorGenerator:
+    """Simulates LLM-based alpha factor generation"""
+    
+    def __init__(self, price_data: pd.DataFrame, fundamental_data: pd.DataFrame):
+        """
+        Initialize with financial data
+        
+        Args:
+            price_data: DataFrame of asset prices
+            fundamental_data: DataFrame of fundamental data
+        """
+        self.price_data = price_data
+        self.fundamental_data = fundamental_data
+    
+    def generate_factors(self, n_factors: int = 3) -> pd.DataFrame:
+        """
+        Simulate LLM-generated alpha factors
+        
+        Args:
+            n_factors: Number of factors to generate
+            
+        Returns:
+            DataFrame of generated factors
+        """
+        # Initialize factors DataFrame
+        factors = pd.DataFrame(index=self.price_data.index, columns=self.price_data.columns)
+        
+        # Generate factors
+        for i in range(n_factors):
+            # Simulate different factor types
+            if i == 0:
+                # Value factor based on P/E ratio
+                factor = self._generate_value_factor()
+            elif i == 1:
+                # Momentum factor
+                factor = self._generate_momentum_factor()
+            else:
+                # Volatility factor
+                factor = self._generate_volatility_factor()
+            
+            # Add some noise to simulate LLM imperfections
+            factor = factor + pd.DataFrame(
+                np.random.normal(0, 0.2, factor.shape),
+                index=factor.index,
+                columns=factor.columns
+            )
+            
+            # Normalize factor
+            factor = factor.apply(lambda x: (x - x.mean()) / x.std(), axis=1)
+            
+            # Add to factors
+            factors = factors.add(factor, fill_value=0)
+        
+        # Normalize combined factors
+        factors = factors.apply(lambda x: (x - x.mean()) / x.std(), axis=1)
+        
+        return factors
+    
+    def _generate_value_factor(self) -> pd.DataFrame:
+        """Generate a value factor based on P/E ratio"""
+        # Initialize factor DataFrame
+        factor = pd.DataFrame(index=self.price_data.index, columns=self.price_data.columns)
+        
+        # For each asset, calculate P/E ratio
+        for asset in self.price_data.columns:
+            for date in self.price_data.index:
+                # Find the most recent fundamental data before this date
+                prev_quarters = self.fundamental_data.index.get_level_values(0)
+                prev_quarter = prev_quarters[prev_quarters <= date].max() if any(prev_quarters <= date) else None
+                
+                if prev_quarter is not None:
+                    try:
+                        price = self.price_data.loc[date, asset]
+                        earnings = self.fundamental_data.loc[(prev_quarter, asset), 'NetIncome']
+                        
+                        # P/E ratio (inverted so higher values = more value)
+                        if earnings > 0:
+                            factor.loc[date, asset] = earnings / price
+                        else:
+                            factor.loc[date, asset] = 0
+                    except KeyError:
+                        factor.loc[date, asset] = 0
+        
+        return factor
+    
+    def _generate_momentum_factor(self) -> pd.DataFrame:
+        """Generate a momentum factor"""
+        # Calculate returns
+        returns = self.price_data.pct_change()
+        
+        # Calculate 20-day momentum
+        momentum = returns.rolling(window=20).sum()
+        
+        return momentum
+    
+    def _generate_volatility_factor(self) -> pd.DataFrame:
+        """Generate a volatility factor (low volatility anomaly)"""
+        # Calculate returns
+        returns = self.price_data.pct_change()
+        
+        # Calculate 20-day volatility
+        volatility = returns.rolling(window=20).std()
+        
+        # Invert volatility (low vol anomaly)
+        volatility = -1 * volatility
+        
+        return volatility
+
+def main():
+    print("Starting quantitative investment simulation...")
+    
+    try:
+        # Generate synthetic data
+        print("Generating synthetic financial data...")
+        data_gen = FinancialDataGenerator(n_assets=10, n_days=252)
+        price_data = data_gen.generate_price_data()
+        fundamental_data = data_gen.generate_fundamental_data()
+        sentiment_data = data_gen.generate_news_sentiment()
+        
+        # Calculate returns for later use
+        returns = price_data.pct_change()
+        
+        print(f"Generated data for {len(price_data.columns)} assets over {len(price_data)} days")
+        
+        # Generate traditional factors
+        print("\nGenerating traditional alpha factors...")
+        factor_gen = FactorGenerator(price_data, fundamental_data, sentiment_data)
+        factors = factor_gen.combine_factors()
+        
+        # Simulate deep learning predictions
+        print("\nSimulating deep learning predictions...")
+        dl_predictor = DeepLearningPredictor(factors, returns)
+        predictions = dl_predictor.simulate_predictions()
+        
+        # Portfolio optimization
+        print("\nOptimizing portfolio based on predictions...")
+        optimizer = PortfolioOptimizer(predictions, risk_aversion=1.0, max_position=0.1)
+        positions = optimizer.optimize()
+        
+        # Order execution
+        print("\nSimulating order execution...")
+        executor = OrderExecutor(positions, price_data)
+        actual_positions, transaction_costs = executor.execute()
+        
+        # Backtest
+        print("\nBacktesting strategy...")
+        backtest = BacktestEngine(actual_positions, price_data, transaction_costs)
+        strategy_returns = backtest.calculate_returns()
+        stats = backtest.calculate_statistics(strategy_returns)
+        
+        # Print results
+        print("\nStrategy Performance Statistics:")
+        for key, value in stats.items():
+            if key in ['Total Return', 'Annual Return', 'Annual Volatility', 'Maximum Drawdown']:
+                print(f"{key}: {value:.2%}")
+            elif key == 'Sharpe Ratio':
+                print(f"{key}: {value:.2f}")
+            elif key == 'Win Rate':
+                print(f"{key}: {value:.2%}")
+        
+        # Simulate LLM sentiment analysis
+        print("\nSimulating LLM-based sentiment analysis...")
+        llm_sentiment = LLMSentimentSimulator(sentiment_data).analyze_sentiment()
+        
+        # Simulate LLM alpha factor generation
+        print("\nSimulating LLM-based alpha factor generation...")
+        llm_factors = AlphaFactorGenerator(price_data, fundamental_data).generate_factors()
+        
+        # Evaluate LLM factors vs traditional factors
+        print("\nComparing Traditional vs LLM-generated factors:")
+        
+        # Calculate correlation with future returns for both factor sets
+        future_returns = returns.shift(-1)
+        
+        # For traditional factors
+        trad_factor_corr = []
+        for date in factors.index:
+            if date in future_returns.index:
+                row_corr = factors.loc[date].corr(future_returns.loc[date])
+                if not np.isnan(row_corr):
+                    trad_factor_corr.append(row_corr)
+        
+        # For LLM factors
+        llm_factor_corr = []
+        for date in llm_factors.index:
+            if date in future_returns.index:
+                row_corr = llm_factors.loc[date].corr(future_returns.loc[date])
+                if not np.isnan(row_corr):
+                    llm_factor_corr.append(row_corr)
+        
+        print(f"Average correlation with next-day returns:")
+        print(f"Traditional factors: {np.nanmean(trad_factor_corr):.4f}")
+        print(f"LLM-generated factors: {np.nanmean(llm_factor_corr):.4f}")
+        
+        print("\nSimulation completed successfully!")
+        
+    except Exception as e:
+        print(f"Error during simulation: {str(e)}")
+        import traceback
+        traceback.print_exc()
+
+if __name__ == "__main__":
+    main()
+```
+
+Would you like me to explain or break down this code?

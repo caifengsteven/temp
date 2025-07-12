@@ -1,0 +1,6 @@
+PDF: 2501.07828v1.pdf
+Size: 1,133,697 bytes
+Processing time: 69.3 seconds
+Response length: 17,910 characters
+Code length: 16,990 characters
+Generated: 2025-07-09 21:32:24

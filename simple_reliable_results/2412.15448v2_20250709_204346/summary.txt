@@ -1,0 +1,6 @@
+PDF: 2412.15448v2.pdf
+Size: 7,520,987 bytes
+Processing time: 96.4 seconds
+Response length: 24,107 characters
+Code length: 22,721 characters
+Generated: 2025-07-09 20:45:25

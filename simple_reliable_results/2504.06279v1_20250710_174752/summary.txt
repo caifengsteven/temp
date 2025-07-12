@@ -1,0 +1,6 @@
+PDF: 2504.06279v1.pdf
+Size: 248,741 bytes
+Processing time: 43.6 seconds
+Response length: 11,319 characters
+Code length: 11,121 characters
+Generated: 2025-07-10 17:48:37

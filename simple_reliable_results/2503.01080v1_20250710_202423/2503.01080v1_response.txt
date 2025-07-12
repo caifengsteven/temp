@@ -1,0 +1,765 @@
+Claude-Sonnet-3.7 Response for 2503.01080v1
+Generated: 2025-07-10 20:26:16
+Time: 110.0s
+==================================================
+
+Based on the paper, I'll create a Python test strategy implementing a simplified version of the Dynamic Factor Correlation Model. This will focus on the core elements: dynamic factor loadings with the novel variation-free parameterization and idiosyncratic correlation modeling.
+
+```python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from scipy.optimize import minimize
+from scipy.special import loggamma
+
+class DynamicFactorCorrelationModel:
+    def __init__(self, n_assets=12, n_factors=6, block_structure='sparse', distribution='CT'):
+        """
+        Initialize the Dynamic Factor Correlation Model
+        
+        Parameters:
+        -----------
+        n_assets : int
+            Number of assets
+        n_factors : int
+            Number of factors
+        block_structure : str
+            Structure of idiosyncratic correlation matrix ('unrestricted', 'full_block', 
+            'sparse_block', or 'diagonal_block')
+        distribution : str
+            Distribution type ('Gaussian', 'MT', 'CT', or 'HT')
+        """
+        self.n_assets = n_assets
+        self.n_factors = n_factors
+        self.block_structure = block_structure
+        self.distribution = distribution
+        
+        # Parameters for the core correlation model
+        self.tau = np.zeros((n_assets, n_factors))  # Factor loadings in tau-space
+        self.rho = np.zeros((n_assets, n_factors))  # Factor loadings
+        self.omega = np.zeros(n_assets)             # Idiosyncratic volatilities
+        self.Ce = np.eye(n_assets)                  # Idiosyncratic correlation matrix
+        
+        # Score-driven parameters
+        self.kappa = 0.01 * np.ones(n_assets * n_factors)
+        self.beta = 0.95 * np.ones(n_assets * n_factors)
+        self.alpha = 0.05 * np.ones(n_assets * n_factors)
+        
+        # Initialize degrees of freedom for heavy-tailed distributions
+        if distribution in ['MT', 'CT', 'HT']:
+            if distribution == 'MT':
+                self.nu = 5.0  # Single DoF parameter for multivariate t
+            elif distribution == 'CT':
+                # Cluster-specific DoF (assuming 4 clusters of size 3 each)
+                self.nu = 4.0 * np.ones(4)
+                self.clusters = np.array([0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3])
+            else:  # HT
+                # Asset-specific DoF
+                self.nu = 3.0 + np.random.rand(n_assets) * 2.0
+    
+    def tau_to_rho(self, tau_i):
+        """
+        Convert tau parameterization to rho (factor loadings)
+        Using the novel variation-free parameterization from the paper
+        
+        Parameters:
+        -----------
+        tau_i : array-like
+            Factor loadings in tau-space for asset i
+        
+        Returns:
+        --------
+        rho_i : array-like
+            Factor loadings for asset i
+        """
+        tau_norm = np.sqrt(np.sum(tau_i**2))
+        if tau_norm < 1e-10:
+            return np.zeros_like(tau_i)
+        
+        # Applying the transformation from Theorem 1
+        factor = np.tanh(tau_norm) / tau_norm if tau_norm > 0 else 1.0
+        rho_i = factor * tau_i
+        return rho_i
+    
+    def rho_to_tau(self, rho_i):
+        """
+        Convert rho (factor loadings) to tau parameterization
+        
+        Parameters:
+        -----------
+        rho_i : array-like
+            Factor loadings for asset i
+        
+        Returns:
+        --------
+        tau_i : array-like
+            Factor loadings in tau-space for asset i
+        """
+        rho_norm = np.sqrt(np.sum(rho_i**2))
+        if rho_norm < 1e-10 or rho_norm >= 1.0:
+            return np.zeros_like(rho_i) if rho_norm < 1e-10 else 0.99 * rho_i / rho_norm
+        
+        factor = np.arctanh(rho_norm) / rho_norm
+        tau_i = factor * rho_i
+        return tau_i
+    
+    def update_factor_loadings(self):
+        """Update factor loadings (rho) from tau parameterization"""
+        for i in range(self.n_assets):
+            self.rho[i] = self.tau_to_rho(self.tau[i])
+            # Update omega (proportion of variance attributed to idiosyncratic component)
+            self.omega[i] = np.sqrt(1 - np.sum(self.rho[i]**2))
+    
+    def initialize_block_structure(self, subindustries):
+        """
+        Initialize the idiosyncratic correlation matrix with block structure
+        
+        Parameters:
+        -----------
+        subindustries : array-like
+            Array of length n_assets indicating subindustry membership
+        """
+        n = self.n_assets
+        unique_subind = np.unique(subindustries)
+        K = len(unique_subind)
+        
+        # Initialize correlation matrix with identity
+        self.Ce = np.eye(n)
+        
+        if self.block_structure == 'unrestricted':
+            # No special structure
+            pass
+        
+        elif self.block_structure in ['full_block', 'sparse_block', 'diagonal_block']:
+            # Set within-block correlations (same subindustry)
+            for k in unique_subind:
+                idx = np.where(subindustries == k)[0]
+                if len(idx) > 1:
+                    # Set correlation within block to 0.5
+                    for i in idx:
+                        for j in idx:
+                            if i != j:
+                                self.Ce[i, j] = 0.5
+            
+            if self.block_structure == 'sparse_block':
+                # Need sector information for sparse block
+                # For simplicity in this test, assume first half and second half are different sectors
+                n_half = n // 2
+                
+                # Zero out correlations between sectors
+                for i in range(n_half):
+                    for j in range(n_half, n):
+                        self.Ce[i, j] = 0.0
+                        self.Ce[j, i] = 0.0
+            
+            elif self.block_structure == 'diagonal_block':
+                # Only non-zero correlations are within the same subindustry
+                for i in range(n):
+                    for j in range(n):
+                        if subindustries[i] != subindustries[j]:
+                            self.Ce[i, j] = 0.0
+    
+    def log_likelihood(self, Z, U):
+        """
+        Compute log-likelihood for the core correlation model
+        
+        Parameters:
+        -----------
+        Z : array-like
+            Standardized returns (n_assets, n_obs)
+        U : array-like
+            Standardized orthogonalized factors (n_factors, n_obs)
+        
+        Returns:
+        --------
+        ll : float
+            Log-likelihood value
+        """
+        n, T = Z.shape
+        r = U.shape[0]
+        
+        # Compute idiosyncratic residuals e
+        e = np.zeros_like(Z)
+        for t in range(T):
+            mu_t = self.rho @ U[:, t]  # Conditional mean
+            e[:, t] = (Z[:, t] - mu_t) / self.omega  # Standardized residuals
+        
+        # Compute log-likelihood based on distribution
+        ll = 0.0
+        
+        if self.distribution == 'Gaussian':
+            # Log determinant term
+            ll -= 0.5 * T * np.log(np.linalg.det(self.Ce))
+            
+            # Quadratic form
+            for t in range(T):
+                ll -= 0.5 * e[:, t].T @ np.linalg.inv(self.Ce) @ e[:, t]
+            
+            # Constants
+            ll -= 0.5 * n * T * np.log(2 * np.pi)
+            
+        elif self.distribution == 'MT':
+            # Multivariate t-distribution
+            nu = self.nu
+            # Log determinant term
+            ll -= 0.5 * T * np.log(np.linalg.det(self.Ce))
+            
+            # Quadratic form with t-distribution weight
+            for t in range(T):
+                quad = e[:, t].T @ np.linalg.inv(self.Ce) @ e[:, t]
+                ll -= (nu + n) / 2 * np.log(1 + quad / (nu - 2))
+            
+            # Constants for t-distribution
+            ll += T * (loggamma((nu + n) / 2) - loggamma(nu / 2) - 0.5 * n * np.log((nu - 2) * np.pi))
+            
+        elif self.distribution in ['CT', 'HT']:
+            # Simplification for test purposes
+            # In practice, need to implement the more complex likelihood calculations
+            # from Section 3 of the paper
+            ll -= 0.5 * T * np.log(np.linalg.det(self.Ce))
+            
+            if self.distribution == 'CT':
+                # Cluster-t distribution
+                for t in range(T):
+                    e_clusters = []
+                    for k in range(len(self.nu)):
+                        idx = np.where(self.clusters == k)[0]
+                        e_k = e[idx, t]
+                        Ce_k = self.Ce[np.ix_(idx, idx)]
+                        quad_k = e_k.T @ np.linalg.inv(Ce_k) @ e_k
+                        ll -= (self.nu[k] + len(idx)) / 2 * np.log(1 + quad_k / (self.nu[k] - 2))
+                        
+                        # Add constants
+                        ll += loggamma((self.nu[k] + len(idx)) / 2) - loggamma(self.nu[k] / 2)
+                        ll -= 0.5 * len(idx) * np.log((self.nu[k] - 2) * np.pi)
+            
+            else:  # HT distribution
+                for t in range(T):
+                    for i in range(n):
+                        # Each asset has its own t-distribution
+                        ll -= (self.nu[i] + 1) / 2 * np.log(1 + e[i, t]**2 / (self.nu[i] - 2))
+                        
+                        # Add constants
+                        ll += loggamma((self.nu[i] + 1) / 2) - loggamma(self.nu[i] / 2)
+                        ll -= 0.5 * np.log((self.nu[i] - 2) * np.pi)
+        
+        return ll
+    
+    def compute_score(self, Z_t, U_t):
+        """
+        Compute score for updating the parameters
+        Simplified version of the score computation
+        
+        Parameters:
+        -----------
+        Z_t : array-like
+            Standardized returns at time t
+        U_t : array-like
+            Standardized orthogonalized factors at time t
+            
+        Returns:
+        --------
+        score : array-like
+            Score vector for tau parameters
+        """
+        n = self.n_assets
+        r = self.n_factors
+        score = np.zeros(n * r)
+        
+        # Compute conditional mean and residuals
+        mu_t = self.rho @ U_t
+        e_t = (Z_t - mu_t) / self.omega
+        
+        # Compute weights based on distribution
+        if self.distribution == 'Gaussian':
+            weights = np.ones(n)
+        else:
+            # For t-based distributions, compute weights to downweight outliers
+            if self.distribution == 'MT':
+                nu = self.nu
+                quad = e_t.T @ np.linalg.inv(self.Ce) @ e_t
+                weight = (nu + n) / (nu - 2 + quad)
+                weights = np.ones(n) * weight
+            elif self.distribution == 'CT':
+                weights = np.zeros(n)
+                for k in range(len(self.nu)):
+                    idx = np.where(self.clusters == k)[0]
+                    e_k = e_t[idx]
+                    Ce_k = self.Ce[np.ix_(idx, idx)]
+                    quad_k = e_k.T @ np.linalg.inv(Ce_k) @ e_k
+                    weight_k = (self.nu[k] + len(idx)) / (self.nu[k] - 2 + quad_k)
+                    weights[idx] = weight_k
+            else:  # HT
+                for i in range(n):
+                    weights[i] = (self.nu[i] + 1) / (self.nu[i] - 2 + e_t[i]**2)
+        
+        # Compute simplified score for each asset's tau parameters
+        for i in range(n):
+            # Simplified approximation of the score
+            err = Z_t[i] - mu_t[i]
+            J_i = np.eye(r)  # Simplified Jacobian
+            
+            # Score contribution for asset i
+            score_i = weights[i] * err / self.omega[i] * U_t - (weights[i] * err**2 - 1) / self.omega[i]**2 * self.rho[i]
+            score_i = J_i @ score_i
+            
+            # Store in the overall score vector
+            score[i*r:(i+1)*r] = score_i
+            
+        return score
+    
+    def update_parameters(self, Z_t, U_t, t):
+        """
+        Update model parameters based on new observation
+        
+        Parameters:
+        -----------
+        Z_t : array-like
+            Standardized returns at time t
+        U_t : array-like
+            Standardized orthogonalized factors at time t
+        t : int
+            Current time index
+        """
+        # Compute score
+        score = self.compute_score(Z_t, U_t)
+        
+        # Update tau parameters using score-driven dynamics
+        tau_flat = self.tau.flatten()
+        tau_flat = self.kappa + self.beta * tau_flat + self.alpha * score
+        self.tau = tau_flat.reshape(self.n_assets, self.n_factors)
+        
+        # Update factor loadings
+        self.update_factor_loadings()
+    
+    def fit(self, Z, U, n_iter=100):
+        """
+        Fit the model to the data
+        
+        Parameters:
+        -----------
+        Z : array-like
+            Standardized returns (n_assets, n_obs)
+        U : array-like
+            Standardized orthogonalized factors (n_factors, n_obs)
+        n_iter : int
+            Number of iterations for parameter updates
+            
+        Returns:
+        --------
+        ll_history : list
+            Log-likelihood history
+        """
+        n, T = Z.shape
+        ll_history = []
+        
+        # Initialize parameters
+        self.update_factor_loadings()
+        
+        for iter in range(n_iter):
+            # Compute current log-likelihood
+            ll = self.log_likelihood(Z, U)
+            ll_history.append(ll)
+            
+            # Update parameters using first half of data
+            t_end = min(T, 100)
+            for t in range(t_end):
+                self.update_parameters(Z[:, t], U[:, t], t)
+        
+        return ll_history
+
+
+def simulate_data(n_assets=12, n_factors=6, T=500, subindustries=None):
+    """
+    Simulate data for testing the model
+    
+    Parameters:
+    -----------
+    n_assets : int
+        Number of assets
+    n_factors : int
+        Number of factors
+    T : int
+        Number of time periods
+    subindustries : array-like
+        Array of length n_assets indicating subindustry membership
+        
+    Returns:
+    --------
+    Z : array-like
+        Standardized returns (n_assets, T)
+    U : array-like
+        Standardized orthogonalized factors (n_factors, T)
+    F : array-like
+        Standardized factors (n_factors, T)
+    """
+    # Default subindustry assignment if not provided
+    if subindustries is None:
+        # Assume 4 subindustries with 3 assets each
+        subindustries = np.array([0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3])
+    
+    # Simulate factors
+    F = np.random.normal(0, 1, (n_factors, T))
+    
+    # Simulate dynamic correlation for factors
+    CF = np.eye(n_factors)
+    CF[0, 1] = CF[1, 0] = 0.3
+    CF[0, 2] = CF[2, 0] = 0.1
+    CF[1, 2] = CF[2, 1] = 0.2
+    
+    # Simulate orthogonalized factors
+    L = np.linalg.cholesky(CF)
+    U = np.linalg.inv(L) @ F
+    
+    # Create true factor loadings with some dynamics
+    rho = np.zeros((n_assets, n_factors, T))
+    for i in range(n_assets):
+        base_rho = 0.1 + 0.05 * i/n_assets + 0.2 * np.random.rand(n_factors)
+        
+        # Make first factor more important
+        base_rho[0] += 0.2
+        
+        # Ensure sum of squares < 1
+        base_rho = base_rho / np.sqrt(np.sum(base_rho**2) * 1.5)
+        
+        # Add some time variation
+        for j in range(n_factors):
+            trend = 0.1 * np.sin(np.linspace(0, 4*np.pi, T) + i*0.5 + j*0.7)
+            rho[i, j, :] = base_rho[j] + trend
+    
+    # Ensure all factor loadings are valid (sum of squares < 1)
+    for i in range(n_assets):
+        for t in range(T):
+            ss = np.sum(rho[i, :, t]**2)
+            if ss >= 1:
+                rho[i, :, t] = rho[i, :, t] / np.sqrt(ss * 1.1)
+    
+    # Create idiosyncratic correlation matrix with block structure
+    Ce = np.eye(n_assets)
+    unique_subind = np.unique(subindustries)
+    
+    # Set within-block correlations
+    for k in unique_subind:
+        idx = np.where(subindustries == k)[0]
+        if len(idx) > 1:
+            for i in idx:
+                for j in idx:
+                    if i != j:
+                        Ce[i, j] = 0.5 + 0.1 * np.random.rand()
+    
+    # Ensure positive definiteness
+    min_eig = np.min(np.linalg.eigvals(Ce))
+    if min_eig < 0:
+        Ce = Ce + (-min_eig + 0.01) * np.eye(n_assets)
+        # Rescale to correlation matrix
+        D = np.diag(1.0 / np.sqrt(np.diag(Ce)))
+        Ce = D @ Ce @ D
+    
+    # Simulate returns
+    Z = np.zeros((n_assets, T))
+    for t in range(T):
+        # Idiosyncratic shocks
+        e = np.random.multivariate_normal(np.zeros(n_assets), Ce)
+        
+        # Factor component
+        for i in range(n_assets):
+            omega_i = np.sqrt(1 - np.sum(rho[i, :, t]**2))
+            Z[i, t] = rho[i, :, t] @ U[:, t] + omega_i * e[i]
+    
+    return Z, U, F
+
+
+def test_model_comparison():
+    """Test different model specifications and compare performance"""
+    np.random.seed(42)
+    
+    # Simulate data
+    n_assets = 12
+    n_factors = 6
+    T = 500
+    subindustries = np.array([0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3])
+    Z, U, F = simulate_data(n_assets, n_factors, T, subindustries)
+    
+    # Define model configurations to test
+    distributions = ['Gaussian', 'MT', 'CT', 'HT']
+    block_structures = ['unrestricted', 'full_block', 'sparse_block', 'diagonal_block']
+    
+    results = {}
+    
+    for dist in distributions:
+        for block in block_structures:
+            print(f"Testing {dist} distribution with {block} block structure...")
+            
+            # Initialize model
+            model = DynamicFactorCorrelationModel(
+                n_assets=n_assets, 
+                n_factors=n_factors,
+                block_structure=block,
+                distribution=dist
+            )
+            
+            # Initialize block structure
+            model.initialize_block_structure(subindustries)
+            
+            # Fit model
+            ll_history = model.fit(Z, U, n_iter=30)
+            
+            # Store results
+            key = f"{dist}_{block}"
+            results[key] = {
+                'model': model,
+                'll_history': ll_history,
+                'final_ll': ll_history[-1]
+            }
+            
+            print(f"  Final log-likelihood: {ll_history[-1]:.2f}")
+    
+    # Compare models
+    print("\nModel Comparison:")
+    sorted_results = sorted(results.items(), key=lambda x: x[1]['final_ll'], reverse=True)
+    for i, (key, res) in enumerate(sorted_results):
+        print(f"{i+1}. {key}: {res['final_ll']:.2f}")
+    
+    # Plot log-likelihood histories
+    plt.figure(figsize=(12, 8))
+    for key, res in results.items():
+        plt.plot(res['ll_history'], label=key)
+    plt.xlabel('Iteration')
+    plt.ylabel('Log-Likelihood')
+    plt.title('Log-Likelihood Convergence')
+    plt.legend()
+    plt.grid(True)
+    
+    # Save or display plot
+    plt.savefig('model_comparison.png')
+    plt.close()
+    
+    return results
+
+
+def test_factor_loadings_parameterization():
+    """Test the novel variation-free parameterization of factor loadings"""
+    model = DynamicFactorCorrelationModel(n_assets=1, n_factors=3)
+    
+    # Test various factor loadings
+    rho_values = [
+        np.array([0.3, 0.4, 0.2]),         # Valid loading
+        np.array([0.6, 0.5, 0.4]),         # Sum of squares > 1, should be normalized
+        np.array([0.0, 0.0, 0.0]),         # Zero loading
+        np.array([-0.3, 0.5, -0.1]),       # Mixed signs
+        np.array([0.9, 0.0, 0.0]),         # Nearly singular
+    ]
+    
+    print("Testing factor loadings parameterization:")
+    print("----------------------------------------")
+    
+    for i, rho in enumerate(rho_values):
+        print(f"\nTest {i+1}:")
+        rho_norm = np.sqrt(np.sum(rho**2))
+        print(f"Original rho: {rho}, norm: {rho_norm:.4f}")
+        
+        if rho_norm >= 1:
+            print("  (Note: Original rho has norm >= 1, which is invalid)")
+            rho = 0.99 * rho / rho_norm
+            rho_norm = np.sqrt(np.sum(rho**2))
+            print(f"  Normalized rho: {rho}, norm: {rho_norm:.4f}")
+        
+        # Convert to tau
+        tau = model.rho_to_tau(rho)
+        tau_norm = np.sqrt(np.sum(tau**2))
+        print(f"Converted tau: {tau}, norm: {tau_norm:.4f}")
+        
+        # Convert back to rho
+        rho_back = model.tau_to_rho(tau)
+        rho_back_norm = np.sqrt(np.sum(rho_back**2))
+        print(f"Recovered rho: {rho_back}, norm: {rho_back_norm:.4f}")
+        
+        # Check error
+        error = np.linalg.norm(rho - rho_back)
+        print(f"Conversion error: {error:.8f}")
+        
+        # Check that rho_back has norm < 1
+        assert rho_back_norm < 1, "Recovered rho should have norm < 1"
+    
+    return True
+
+
+def test_decoupled_estimation():
+    """Test the decoupled estimation procedure"""
+    np.random.seed(42)
+    
+    # Simulate data
+    n_assets = 12
+    n_factors = 6
+    T = 500
+    subindustries = np.array([0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3])
+    Z, U, F = simulate_data(n_assets, n_factors, T, subindustries)
+    
+    # 1. First step: estimate factor loadings for each asset separately
+    factor_loadings = []
+    residuals = np.zeros_like(Z)
+    
+    for i in range(n_assets):
+        print(f"Estimating factor loadings for asset {i+1}...")
+        
+        # Initialize model for this asset only
+        model_i = DynamicFactorCorrelationModel(
+            n_assets=1, 
+            n_factors=n_factors,
+            distribution='MT'  # Use t-distribution for approximation
+        )
+        
+        # Initialize reasonable factor loadings
+        model_i.tau[0] = np.random.randn(n_factors) * 0.1
+        model_i.update_factor_loadings()
+        
+        # Fit model using score-driven updates
+        Z_i = Z[i:i+1, :]  # Single asset returns
+        for t in range(min(T, 200)):  # Use subset of data for efficiency
+            model_i.update_parameters(Z_i[:, t], U[:, t], t)
+        
+        # Store estimated factor loadings
+        factor_loadings.append(model_i.rho[0])
+        
+        # Compute residuals
+        for t in range(T):
+            mu_it = model_i.rho[0] @ U[:, t]
+            residuals[i, t] = (Z[i, t] - mu_it) / model_i.omega[0]
+    
+    # Convert to array
+    factor_loadings = np.array(factor_loadings)
+    
+    # 2. Second step: estimate idiosyncratic correlation matrix
+    print("\nEstimating idiosyncratic correlation matrix...")
+    
+    # Compute sample correlation of residuals
+    Ce_sample = np.corrcoef(residuals)
+    
+    # Initialize model for idiosyncratic correlations
+    model_e = DynamicFactorCorrelationModel(
+        n_assets=n_assets, 
+        n_factors=0,  # No factors needed for this part
+        block_structure='sparse_block',
+        distribution='CT'
+    )
+    
+    # Initialize with sample correlation
+    model_e.Ce = Ce_sample
+    model_e.initialize_block_structure(subindustries)
+    
+    # Compare original and estimated factor loadings
+    print("\nFactor Loadings Comparison (average over time):")
+    print("-----------------------------------------------")
+    
+    # Compute average true factor loadings over time
+    true_rho_avg = np.mean(np.sqrt(np.sum(Z @ U.T / T, axis=1)**2))
+    est_rho_avg = np.mean(np.sqrt(np.sum(factor_loadings**2, axis=1)))
+    
+    print(f"Average norm of true factor loadings: {true_rho_avg:.4f}")
+    print(f"Average norm of estimated factor loadings: {est_rho_avg:.4f}")
+    
+    # Compare original and estimated idiosyncratic correlations
+    print("\nIdiosyncratic Correlation Comparison:")
+    print("------------------------------------")
+    
+    # Compute true idiosyncratic correlations (simplified approximation)
+    residual_corr = np.corrcoef(residuals)
+    
+    # Compare with the model's Ce
+    corr_diff = np.linalg.norm(residual_corr - model_e.Ce, 'fro')
+    print(f"Frobenius norm of difference between true and estimated Ce: {corr_diff:.4f}")
+    
+    return factor_loadings, model_e.Ce
+
+
+def test_out_of_sample_performance():
+    """Test out-of-sample performance of the model"""
+    np.random.seed(42)
+    
+    # Simulate data
+    n_assets = 12
+    n_factors = 6
+    T = 800  # Longer time series for train/test split
+    subindustries = np.array([0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3])
+    Z, U, F = simulate_data(n_assets, n_factors, T, subindustries)
+    
+    # Split data into training and testing sets
+    train_size = 600
+    Z_train = Z[:, :train_size]
+    U_train = U[:, :train_size]
+    Z_test = Z[:, train_size:]
+    U_test = U[:, train_size:]
+    
+    # Define model configurations to test
+    distributions = ['Gaussian', 'MT', 'CT', 'HT']
+    block_structures = ['full_block', 'sparse_block', 'diagonal_block']
+    
+    results = {}
+    
+    for dist in distributions:
+        for block in block_structures:
+            print(f"Testing {dist} distribution with {block} block structure...")
+            
+            # Initialize model
+            model = DynamicFactorCorrelationModel(
+                n_assets=n_assets, 
+                n_factors=n_factors,
+                block_structure=block,
+                distribution=dist
+            )
+            
+            # Initialize block structure
+            model.initialize_block_structure(subindustries)
+            
+            # Train model
+            model.fit(Z_train, U_train, n_iter=20)
+            
+            # Compute in-sample log-likelihood
+            in_sample_ll = model.log_likelihood(Z_train, U_train)
+            
+            # Compute out-of-sample log-likelihood
+            out_sample_ll = model.log_likelihood(Z_test, U_test)
+            
+            # Store results
+            key = f"{dist}_{block}"
+            results[key] = {
+                'model': model,
+                'in_sample_ll': in_sample_ll,
+                'out_sample_ll': out_sample_ll
+            }
+            
+            print(f"  In-sample log-likelihood: {in_sample_ll:.2f}")
+            print(f"  Out-of-sample log-likelihood: {out_sample_ll:.2f}")
+    
+    # Compare models
+    print("\nOut-of-Sample Model Comparison:")
+    sorted_results = sorted(results.items(), key=lambda x: x[1]['out_sample_ll'], reverse=True)
+    for i, (key, res) in enumerate(sorted_results):
+        print(f"{i+1}. {key}: {res['out_sample_ll']:.2f}")
+    
+    return results
+
+
+if __name__ == "__main__":
+    try:
+        print("==== Testing Factor Loadings Parameterization ====")
+        test_factor_loadings_parameterization()
+        
+        print("\n==== Testing Model Comparison ====")
+        comparison_results = test_model_comparison()
+        
+        print("\n==== Testing Decoupled Estimation ====")
+        factor_loadings, Ce = test_decoupled_estimation()
+        
+        print("\n==== Testing Out-of-Sample Performance ====")
+        oos_results = test_out_of_sample_performance()
+        
+        print("\nAll tests completed successfully!")
+        
+    except Exception as e:
+        print(f"Error during testing: {str(e)}")
+        import traceback
+        traceback.print_exc()
+```
+
+Would you like me to explain any specific parts of this implementation?

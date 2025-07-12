@@ -1,0 +1,6 @@
+PDF: 2501.03919v6.pdf
+Size: 11,619,165 bytes
+Processing time: 79.7 seconds
+Response length: 21,174 characters
+Code length: 20,052 characters
+Generated: 2025-07-09 20:50:56

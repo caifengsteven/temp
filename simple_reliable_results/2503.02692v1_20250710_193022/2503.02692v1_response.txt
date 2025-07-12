@@ -1,0 +1,680 @@
+Claude-Sonnet-3.7 Response for 2503.02692v1
+Generated: 2025-07-10 19:31:57
+Time: 93.3s
+==================================================
+
+Looking at the PDF, I'll create a Python file to simulate and test the FinArena framework described in the paper. The framework combines multiple agents for financial analysis and includes human risk preference to make investment decisions.
+
+```python
+import pandas as pd
+import numpy as np
+import random
+from datetime import datetime, timedelta
+import matplotlib.pyplot as plt
+from sklearn.metrics import accuracy_score, f1_score
+from typing import List, Dict, Tuple, Optional, Union
+
+# ----- Data Models -----
+
+class StockData:
+    """Represents historical stock price data"""
+    def __init__(self, ticker: str, days: int = 100):
+        self.ticker = ticker
+        self.dates = [(datetime.now() - timedelta(days=i)).strftime('%Y-%m-%d') for i in range(days, 0, -1)]
+        
+        # Generate simulated price data with some trend and volatility
+        base = 100 + random.randint(-20, 20)
+        trend = random.uniform(-0.1, 0.15)
+        volatility = random.uniform(0.01, 0.03)
+        
+        prices = [base]
+        for i in range(1, days):
+            change = trend + random.normalvariate(0, volatility)
+            new_price = max(1, prices[-1] * (1 + change))
+            prices.append(new_price)
+        
+        # Create structured data
+        self.data = pd.DataFrame({
+            'date': self.dates,
+            'open': prices,
+            'close': [p * (1 + random.normalvariate(0, 0.005)) for p in prices],
+            'volume': [int(random.normalvariate(1000000, 200000)) for _ in range(days)]
+        })
+        self.data['date'] = pd.to_datetime(self.data['date'])
+        self.data.set_index('date', inplace=True)
+
+
+class NewsData:
+    """Represents company news data"""
+    def __init__(self, ticker: str, days: int = 100, news_frequency: float = 0.7):
+        self.ticker = ticker
+        self.dates = [(datetime.now() - timedelta(days=i)).strftime('%Y-%m-%d') for i in range(days, 0, -1)]
+        
+        # Generate simulated news with varying sentiment
+        self.news_items = []
+        
+        for date in self.dates:
+            # Not every day has news
+            if random.random() < news_frequency:
+                sentiment = random.choice(['positive', 'neutral', 'negative'])
+                weight = {'positive': 0.6, 'neutral': 0.3, 'negative': 0.1}
+                
+                # Generate more positive news than negative to simulate real-world bias
+                if random.random() < weight[sentiment]:
+                    sentiment_score = random.uniform(0.6, 0.9) if sentiment == 'positive' else \
+                                    random.uniform(0.4, 0.6) if sentiment == 'neutral' else \
+                                    random.uniform(0.1, 0.4)
+                    
+                    templates = {
+                        'positive': [
+                            f"{ticker} announces better than expected quarterly results",
+                            f"{ticker} launches innovative new product line",
+                            f"{ticker} expands operations to new markets"
+                        ],
+                        'neutral': [
+                            f"{ticker} holds annual shareholder meeting",
+                            f"{ticker} makes routine management changes",
+                            f"{ticker} maintains current market position"
+                        ],
+                        'negative': [
+                            f"{ticker} faces regulatory scrutiny",
+                            f"{ticker} reports supply chain disruptions",
+                            f"{ticker} sees unexpected decline in sales"
+                        ]
+                    }
+                    
+                    title = random.choice(templates[sentiment])
+                    content = f"{title}. Additional details about the {sentiment} development at {ticker}."
+                    
+                    self.news_items.append({
+                        'date': date,
+                        'title': title,
+                        'content': content,
+                        'sentiment': sentiment,
+                        'sentiment_score': sentiment_score
+                    })
+        
+        self.data = pd.DataFrame(self.news_items)
+        if not self.news_items:
+            self.data = pd.DataFrame(columns=['date', 'title', 'content', 'sentiment', 'sentiment_score'])
+        
+        if not self.data.empty:
+            self.data['date'] = pd.to_datetime(self.data['date'])
+
+
+class FinancialStatement:
+    """Represents quarterly financial statements"""
+    def __init__(self, ticker: str, quarters: int = 4):
+        self.ticker = ticker
+        
+        # Generate simulated financial statement data
+        base_revenue = random.uniform(1000000, 10000000)
+        growth_rate = random.uniform(0.02, 0.15)
+        margin = random.uniform(0.1, 0.3)
+        
+        self.statements = []
+        
+        for i in range(quarters):
+            quarter = f"Q{(i % 4) + 1} {2023 - (i // 4)}"
+            revenue = base_revenue * (1 + growth_rate) ** i
+            cost = revenue * (1 - margin) * random.uniform(0.9, 1.1)
+            profit = revenue - cost
+            
+            assets = revenue * random.uniform(1.2, 2.5)
+            liabilities = assets * random.uniform(0.3, 0.7)
+            equity = assets - liabilities
+            
+            self.statements.append({
+                'quarter': quarter,
+                'revenue': revenue,
+                'cost': cost,
+                'profit': profit,
+                'assets': assets,
+                'liabilities': liabilities,
+                'equity': equity,
+                'cash_flow_operations': profit * random.uniform(0.8, 1.2),
+                'cash_flow_investing': -revenue * random.uniform(0.1, 0.3),
+                'cash_flow_financing': revenue * random.uniform(-0.1, 0.1)
+            })
+        
+        self.data = pd.DataFrame(self.statements)
+
+
+# ----- Agent Simulations -----
+
+class TimeSeriesAgent:
+    """Simulates the Time Series Agent in the FinArena framework"""
+    def __init__(self, accuracy: float = 0.65):
+        self.accuracy = accuracy
+    
+    def predict(self, stock_data: StockData, days_ahead: int = 1) -> List[float]:
+        """Predicts stock movement for the specified number of days ahead"""
+        # In a real implementation, this would use TimeGPT or similar models
+        # Here we simulate with biased random predictions based on trend
+        
+        prices = stock_data.data['close'].values
+        predictions = []
+        
+        for i in range(days_ahead):
+            # Calculate short-term trend
+            window = min(10, len(prices))
+            recent_trend = np.mean(np.diff(prices[-window:]))
+            
+            # Determine direction with some randomness
+            if random.random() < self.accuracy:
+                # Correct prediction most of the time based on accuracy parameter
+                direction = 1 if recent_trend > 0 else 0
+            else:
+                # Random prediction
+                direction = random.randint(0, 1)
+            
+            predictions.append(direction)
+        
+        return predictions
+
+
+class NewsAgent:
+    """Simulates the News Agent with RAG capabilities"""
+    def __init__(self, accuracy: float = 0.7, use_rag: bool = True):
+        self.accuracy = accuracy
+        self.use_rag = use_rag
+    
+    def predict(self, news_data: NewsData) -> List[float]:
+        """Predicts stock movement based on news sentiment"""
+        if news_data.data.empty:
+            return [0.5]  # Neutral prediction if no news
+        
+        # Get average sentiment for recent news
+        if 'sentiment_score' in news_data.data.columns:
+            recent_news = news_data.data.sort_values('date', ascending=False).head(5)
+            avg_sentiment = recent_news['sentiment_score'].mean()
+            
+            # Adjust with RAG if enabled
+            if self.use_rag and avg_sentiment < 0.45:
+                # Simulating additional information retrieval for negative news
+                adjustment = random.uniform(0.05, 0.15)
+                avg_sentiment = min(0.9, avg_sentiment + adjustment)
+            
+            # Convert to binary prediction
+            if random.random() < self.accuracy:
+                # Accurate prediction based on sentiment
+                prediction = 1 if avg_sentiment > 0.5 else 0
+            else:
+                # Random prediction
+                prediction = random.randint(0, 1)
+                
+            return [prediction]
+        else:
+            return [random.randint(0, 1)]
+
+
+class StatementAgent:
+    """Simulates the Statement Agent for financial analysis"""
+    def __init__(self, accuracy: float = 0.75):
+        self.accuracy = accuracy
+    
+    def predict(self, statement_data: FinancialStatement) -> Tuple[int, float]:
+        """Predicts stock movement based on financial statements"""
+        if statement_data.data.empty:
+            return 0, 0.5  # Neutral prediction with low confidence
+        
+        # Analyze financial trends
+        df = statement_data.data
+        
+        # Calculate key metrics
+        if len(df) >= 2:
+            revenue_growth = (df['revenue'].iloc[0] / df['revenue'].iloc[1]) - 1
+            profit_margin = df['profit'].iloc[0] / df['revenue'].iloc[0]
+            debt_ratio = df['liabilities'].iloc[0] / df['assets'].iloc[0]
+            
+            # Create a simple score based on these metrics
+            score = revenue_growth * 0.4 + profit_margin * 0.4 - debt_ratio * 0.2
+            
+            # Determine prediction and confidence
+            if random.random() < self.accuracy:
+                prediction = 1 if score > 0 else 0
+            else:
+                prediction = random.randint(0, 1)
+            
+            confidence = min(0.9, max(0.1, 0.5 + abs(score) * 0.5))
+            
+            return prediction, confidence
+        else:
+            return random.randint(0, 1), 0.5
+
+
+class FinArena:
+    """Simulates the complete FinArena framework"""
+    def __init__(self, use_rag: bool = True):
+        self.time_series_agent = TimeSeriesAgent()
+        self.news_agent = NewsAgent(use_rag=use_rag)
+        self.statement_agent = StatementAgent()
+        
+    def predict(self, stock_data: StockData, news_data: NewsData, 
+                statement_data: FinancialStatement, risk_preference: str = 'moderate') -> Dict:
+        """Predicts stock movement and makes investment recommendation"""
+        # Get predictions from each agent
+        time_series_pred = self.time_series_agent.predict(stock_data)[0]
+        news_pred = self.news_agent.predict(news_data)[0]
+        statement_pred, statement_conf = self.statement_agent.predict(statement_data)
+        
+        # Weights based on risk preference
+        risk_weights = {
+            'conservative': {'time': 0.4, 'news': 0.2, 'statement': 0.4},
+            'moderate': {'time': 0.33, 'news': 0.33, 'statement': 0.34},
+            'aggressive': {'time': 0.25, 'news': 0.5, 'statement': 0.25}
+        }
+        
+        weights = risk_weights.get(risk_preference, risk_weights['moderate'])
+        
+        # Combined prediction
+        combined_score = (time_series_pred * weights['time'] + 
+                          news_pred * weights['news'] + 
+                          statement_pred * weights['statement'])
+        
+        prediction = 1 if combined_score >= 0.5 else 0
+        
+        # Decision logic based on risk preference
+        decision = "HOLD"
+        if prediction == 1:
+            if risk_preference == 'conservative' and combined_score > 0.7:
+                decision = "BUY"
+            elif risk_preference == 'moderate' and combined_score > 0.6:
+                decision = "BUY"
+            elif risk_preference == 'aggressive' and combined_score > 0.5:
+                decision = "BUY"
+        else:
+            if risk_preference == 'conservative' and combined_score < 0.3:
+                decision = "SELL"
+            elif risk_preference == 'moderate' and combined_score < 0.4:
+                decision = "SELL"
+            elif risk_preference == 'aggressive' and combined_score < 0.5:
+                decision = "SELL"
+        
+        return {
+            'prediction': prediction,
+            'decision': decision,
+            'confidence': combined_score,
+            'component_predictions': {
+                'time_series': time_series_pred,
+                'news': news_pred,
+                'statement': statement_pred
+            }
+        }
+
+
+# ----- Simulation and Testing -----
+
+class TradingSimulator:
+    """Simulates trading based on predictions"""
+    def __init__(self, initial_capital: float = 100000.0):
+        self.initial_capital = initial_capital
+        self.capital = initial_capital
+        self.holdings = 0
+        self.trades = []
+        self.daily_value = []
+    
+    def reset(self):
+        """Reset the simulator"""
+        self.capital = self.initial_capital
+        self.holdings = 0
+        self.trades = []
+        self.daily_value = []
+    
+    def execute_strategy(self, stock_data: pd.DataFrame, predictions: List[str], 
+                         risk_profile: str = 'moderate') -> Dict:
+        """Execute trading strategy based on predictions and risk profile"""
+        self.reset()
+        
+        # Risk profile determines trading parameters
+        risk_params = {
+            'conservative': {'buy_pct': 0.5, 'sell_pct': 1.0},
+            'moderately_conservative': {'buy_pct': 0.7, 'sell_pct': 1.0},
+            'moderately_aggressive': {'buy_pct': 1.0, 'sell_pct': 0.5},
+            'aggressive': {'buy_pct': 1.0, 'sell_pct': 0.3}
+        }
+        
+        params = risk_params.get(risk_profile, risk_params['moderate'])
+        
+        # Simulate trading
+        for i, (date, row) in enumerate(stock_data.iterrows()):
+            if i >= len(predictions):
+                break
+                
+            price = row['close']
+            decision = predictions[i]
+            
+            portfolio_value = self.capital + self.holdings * price
+            self.daily_value.append(portfolio_value)
+            
+            if decision == "BUY" and self.capital > 0:
+                # Buy stocks
+                amount_to_spend = self.capital * params['buy_pct']
+                shares_to_buy = amount_to_spend / price
+                self.holdings += shares_to_buy
+                self.capital -= amount_to_spend
+                
+                self.trades.append({
+                    'date': date,
+                    'action': 'BUY',
+                    'price': price,
+                    'shares': shares_to_buy,
+                    'value': amount_to_spend
+                })
+                
+            elif decision == "SELL" and self.holdings > 0:
+                # Sell stocks
+                shares_to_sell = self.holdings * params['sell_pct']
+                amount_received = shares_to_sell * price
+                self.holdings -= shares_to_sell
+                self.capital += amount_received
+                
+                self.trades.append({
+                    'date': date,
+                    'action': 'SELL',
+                    'price': price,
+                    'shares': shares_to_sell,
+                    'value': amount_received
+                })
+        
+        # Calculate final portfolio value
+        final_price = stock_data['close'].iloc[-1]
+        final_value = self.capital + self.holdings * final_price
+        
+        # Calculate metrics
+        days = len(self.daily_value)
+        annualized_return = ((final_value / self.initial_capital) ** (365 / days)) - 1
+        
+        # Calculate daily returns for Sharpe ratio
+        daily_returns = []
+        for i in range(1, len(self.daily_value)):
+            daily_return = (self.daily_value[i] / self.daily_value[i-1]) - 1
+            daily_returns.append(daily_return)
+        
+        if daily_returns:
+            sharpe_ratio = (np.mean(daily_returns) / np.std(daily_returns)) * np.sqrt(252)
+        else:
+            sharpe_ratio = 0
+            
+        # Calculate maximum drawdown
+        running_max = 0
+        drawdowns = []
+        
+        for value in self.daily_value:
+            if value > running_max:
+                running_max = value
+            
+            if running_max > 0:
+                drawdown = (running_max - value) / running_max
+                drawdowns.append(drawdown)
+        
+        max_drawdown = max(drawdowns) if drawdowns else 0
+        
+        return {
+            'initial_capital': self.initial_capital,
+            'final_value': final_value,
+            'return': (final_value / self.initial_capital) - 1,
+            'annualized_return': annualized_return,
+            'sharpe_ratio': sharpe_ratio,
+            'max_drawdown': max_drawdown,
+            'trades': len(self.trades),
+            'trade_history': self.trades
+        }
+
+
+def test_finarena_prediction(tickers: List[str], test_days: int = 30) -> Dict:
+    """Test FinArena prediction accuracy on multiple tickers"""
+    results = {}
+    
+    for ticker in tickers:
+        print(f"Testing predictions for {ticker}...")
+        
+        # Generate data
+        stock_data = StockData(ticker, days=test_days + 30)  # Extra days for training
+        news_data = NewsData(ticker, days=test_days + 30)
+        statement_data = FinancialStatement(ticker)
+        
+        # Generate actual outcomes (using simple momentum as ground truth)
+        actual_outcomes = []
+        for i in range(test_days):
+            window = 5
+            start_idx = len(stock_data.data) - test_days - window + i
+            end_idx = len(stock_data.data) - test_days + i
+            
+            prices = stock_data.data['close'].iloc[start_idx:end_idx].values
+            actual_direction = 1 if prices[-1] > prices[0] else 0
+            actual_outcomes.append(actual_direction)
+        
+        # Test standard FinArena
+        finarena = FinArena(use_rag=True)
+        standard_predictions = []
+        
+        for i in range(test_days):
+            # Use sliding window approach for testing
+            stock_window = StockData(ticker, days=30)
+            stock_window.data = stock_data.data.iloc[i:i+30].copy()
+            
+            news_window = NewsData(ticker)
+            if not news_data.data.empty:
+                mask = (news_data.data['date'] >= stock_window.data.index[0]) & \
+                       (news_data.data['date'] <= stock_window.data.index[-1])
+                news_window.data = news_data.data[mask].copy()
+            
+            result = finarena.predict(stock_window, news_window, statement_data)
+            standard_predictions.append(result['prediction'])
+        
+        # Test FinArena without RAG
+        finarena_no_rag = FinArena(use_rag=False)
+        no_rag_predictions = []
+        
+        for i in range(test_days):
+            stock_window = StockData(ticker, days=30)
+            stock_window.data = stock_data.data.iloc[i:i+30].copy()
+            
+            news_window = NewsData(ticker)
+            if not news_data.data.empty:
+                mask = (news_data.data['date'] >= stock_window.data.index[0]) & \
+                       (news_data.data['date'] <= stock_window.data.index[-1])
+                news_window.data = news_data.data[mask].copy()
+            
+            result = finarena_no_rag.predict(stock_window, news_window, statement_data)
+            no_rag_predictions.append(result['prediction'])
+        
+        # Calculate metrics
+        standard_accuracy = accuracy_score(actual_outcomes, standard_predictions)
+        standard_f1 = f1_score(actual_outcomes, standard_predictions)
+        
+        no_rag_accuracy = accuracy_score(actual_outcomes, no_rag_predictions)
+        no_rag_f1 = f1_score(actual_outcomes, no_rag_predictions)
+        
+        results[ticker] = {
+            'standard': {
+                'accuracy': standard_accuracy,
+                'f1_score': standard_f1,
+                'predictions': standard_predictions
+            },
+            'no_rag': {
+                'accuracy': no_rag_accuracy,
+                'f1_score': no_rag_f1,
+                'predictions': no_rag_predictions
+            },
+            'actual': actual_outcomes
+        }
+    
+    return results
+
+
+def test_trading_simulation(tickers: List[str], test_days: int = 60) -> Dict:
+    """Test trading simulation with different risk profiles"""
+    risk_profiles = ['conservative', 'moderately_conservative', 
+                     'moderately_aggressive', 'aggressive']
+    results = {}
+    
+    for ticker in tickers:
+        print(f"Running trading simulation for {ticker}...")
+        
+        # Generate data
+        stock_data = StockData(ticker, days=test_days + 30)
+        news_data = NewsData(ticker, days=test_days + 30)
+        statement_data = FinancialStatement(ticker)
+        
+        # Test window
+        test_stock_data = stock_data.data.iloc[-test_days:].copy()
+        
+        # Generate predictions
+        finarena = FinArena()
+        ticker_results = {}
+        
+        for risk_profile in risk_profiles:
+            # Generate decisions for each day
+            decisions = []
+            
+            for i in range(test_days):
+                # Use sliding window approach
+                start_idx = len(stock_data.data) - test_days - 30 + i
+                end_idx = len(stock_data.data) - test_days + i
+                
+                stock_window = StockData(ticker, days=30)
+                stock_window.data = stock_data.data.iloc[start_idx:end_idx].copy()
+                
+                news_window = NewsData(ticker)
+                if not news_data.data.empty:
+                    mask = (news_data.data['date'] >= stock_window.data.index[0]) & \
+                           (news_data.data['date'] <= stock_window.data.index[-1])
+                    news_window.data = news_data.data[mask].copy()
+                
+                result = finarena.predict(stock_window, news_window, statement_data, risk_preference=risk_profile.split('_')[0])
+                decisions.append(result['decision'])
+            
+            # Run simulation
+            simulator = TradingSimulator()
+            sim_results = simulator.execute_strategy(test_stock_data, decisions, risk_profile)
+            
+            ticker_results[risk_profile] = sim_results
+        
+        # Add baseline Buy & Hold strategy
+        hold_decisions = ["BUY"] + ["HOLD"] * (test_days - 1)
+        simulator = TradingSimulator()
+        hold_results = simulator.execute_strategy(test_stock_data, hold_decisions)
+        ticker_results['buy_hold'] = hold_results
+        
+        # Add random strategy
+        random_decisions = [random.choice(["BUY", "SELL", "HOLD"]) for _ in range(test_days)]
+        simulator = TradingSimulator()
+        random_results = simulator.execute_strategy(test_stock_data, random_decisions)
+        ticker_results['random'] = random_results
+        
+        results[ticker] = ticker_results
+    
+    return results
+
+
+def visualize_results(prediction_results: Dict, trading_results: Dict):
+    """Visualize experiment results"""
+    # Prediction accuracy comparison
+    tickers = list(prediction_results.keys())
+    standard_acc = [prediction_results[t]['standard']['accuracy'] for t in tickers]
+    no_rag_acc = [prediction_results[t]['no_rag']['accuracy'] for t in tickers]
+    
+    plt.figure(figsize=(10, 6))
+    x = np.arange(len(tickers))
+    width = 0.35
+    
+    plt.bar(x - width/2, standard_acc, width, label='FinArena with RAG')
+    plt.bar(x + width/2, no_rag_acc, width, label='FinArena without RAG')
+    
+    plt.xlabel('Tickers')
+    plt.ylabel('Prediction Accuracy')
+    plt.title('Prediction Accuracy Comparison')
+    plt.xticks(x, tickers)
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+    
+    # Trading performance comparison
+    plt.figure(figsize=(12, 8))
+    
+    risk_profiles = ['conservative', 'moderately_conservative', 
+                     'moderately_aggressive', 'aggressive', 'buy_hold', 'random']
+    
+    for i, ticker in enumerate(tickers):
+        plt.subplot(len(tickers), 1, i+1)
+        
+        returns = [trading_results[ticker][rp]['annualized_return'] for rp in risk_profiles]
+        colors = ['green' if r > 0 else 'red' for r in returns]
+        
+        plt.bar(risk_profiles, returns, color=colors)
+        plt.axhline(y=0, color='k', linestyle='-', alpha=0.3)
+        plt.title(f'{ticker} Annualized Returns by Strategy')
+        plt.ylabel('Return')
+        plt.grid(axis='y', alpha=0.3)
+    
+    plt.tight_layout()
+    plt.show()
+
+
+# ----- Main Test Execution -----
+
+def main():
+    """Main function to run tests"""
+    np.random.seed(42)
+    random.seed(42)
+    
+    print("FinArena Testing Framework")
+    print("=========================")
+    
+    # Test stocks
+    test_tickers = ['AAPL', 'MSFT', 'NVDA', 'GOOGL']
+    
+    # Test prediction accuracy
+    print("\nTesting prediction accuracy...")
+    prediction_results = test_finarena_prediction(test_tickers, test_days=30)
+    
+    # Display prediction results
+    print("\nPrediction Results:")
+    print("------------------")
+    for ticker in prediction_results:
+        std_acc = prediction_results[ticker]['standard']['accuracy']
+        std_f1 = prediction_results[ticker]['standard']['f1_score']
+        no_rag_acc = prediction_results[ticker]['no_rag']['accuracy']
+        no_rag_f1 = prediction_results[ticker]['no_rag']['f1_score']
+        
+        print(f"{ticker}:")
+        print(f"  FinArena with RAG: Accuracy = {std_acc:.4f}, F1 = {std_f1:.4f}")
+        print(f"  FinArena without RAG: Accuracy = {no_rag_acc:.4f}, F1 = {no_rag_f1:.4f}")
+    
+    # Test trading simulation
+    print("\nRunning trading simulations...")
+    trading_results = test_trading_simulation(test_tickers, test_days=60)
+    
+    # Display trading results
+    print("\nTrading Simulation Results:")
+    print("--------------------------")
+    for ticker in trading_results:
+        print(f"\n{ticker} Results:")
+        
+        for strategy, results in trading_results[ticker].items():
+            print(f"  {strategy.replace('_', ' ').title()}:")
+            print(f"    Annualized Return: {results['annualized_return']:.4f}")
+            print(f"    Sharpe Ratio: {results['sharpe_ratio']:.4f}")
+            print(f"    Max Drawdown: {results['max_drawdown']:.4f}")
+            print(f"    Total Trades: {results['trades']}")
+    
+    # Visualize results
+    try:
+        visualize_results(prediction_results, trading_results)
+    except Exception as e:
+        print(f"Error visualizing results: {e}")
+        print("Results visualization skipped - continuing with execution")
+    
+    print("\nTesting complete!")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as e:
+        print(f"Error during execution: {e}")
+```
+
+Would you like me to explain or break down the code?

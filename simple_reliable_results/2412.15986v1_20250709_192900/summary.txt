@@ -1,0 +1,6 @@
+PDF: 2412.15986v1.pdf
+Size: 826,745 bytes
+Processing time: 72.1 seconds
+Response length: 16,814 characters
+Code length: 15,595 characters
+Generated: 2025-07-09 19:30:14

@@ -1,0 +1,326 @@
+Claude-Sonnet-3.7 Response for 2502.07766v2
+Generated: 2025-07-10 19:00:26
+Time: 57.4s
+==================================================
+
+Based on the PDF about mean-reverting SABR models for equity volatility surfaces, I'll create a Python test strategy to implement and test the CIR-ZABR model (one of the three models discussed) with simulated data.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.optimize import minimize
+from dataclasses import dataclass
+
+@dataclass
+class ModelParameters:
+    alpha: float  # initial instantaneous volatility
+    theta: float  # long-term volatility
+    lambda_: float  # speed of mean reversion of volatility
+    nu: float  # volatility of volatility
+    rho: float  # correlation between forward price and volatility processes
+
+class CIRZABR:
+    """Implementation of the CIR-ZABR model from the paper."""
+    
+    def __init__(self, params: ModelParameters):
+        self.params = params
+    
+    def tau_ex(self, T_ex):
+        """Calculate tau_ex in CIR-ZABR."""
+        alp = self.params.alpha
+        the = self.params.theta
+        lam = self.params.lambda_
+        E = np.exp(lam * T_ex)
+        
+        numerator = (2 * T_ex * lam * the**2 * E**2 - alp**2 + 2 * alp * the - the**2 
+                    - 4 * the * E * (alp - the) + E**2 * (alp**2 + 2 * alp * the - 3 * the**2))
+        denominator = (2 * lam * E**2)
+        
+        return numerator / denominator
+    
+    def G_int(self, T_ex):
+        """Calculate G_int in CIR-ZABR."""
+        alp = self.params.alpha
+        the = self.params.theta
+        lam = self.params.lambda_
+        nu = self.params.nu
+        E = np.exp(lam * T_ex)
+        
+        numerator = nu**2 * (2 * T_ex * lam * the * E**2 + 2 * alp - the 
+                           + E**2 * (2 * alp - 3 * the) - 4 * E * (alp - the))
+        denominator = (4 * lam**2 * E**2)
+        
+        return numerator / denominator
+    
+    def b_bar(self, T_ex):
+        """Calculate b_bar in CIR-ZABR (simplified version)."""
+        # This is a simplified version of the complex formula from the PDF
+        alp = self.params.alpha
+        the = self.params.theta
+        lam = self.params.lambda_
+        nu = self.params.nu
+        rho = self.params.rho
+        E = np.exp(lam * T_ex)
+        
+        # A simpler approximation of the complex formula in the paper
+        numerator = -np.sqrt(2) * nu * rho * E * (alp - the)**3
+        denominator = 48 * np.sqrt(alp + the) * self.tau_ex(T_ex)**2
+        
+        return numerator / denominator
+    
+    def c_bar(self, T_ex):
+        """Calculate c_bar in CIR-ZABR (simplified version)."""
+        # This is a simplified approximation of the very complex formula from the PDF
+        alp = self.params.alpha
+        the = self.params.theta
+        lam = self.params.lambda_
+        nu = self.params.nu
+        rho = self.params.rho
+        
+        # Simplified calculation to capture the essence of the formula
+        tau = self.tau_ex(T_ex)
+        b = self.b_bar(T_ex)
+        
+        # Simple approximation of c_int (much simpler than the actual formula)
+        c_int = nu**2 * (1 + rho**2) * (alp**2 + the**2) / (lam**3)
+        
+        # Calculate c_bar as per the formula in the paper
+        return 3 * c_int / (tau**3) - 3 * b**2
+    
+    def standard_sabr_params(self, T_ex):
+        """Calculate standard SABR parameters for a given expiry."""
+        tau_ex = self.tau_ex(T_ex)
+        G_int = self.G_int(T_ex)
+        b_bar = self.b_bar(T_ex)
+        c_bar = self.c_bar(T_ex)
+        
+        # Calculate standard SABR parameters
+        alpha_std = np.sqrt(tau_ex / T_ex) * np.exp(-c_bar * tau_ex / 4 + G_int / (2 * tau_ex))
+        rho_std = b_bar / np.sqrt(c_bar)
+        nu_std = np.sqrt(tau_ex / T_ex) * np.sqrt(c_bar)
+        
+        return alpha_std, rho_std, nu_std
+    
+    def implied_vol(self, K, T_ex, f=1.0):
+        """Calculate Black implied volatility for a given strike and expiry."""
+        alpha_std, rho_std, nu_std = self.standard_sabr_params(T_ex)
+        
+        # Calculate z parameter for SABR formula
+        z = (nu_std / alpha_std) * np.log(f / K)
+        
+        # Function x(z) from the SABR formula
+        def x_of_z(z, rho):
+            return np.log((np.sqrt(1 - 2 * rho * z + z**2) + z - rho) / (1 - rho))
+        
+        # Handle ATM case separately
+        if np.isclose(K, f):
+            sigma_B = alpha_std * (1 + ((1/4) * rho_std * nu_std * alpha_std + 
+                                      (2 - 3 * rho_std**2) / 24 * nu_std**2) * T_ex)
+        else:
+            x_z = x_of_z(z, rho_std)
+            z_over_x = z / x_z if not np.isclose(x_z, 0) else 1.0
+            
+            sigma_B = (z_over_x * alpha_std * 
+                       (1 + ((1/4) * rho_std * nu_std * alpha_std + 
+                           (2 - 3 * rho_std**2) / 24 * nu_std**2) * T_ex))
+        
+        return sigma_B
+
+
+def generate_simulated_volatility_surface():
+    """Generate a simulated volatility surface for testing."""
+    # Define a grid of strikes and expiries
+    strikes = np.linspace(0.8, 1.2, 5)  # Strikes from 80% to 120% of ATM
+    expiries = np.array([0.25, 0.5, 1.0])  # 3 months, 6 months, 1 year
+    
+    # Create a simulated volatility surface with a typical equity volatility skew
+    surface = np.zeros((len(expiries), len(strikes)))
+    
+    # Simulate a realistic equity volatility surface
+    for i, T in enumerate(expiries):
+        for j, K in enumerate(strikes):
+            # Base level
+            base_vol = 0.20
+            
+            # Add skew (typically negative for equities)
+            skew = -0.15 * (K - 1.0)
+            
+            # Add term structure (typically upward sloping)
+            term = 0.05 * (1 - np.exp(-2 * T))
+            
+            # Add smile curvature
+            smile = 0.1 * (K - 1.0)**2
+            
+            # Combine effects with some randomness
+            surface[i, j] = max(0.05, base_vol + skew + term + smile + 
+                               np.random.normal(0, 0.005))
+    
+    return strikes, expiries, surface
+
+
+def calibrate_cir_zabr(strikes, expiries, surface):
+    """Calibrate the CIR-ZABR model to the volatility surface."""
+    # Initial parameter guess
+    x0 = [0.2, 0.2, 5.0, 1.5, -0.6]  # [alpha, theta, lambda_, nu, rho]
+    
+    # Parameter bounds
+    bounds = [
+        (0.01, 1.0),    # alpha > 0
+        (0.01, 1.0),    # theta > 0
+        (0.1, 20.0),    # lambda > 0
+        (0.1, 5.0),     # nu > 0
+        (-0.99, 0.0)    # -1 < rho < 0 (negative for equity)
+    ]
+    
+    # Objective function to minimize (sum of squared errors)
+    def objective(x):
+        params = ModelParameters(x[0], x[1], x[2], x[3], x[4])
+        model = CIRZABR(params)
+        
+        # Calculate model implied vols and sum squared errors
+        error = 0.0
+        for i, T in enumerate(expiries):
+            for j, K in enumerate(strikes):
+                model_vol = model.implied_vol(K, T)
+                error += (model_vol - surface[i, j])**2
+        
+        return error
+    
+    # Run optimization
+    try:
+        result = minimize(
+            objective, 
+            x0, 
+            bounds=bounds, 
+            method='L-BFGS-B',
+            options={'maxiter': 100}
+        )
+        
+        fitted_params = ModelParameters(
+            result.x[0], result.x[1], result.x[2], result.x[3], result.x[4]
+        )
+        
+        return fitted_params, result.success
+    except Exception as e:
+        print(f"Calibration error: {e}")
+        return None, False
+
+
+def plot_volatility_surface(strikes, expiries, market_surface, model_surface=None):
+    """Plot the volatility surface."""
+    fig = plt.figure(figsize=(14, 7))
+    
+    # 3D plot
+    ax1 = fig.add_subplot(121, projection='3d')
+    X, Y = np.meshgrid(strikes, expiries)
+    
+    # Plot market surface
+    ax1.plot_surface(X, Y, market_surface, cmap='viridis', alpha=0.7)
+    
+    # Plot model surface if provided
+    if model_surface is not None:
+        ax1.plot_surface(X, Y, model_surface, cmap='plasma', alpha=0.5)
+    
+    ax1.set_xlabel('Strike')
+    ax1.set_ylabel('Expiry')
+    ax1.set_zlabel('Implied Volatility')
+    ax1.set_title('Volatility Surface')
+    
+    # 2D plot (volatility smile for each expiry)
+    ax2 = fig.add_subplot(122)
+    
+    for i, T in enumerate(expiries):
+        ax2.plot(strikes, market_surface[i], 'o-', label=f'Market T={T:.2f}')
+        if model_surface is not None:
+            ax2.plot(strikes, model_surface[i], 'x--', label=f'Model T={T:.2f}')
+    
+    ax2.set_xlabel('Strike')
+    ax2.set_ylabel('Implied Volatility')
+    ax2.set_title('Volatility Smiles')
+    ax2.legend()
+    
+    plt.tight_layout()
+    return fig
+
+
+def main():
+    """Main function to run the test strategy."""
+    print("Starting CIR-ZABR model test with simulated data...")
+    
+    # Generate simulated volatility surface
+    strikes, expiries, market_surface = generate_simulated_volatility_surface()
+    print(f"Generated volatility surface with {len(expiries)} expiries and {len(strikes)} strikes.")
+    
+    # Calibrate model to the surface
+    print("\nCalibrating CIR-ZABR model...")
+    fitted_params, success = calibrate_cir_zabr(strikes, expiries, market_surface)
+    
+    if not success:
+        print("Calibration did not converge. Using initial estimates.")
+        fitted_params = ModelParameters(0.2, 0.2, 5.0, 1.5, -0.6)
+    
+    print("\nFitted parameters:")
+    print(f"  alpha (initial vol): {fitted_params.alpha:.4f}")
+    print(f"  theta (long-term vol): {fitted_params.theta:.4f}")
+    print(f"  lambda (mean-reversion speed): {fitted_params.lambda_:.4f}")
+    print(f"  nu (vol of vol): {fitted_params.nu:.4f}")
+    print(f"  rho (correlation): {fitted_params.rho:.4f}")
+    
+    # Generate model implied volatility surface
+    model_surface = np.zeros_like(market_surface)
+    model = CIRZABR(fitted_params)
+    
+    for i, T in enumerate(expiries):
+        for j, K in enumerate(strikes):
+            try:
+                model_surface[i, j] = model.implied_vol(K, T)
+            except Exception as e:
+                print(f"Error calculating implied vol for K={K}, T={T}: {e}")
+                model_surface[i, j] = np.nan
+    
+    # Calculate RMSE
+    valid_indices = ~np.isnan(model_surface)
+    rmse = np.sqrt(np.mean((model_surface[valid_indices] - market_surface[valid_indices])**2))
+    print(f"\nModel fit RMSE: {rmse:.4%}")
+    
+    # Check if Feller condition is satisfied
+    feller_condition = 2 * fitted_params.lambda_ * fitted_params.theta > fitted_params.nu**2
+    print(f"Feller condition satisfied: {feller_condition}")
+    
+    # Plot results
+    print("\nPlotting volatility surface...")
+    fig = plot_volatility_surface(strikes, expiries, market_surface, model_surface)
+    
+    # Example of standard SABR parameters for different expiries
+    print("\nStandard SABR parameters for different expiries:")
+    for T in expiries:
+        alpha_std, rho_std, nu_std = model.standard_sabr_params(T)
+        print(f"  T={T:.2f}: alpha_std={alpha_std:.4f}, rho_std={rho_std:.4f}, nu_std={nu_std:.4f}")
+    
+    plt.show()
+    print("\nTest completed.")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as e:
+        print(f"Error in execution: {e}")
+```
+
+This code implements:
+
+1. A simplified version of the CIR-ZABR model from the paper, focusing on its core functionality
+2. Functions to generate simulated equity volatility surfaces with realistic properties (skew, term structure)
+3. Model calibration using numerical optimization
+4. Visualization of both market and model volatility surfaces
+5. Checking the Feller condition as mentioned in the paper
+
+The implementation simplifies some of the very complex formulas in the paper (especially the c_bar calculation) but captures the essential structure of the model. In a real implementation, you would want to use the complete formulas from Appendix C of the paper.
+
+When run, this code will:
+1. Generate a simulated volatility surface with realistic equity characteristics
+2. Calibrate the CIR-ZABR model parameters to this surface
+3. Calculate and display the model fit quality
+4. Check if the Feller condition is satisfied
+5. Visualize both the original and fitted surfaces

@@ -1,0 +1,503 @@
+Claude-Sonnet-3.7 Response for 2502.07393v1
+Generated: 2025-07-10 19:12:13
+Time: 75.1s
+==================================================
+
+Based on the paper, I'll create a Python implementation that simulates the FinRL-DeepSeek approach with risk-sensitive reinforcement learning for trading agents.
+
+```python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from datetime import datetime, timedelta
+import random
+from typing import Dict, List, Tuple
+
+# Simulate LLM classes
+class SimulatedLLM:
+    def __init__(self, model_name: str):
+        self.model_name = model_name
+        
+    def get_stock_recommendation(self, news_text: str) -> int:
+        """
+        Simulates LLM recommendation score from 1 to 5
+        1: negative, 2: somewhat negative, 3: neutral, 
+        4: somewhat positive, 5: positive
+        """
+        # In real implementation, this would call an LLM API
+        return random.randint(1, 5)
+    
+    def get_risk_assessment(self, news_text: str) -> int:
+        """
+        Simulates LLM risk assessment score from 1 to 5
+        1: very low risk, 2: low risk, 3: moderate risk, 
+        4: high risk, 5: very high risk
+        """
+        # In real implementation, this would call an LLM API
+        return random.randint(1, 5)
+
+# Simulated RL agents
+class TradingAgent:
+    def __init__(self, agent_type: str, llm_model: SimulatedLLM = None, llm_infusion_strength: float = 0.1):
+        self.agent_type = agent_type  # "PPO", "CPPO", "PPO-LLM", "CPPO-LLM"
+        self.llm_model = llm_model
+        self.llm_infusion_strength = llm_infusion_strength
+        self.portfolio_value = 10000  # Starting with $10,000
+        self.position = 0  # Current position in the market
+        self.cash = self.portfolio_value
+        self.returns = []
+        self.portfolio_values = [self.portfolio_value]
+        self.actions = []
+        
+    def _compute_sf_factor(self, recommendation: int, action: float) -> float:
+        """Compute the stock recommendation factor based on LLM recommendation"""
+        if self.llm_model is None:
+            return 1.0
+            
+        sf = 1.0  # Default, no change
+        strength = self.llm_infusion_strength
+        
+        if (recommendation == 5 and action > 0) or (recommendation == 1 and action < 0):
+            sf = 1.0 + strength
+        elif (recommendation == 4 and action > 0) or (recommendation == 2 and action < 0):
+            sf = 1.0 + strength/2
+        elif (recommendation == 4 and action < 0) or (recommendation == 2 and action > 0):
+            sf = 1.0 - strength/2
+        elif (recommendation == 5 and action < 0) or (recommendation == 1 and action > 0):
+            sf = 1.0 - strength
+            
+        return sf
+    
+    def _compute_rf_factor(self, risk_assessment: int) -> float:
+        """Compute the risk factor based on LLM risk assessment"""
+        if self.llm_model is None:
+            return 1.0
+            
+        rf = 1.0  # Default, no change
+        strength = self.llm_infusion_strength
+        
+        if risk_assessment == 5:  # Very high risk
+            rf = 1.0 + strength
+        elif risk_assessment == 4:  # High risk
+            rf = 1.0 + strength/2
+        elif risk_assessment == 3:  # Moderate risk
+            rf = 1.0
+        elif risk_assessment == 2:  # Low risk
+            rf = 1.0 - strength/2
+        elif risk_assessment == 1:  # Very low risk
+            rf = 1.0 - strength
+            
+        return rf
+    
+    def decide_action(self, state: np.ndarray, news: str = None) -> float:
+        """
+        Decide on a trading action based on the current state
+        Returns a value between -1 and 1 where:
+        - Negative: sell
+        - 0: hold
+        - Positive: buy
+        The magnitude indicates the size of the position
+        """
+        # Simplified simulation of policy network output
+        # In real implementation, this would be a neural network
+        
+        # Extract features from state for decision making
+        price = state[0]
+        prev_prices = state[1:6]  # Last 5 prices
+        
+        # Simple trend following strategy
+        short_ma = np.mean(prev_prices[:2])
+        long_ma = np.mean(prev_prices)
+        
+        # Add some randomness to simulate exploration
+        noise = np.random.normal(0, 0.2)
+        
+        # Basic action based on moving average crossover
+        if short_ma > long_ma:
+            base_action = 0.5 + noise  # Buy signal
+        else:
+            base_action = -0.5 + noise  # Sell signal
+            
+        # Clip to [-1, 1]
+        base_action = max(-1.0, min(1.0, base_action))
+        
+        # If we're using an LLM-infused agent, modify action based on news
+        if "LLM" in self.agent_type and news is not None and self.llm_model is not None:
+            recommendation = self.llm_model.get_stock_recommendation(news)
+            sf = self._compute_sf_factor(recommendation, base_action)
+            modified_action = sf * base_action
+            return max(-1.0, min(1.0, modified_action))  # Ensure within [-1, 1]
+        
+        return base_action
+    
+    def calculate_cvar_adjustment(self, returns: List[float], risk_assessment: int = None) -> float:
+        """
+        Calculate CVaR adjustment for CPPO agents
+        """
+        if "CPPO" not in self.agent_type:
+            return 1.0
+            
+        # Sort returns to identify worst outcomes
+        sorted_returns = sorted(returns)
+        alpha = 0.05  # CVaR confidence level (worst 5%)
+        worst_returns_count = max(1, int(len(sorted_returns) * alpha))
+        worst_returns = sorted_returns[:worst_returns_count]
+        
+        # Calculate CVaR (average of worst returns)
+        cvar = np.mean(worst_returns) if worst_returns else 0
+        
+        # If using LLM risk assessment, adjust CVaR
+        if "LLM" in self.agent_type and risk_assessment is not None:
+            rf = self._compute_rf_factor(risk_assessment)
+            return 1.0 + (cvar * rf)
+        
+        return 1.0 + cvar  # Simple adjustment based on CVaR
+    
+    def update(self, state: np.ndarray, next_state: np.ndarray, action: float, 
+               reward: float, news: str = None) -> None:
+        """
+        Update the agent after taking an action
+        In a real implementation, this would update the policy
+        """
+        # Placeholder for policy update logic
+        # In real implementation, this would update the PPO or CPPO agent
+        pass
+    
+    def execute_trade(self, price: float, action: float) -> float:
+        """
+        Execute a trade based on the action and current price
+        Returns the reward (profit/loss)
+        """
+        prev_portfolio_value = self.portfolio_value
+        
+        # Convert action (-1 to 1) to target position percentage
+        target_position_pct = action  # -1 = fully short, 0 = cash, 1 = fully long
+        
+        # Calculate target position in dollars
+        target_position_dollars = self.portfolio_value * target_position_pct
+        
+        # Calculate shares to trade
+        current_position_dollars = self.position * price
+        dollars_to_trade = target_position_dollars - current_position_dollars
+        shares_to_trade = dollars_to_trade / price
+        
+        # Update position
+        self.position += shares_to_trade
+        self.cash -= dollars_to_trade
+        
+        # Update portfolio value
+        self.portfolio_value = self.cash + (self.position * price)
+        
+        # Calculate return
+        period_return = (self.portfolio_value / prev_portfolio_value) - 1
+        self.returns.append(period_return)
+        self.portfolio_values.append(self.portfolio_value)
+        self.actions.append(action)
+        
+        return period_return  # Return as reward
+
+
+# Simulation environment
+class TradingEnvironment:
+    def __init__(self, prices: np.ndarray, news_data: List[str], window_size: int = 10):
+        self.prices = prices
+        self.news_data = news_data
+        self.window_size = window_size
+        self.current_step = window_size
+        
+    def reset(self) -> np.ndarray:
+        """Reset environment to initial state"""
+        self.current_step = self.window_size
+        return self._get_state()
+        
+    def _get_state(self) -> np.ndarray:
+        """Get current state representation"""
+        return np.array(self.prices[self.current_step-self.window_size:self.current_step])
+        
+    def step(self, action: float) -> Tuple[np.ndarray, float, bool, dict]:
+        """
+        Take a step in the environment given an action
+        Returns: (next_state, reward, done, info)
+        """
+        current_price = self.prices[self.current_step]
+        
+        # Move to next step
+        self.current_step += 1
+        done = self.current_step >= len(self.prices)
+        
+        if done:
+            next_state = self._get_state()
+            reward = 0
+        else:
+            next_price = self.prices[self.current_step]
+            reward = ((next_price / current_price) - 1) * action  # Reward is return * action direction
+            next_state = self._get_state()
+            
+        current_news = self.news_data[self.current_step-1] if self.current_step-1 < len(self.news_data) else ""
+            
+        info = {
+            'price': current_price,
+            'news': current_news
+        }
+        
+        return next_state, reward, done, info
+
+
+# Helper functions for evaluation
+def calculate_metrics(returns: List[float]) -> Dict:
+    """Calculate performance metrics for a trading strategy"""
+    returns = np.array(returns)
+    
+    # Basic metrics
+    total_return = np.prod(1 + returns) - 1
+    annualized_return = (1 + total_return) ** (252 / len(returns)) - 1
+    volatility = np.std(returns) * np.sqrt(252)
+    
+    # Risk metrics
+    information_ratio = annualized_return / volatility if volatility != 0 else 0
+    
+    # CVaR calculation
+    alpha = 0.05  # 5% worst cases
+    sorted_returns = np.sort(returns)
+    cvar_threshold = int(np.ceil(alpha * len(returns)))
+    cvar = np.mean(sorted_returns[:cvar_threshold])
+    
+    # Rachev ratio (simplified)
+    positive_returns = returns[returns > 0]
+    negative_returns = returns[returns < 0]
+    rachev_ratio = np.mean(positive_returns) / abs(np.mean(negative_returns)) if len(negative_returns) > 0 else 1
+    
+    return {
+        'total_return': total_return,
+        'annualized_return': annualized_return,
+        'volatility': volatility,
+        'information_ratio': information_ratio,
+        'cvar': cvar,
+        'rachev_ratio': rachev_ratio
+    }
+
+def plot_portfolio_values(agents: Dict[str, TradingAgent], benchmark_values: List[float], 
+                          dates: List[datetime] = None):
+    """Plot portfolio values for different agents"""
+    plt.figure(figsize=(12, 6))
+    
+    # Plot for each agent
+    for name, agent in agents.items():
+        if dates:
+            plt.plot(dates, agent.portfolio_values, label=name)
+        else:
+            plt.plot(agent.portfolio_values, label=name)
+    
+    # Plot benchmark
+    if dates:
+        plt.plot(dates, benchmark_values, label='Nasdaq-100 Benchmark', linestyle='--')
+    else:
+        plt.plot(benchmark_values, label='Nasdaq-100 Benchmark', linestyle='--')
+    
+    plt.title('Portfolio Value Over Time')
+    plt.xlabel('Date' if dates else 'Trading Day')
+    plt.ylabel('Portfolio Value ($)')
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    
+    return plt
+
+def generate_simulated_data(days: int = 1000, volatility: float = 0.015) -> Tuple[np.ndarray, List[str]]:
+    """Generate simulated price and news data"""
+    # Generate price data with realistic characteristics
+    returns = np.random.normal(0.0005, volatility, days)  # Daily returns with slight upward bias
+    
+    # Add some market regimes (bull and bear markets)
+    bull_market = np.random.normal(0.001, volatility, days//3)
+    bear_market = np.random.normal(-0.0005, volatility*1.5, days//3)
+    
+    # Combine the regimes
+    combined_returns = np.concatenate([
+        bull_market, 
+        returns[:(days-2*(days//3))], 
+        bear_market
+    ])
+    
+    # Create price series
+    prices = 100 * np.cumprod(1 + combined_returns)
+    
+    # Generate simulated news data
+    news_data = []
+    for i in range(days):
+        if random.random() < 0.7:  # 70% of days have news
+            sentiment = "positive" if combined_returns[i] > 0 else "negative"
+            news_type = random.choice(["earnings", "market", "regulatory", "sector"])
+            
+            if news_type == "earnings":
+                news = f"Company reported {sentiment} earnings results today."
+            elif news_type == "market":
+                news = f"Market sentiment is {sentiment} with traders reacting to economic data."
+            elif news_type == "regulatory":
+                news = f"Regulatory changes have a {sentiment} impact on the company outlook."
+            else:
+                news = f"Sector analysis shows {sentiment} trends for related companies."
+        else:
+            news = ""
+        
+        news_data.append(news)
+    
+    return prices, news_data
+
+def main():
+    # Set random seed for reproducibility
+    np.random.seed(42)
+    random.seed(42)
+    
+    print("FinRL-DeepSeek: LLM-Infused Risk-Sensitive RL Trading Agent Simulation")
+    print("=" * 70)
+    
+    # Generate simulated data
+    print("Generating simulated market data...")
+    train_days = 750  # ~3 years
+    test_days = 250   # ~1 year
+    total_days = train_days + test_days
+    prices, news_data = generate_simulated_data(days=total_days)
+    
+    # Split into training and testing periods
+    train_prices = prices[:train_days]
+    test_prices = prices[train_days:]
+    train_news = news_data[:train_days]
+    test_news = news_data[train_days:]
+    
+    # Create date range for visualization
+    start_date = datetime(2020, 1, 1)
+    dates = [start_date + timedelta(days=i) for i in range(total_days)]
+    train_dates = dates[:train_days]
+    test_dates = dates[train_days:]
+    
+    # Create LLM models
+    print("Initializing simulated LLM models...")
+    deepseek_llm = SimulatedLLM("DeepSeek V3")
+    
+    # Create trading agents
+    print("Creating trading agents...")
+    agents = {
+        "PPO": TradingAgent("PPO"),
+        "CPPO": TradingAgent("CPPO"),
+        "PPO-DeepSeek": TradingAgent("PPO-LLM", deepseek_llm, llm_infusion_strength=0.1),
+        "CPPO-DeepSeek": TradingAgent("CPPO-LLM", deepseek_llm, llm_infusion_strength=0.1)
+    }
+    
+    # Train agents (simplified simulation)
+    print("Training agents (simplified)...")
+    train_env = TradingEnvironment(train_prices, train_news)
+    
+    for agent_name, agent in agents.items():
+        print(f"Training {agent_name}...")
+        state = train_env.reset()
+        done = False
+        
+        # Simplified training loop (in reality, this would involve many epochs)
+        while not done:
+            news = train_env.news_data[train_env.current_step-1] if train_env.current_step-1 < len(train_env.news_data) else ""
+            action = agent.decide_action(state, news)
+            next_state, reward, done, info = train_env.step(action)
+            
+            # Update agent
+            agent.update(state, next_state, action, reward, news)
+            state = next_state
+    
+    # Test agents
+    print("\nTesting agents on out-of-sample data...")
+    test_env = TradingEnvironment(test_prices, test_news)
+    
+    # Reset agents for testing
+    for agent_name, agent in agents.items():
+        agent.portfolio_value = 10000
+        agent.position = 0
+        agent.cash = agent.portfolio_value
+        agent.returns = []
+        agent.portfolio_values = [agent.portfolio_value]
+        agent.actions = []
+    
+    # Testing loop
+    for agent_name, agent in agents.items():
+        print(f"Testing {agent_name}...")
+        state = test_env.reset()
+        done = False
+        
+        while not done:
+            news = test_env.news_data[test_env.current_step-1] if test_env.current_step-1 < len(test_env.news_data) else ""
+            
+            # Get risk assessment if using CPPO-LLM
+            risk_assessment = None
+            if "CPPO-LLM" in agent_name and agent.llm_model is not None and news:
+                risk_assessment = agent.llm_model.get_risk_assessment(news)
+            
+            # Get action from agent
+            action = agent.decide_action(state, news)
+            
+            # Apply CVaR adjustment for CPPO agents
+            if "CPPO" in agent_name and len(agent.returns) > 10:
+                cvar_adjustment = agent.calculate_cvar_adjustment(agent.returns[-30:], risk_assessment)
+                action *= cvar_adjustment
+                action = max(-1.0, min(1.0, action))  # Clip to [-1, 1]
+            
+            # Execute trade
+            current_price = test_prices[test_env.current_step]
+            reward = agent.execute_trade(current_price, action)
+            
+            # Step environment
+            next_state, _, done, _ = test_env.step(action)
+            state = next_state
+    
+    # Create benchmark for comparison
+    benchmark_values = [10000]
+    for i in range(1, len(test_prices)):
+        benchmark_values.append(benchmark_values[-1] * (test_prices[i] / test_prices[i-1]))
+    
+    # Calculate and display performance metrics
+    print("\nPerformance Metrics:")
+    print("-" * 70)
+    print(f"{'Agent':<15} {'Total Return':<15} {'Info Ratio':<15} {'CVaR':<15} {'Rachev Ratio':<15}")
+    print("-" * 70)
+    
+    for agent_name, agent in agents.items():
+        metrics = calculate_metrics(agent.returns)
+        print(f"{agent_name:<15} {metrics['total_return']*100:>6.2f}% {metrics['information_ratio']:>14.4f} {metrics['cvar']*100:>14.4f}% {metrics['rachev_ratio']:>14.4f}")
+    
+    # Calculate benchmark metrics
+    benchmark_returns = [(benchmark_values[i] / benchmark_values[i-1]) - 1 for i in range(1, len(benchmark_values))]
+    benchmark_metrics = calculate_metrics(benchmark_returns)
+    print(f"{'Benchmark':<15} {benchmark_metrics['total_return']*100:>6.2f}% {benchmark_metrics['information_ratio']:>14.4f} {benchmark_metrics['cvar']*100:>14.4f}% {benchmark_metrics['rachev_ratio']:>14.4f}")
+    
+    # Plot results
+    plt = plot_portfolio_values(agents, benchmark_values, test_dates)
+    plt.savefig('trading_results.png')
+    print("\nResults plot saved as 'trading_results.png'")
+    
+    # Analysis of results
+    print("\nAnalysis:")
+    best_agent = max(agents.items(), key=lambda x: x[1].portfolio_values[-1])
+    print(f"Best performing agent: {best_agent[0]} with final portfolio value of ${best_agent[1].portfolio_values[-1]:.2f}")
+    
+    if best_agent[1].portfolio_values[-1] > benchmark_values[-1]:
+        print(f"The best agent outperformed the benchmark by {(best_agent[1].portfolio_values[-1]/benchmark_values[-1] - 1)*100:.2f}%")
+    else:
+        print(f"The best agent underperformed the benchmark by {(benchmark_values[-1]/best_agent[1].portfolio_values[-1] - 1)*100:.2f}%")
+    
+    # Check if LLM-infused agents improved over base versions
+    if agents["PPO-DeepSeek"].portfolio_values[-1] > agents["PPO"].portfolio_values[-1]:
+        print("LLM infusion improved PPO performance")
+    else:
+        print("LLM infusion did not improve PPO performance")
+        
+    if agents["CPPO-DeepSeek"].portfolio_values[-1] > agents["CPPO"].portfolio_values[-1]:
+        print("LLM infusion improved CPPO performance")
+    else:
+        print("LLM infusion did not improve CPPO performance")
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as e:
+        print(f"Error occurred: {e}")
+```
+
+Would you like me to explain how this code works?

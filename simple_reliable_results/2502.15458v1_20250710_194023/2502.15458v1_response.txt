@@ -1,0 +1,435 @@
+Claude-Sonnet-3.7 Response for 2502.15458v1
+Generated: 2025-07-10 19:41:55
+Time: 67.7s
+==================================================
+
+After analyzing the PDF about "Clustered Network Connectedness," I'll create a Python test strategy to simulate and test the key concepts from the paper. The core idea is to implement the clustered network connectedness framework and compare it with generalized and orthogonalized approaches using simulated financial market data.
+
+```python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from statsmodels.tsa.api import VAR
+import seaborn as sns
+from scipy.linalg import cholesky
+
+class ConnectednessAnalysis:
+    def __init__(self, data, p=3, horizon=12):
+        """
+        Initialize the connectedness analysis object
+        
+        Parameters:
+        -----------
+        data : pandas DataFrame
+            Time series data with variables as columns
+        p : int
+            VAR model lag order
+        horizon : int
+            Forecast horizon for variance decomposition
+        """
+        self.data = data
+        self.p = p
+        self.horizon = horizon
+        self.n = data.shape[1]
+        self.var_model = None
+        self.residuals = None
+        self.sigma = None
+        
+    def fit_var(self):
+        """Fit VAR model to the data"""
+        try:
+            model = VAR(self.data)
+            self.var_model = model.fit(self.p)
+            self.residuals = self.var_model.resid
+            self.sigma = np.cov(self.residuals.T)
+            return True
+        except Exception as e:
+            print(f"Error fitting VAR model: {e}")
+            return False
+            
+    def _get_ma_coefficients(self):
+        """Get moving average coefficients from VAR model"""
+        ma_matrices = []
+        # Identity matrix as A0
+        ma_matrices.append(np.eye(self.n))
+        
+        # Get VAR coefficient matrices
+        phi_matrices = []
+        for i in range(self.p):
+            phi_matrices.append(self.var_model.coefs[i])
+            
+        # Calculate MA coefficients recursively
+        for h in range(1, self.horizon):
+            temp = np.zeros((self.n, self.n))
+            for i in range(min(h, self.p)):
+                temp += np.dot(phi_matrices[i], ma_matrices[h-i-1])
+            ma_matrices.append(temp)
+            
+        return ma_matrices
+    
+    def orthogonalized_variance_decomposition(self):
+        """Compute orthogonalized variance decomposition (C=N)"""
+        ma_matrices = self._get_ma_coefficients()
+        M = cholesky(self.sigma, lower=True)
+        
+        # Initialize VD matrix
+        vd = np.zeros((self.n, self.n))
+        
+        # Compute denominator (total forecast error variance)
+        denominators = np.zeros(self.n)
+        for i in range(self.n):
+            total_var = 0
+            for h in range(len(ma_matrices)):
+                total_var += np.dot(ma_matrices[h][i], np.dot(self.sigma, ma_matrices[h][i].T))
+            denominators[i] = total_var
+        
+        # Compute orthogonalized variance decomposition
+        for i in range(self.n):
+            for j in range(self.n):
+                numerator = 0
+                for h in range(len(ma_matrices)):
+                    shock_effect = np.dot(ma_matrices[h][i], M[:, j])
+                    numerator += shock_effect**2
+                vd[i, j] = numerator / denominators[i]
+                
+        return vd
+    
+    def generalized_variance_decomposition(self):
+        """Compute generalized variance decomposition (C=1)"""
+        ma_matrices = self._get_ma_coefficients()
+        
+        # Initialize VD matrix
+        vd = np.zeros((self.n, self.n))
+        
+        # Compute denominator (total forecast error variance)
+        denominators = np.zeros(self.n)
+        for i in range(self.n):
+            total_var = 0
+            for h in range(len(ma_matrices)):
+                total_var += np.dot(ma_matrices[h][i], np.dot(self.sigma, ma_matrices[h][i].T))
+            denominators[i] = total_var
+        
+        # Compute generalized variance decomposition
+        for i in range(self.n):
+            for j in range(self.n):
+                numerator = 0
+                for h in range(len(ma_matrices)):
+                    shock_effect = np.dot(ma_matrices[h][i], self.sigma[:, j])
+                    numerator += shock_effect**2 / self.sigma[j, j]
+                vd[i, j] = numerator / denominators[i]
+                
+        # Normalize rows to sum to 1
+        row_sums = vd.sum(axis=1)
+        vd = vd / row_sums[:, np.newaxis]
+                
+        return vd
+    
+    def clustered_variance_decomposition(self, clusters):
+        """
+        Compute clustered variance decomposition
+        
+        Parameters:
+        -----------
+        clusters : list of lists
+            List of lists containing indices of variables in each cluster
+        """
+        if sum(len(c) for c in clusters) != self.n:
+            raise ValueError("Clusters must contain all variables exactly once")
+            
+        ma_matrices = self._get_ma_coefficients()
+        
+        # Create clustered Q^(-1) matrix
+        Q_inv = np.eye(self.n)
+        
+        # Process clusters sequentially
+        start_idx = 0
+        for c_idx, cluster in enumerate(clusters):
+            end_idx = start_idx + len(cluster)
+            
+            if c_idx > 0:  # Skip first cluster as it's already identity
+                # Extract relevant submatrices
+                for prev_c_idx in range(c_idx):
+                    prev_start = sum(len(clusters[i]) for i in range(prev_c_idx))
+                    prev_end = prev_start + len(clusters[prev_c_idx])
+                    
+                    Sigma_21 = self.sigma[start_idx:end_idx, prev_start:prev_end]
+                    Sigma_11 = self.sigma[prev_start:prev_end, prev_start:prev_end]
+                    
+                    # Update Q_inv
+                    Q_inv[start_idx:end_idx, prev_start:prev_end] = -np.dot(Sigma_21, np.linalg.inv(Sigma_11))
+            
+            start_idx = end_idx
+            
+        # Compute Omega = Q_inv * Sigma * Q_inv.T
+        Omega = np.dot(Q_inv, np.dot(self.sigma, Q_inv.T))
+        
+        # Initialize VD matrix
+        vd = np.zeros((self.n, self.n))
+        
+        # Compute denominator (total forecast error variance)
+        denominators = np.zeros(self.n)
+        for i in range(self.n):
+            total_var = 0
+            for h in range(len(ma_matrices)):
+                total_var += np.dot(ma_matrices[h][i], np.dot(self.sigma, ma_matrices[h][i].T))
+            denominators[i] = total_var
+        
+        # Compute clustered variance decomposition
+        for i in range(self.n):
+            for j in range(self.n):
+                numerator = 0
+                for h in range(len(ma_matrices)):
+                    AQ = np.dot(ma_matrices[h], np.linalg.inv(Q_inv))
+                    omega_j = Omega[:, j] / np.sqrt(Omega[j, j])
+                    shock_effect = np.dot(AQ[i], omega_j)
+                    numerator += shock_effect**2
+                vd[i, j] = numerator / denominators[i]
+                
+        # Normalize rows to sum to 1
+        row_sums = vd.sum(axis=1)
+        vd = vd / row_sums[:, np.newaxis]
+                
+        return vd
+    
+    def compute_connectedness_measures(self, vd):
+        """Compute connectedness measures from variance decomposition matrix"""
+        # System-wide connectedness (sum of off-diagonal elements)
+        system_connectedness = (vd.sum() - np.trace(vd)) / self.n
+        
+        # To-connectedness (column sums minus diagonal)
+        to_connectedness = vd.sum(axis=0) - np.diag(vd)
+        
+        # From-connectedness (row sums minus diagonal)
+        from_connectedness = vd.sum(axis=1) - np.diag(vd)
+        
+        # Net-connectedness (to minus from)
+        net_connectedness = to_connectedness - from_connectedness
+        
+        return {
+            'system': system_connectedness,
+            'to': to_connectedness,
+            'from': from_connectedness,
+            'net': net_connectedness,
+            'matrix': vd
+        }
+    
+    def compute_cluster_connectedness(self, vd, clusters):
+        """Compute within-cluster and cross-cluster connectedness"""
+        n = vd.shape[0]
+        
+        # Initialize within and cross connectedness
+        within_connectedness = 0
+        cross_connectedness = 0
+        
+        # Create a mapping from variable index to cluster index
+        var_to_cluster = {}
+        for c_idx, cluster in enumerate(clusters):
+            for var_idx in cluster:
+                var_to_cluster[var_idx] = c_idx
+        
+        # Compute within and cross connectedness
+        for i in range(n):
+            for j in range(n):
+                if i != j:  # Skip diagonal elements
+                    if var_to_cluster[i] == var_to_cluster[j]:
+                        within_connectedness += vd[i, j]
+                    else:
+                        cross_connectedness += vd[i, j]
+        
+        # Normalize
+        within_connectedness /= n
+        cross_connectedness /= n
+        
+        return {
+            'within': within_connectedness,
+            'cross': cross_connectedness
+        }
+
+
+def simulate_clustered_data(n_obs=500, clusters=None, seed=42):
+    """
+    Simulate data with clustered structure
+    
+    Parameters:
+    -----------
+    n_obs : int
+        Number of observations
+    clusters : list of lists
+        List of lists containing number of variables in each cluster
+    seed : int
+        Random seed
+    """
+    np.random.seed(seed)
+    
+    if clusters is None:
+        clusters = [[0, 1], [2, 3, 4], [5, 6, 7]]  # Default 3 clusters with 8 variables
+    
+    n_vars = sum(len(c) for c in clusters)
+    
+    # Create correlation matrix with block structure
+    corr = np.eye(n_vars)
+    
+    # Set high correlation within clusters
+    start_idx = 0
+    for cluster in clusters:
+        cluster_size = len(cluster)
+        end_idx = start_idx + cluster_size
+        
+        # Set high correlation within cluster (0.7-0.9)
+        for i in range(start_idx, end_idx):
+            for j in range(start_idx, end_idx):
+                if i != j:
+                    corr[i, j] = 0.7 + 0.2 * np.random.rand()
+                    
+        # Set moderate correlation across clusters (0.2-0.4)
+        for other_start in range(0, start_idx):
+            other_end = other_start + len([c for c_idx, c in enumerate(clusters) if sum(len(clusters[i]) for i in range(c_idx)) <= other_start][0])
+            for i in range(start_idx, end_idx):
+                for j in range(other_start, other_end):
+                    corr[i, j] = corr[j, i] = 0.2 + 0.2 * np.random.rand()
+        
+        start_idx = end_idx
+    
+    # Ensure correlation matrix is positive definite
+    min_eig = np.min(np.linalg.eigvals(corr))
+    if min_eig < 0:
+        corr -= 1.1 * min_eig * np.eye(n_vars)
+    
+    # Generate multivariate normal data
+    data = np.random.multivariate_normal(
+        mean=np.zeros(n_vars),
+        cov=corr,
+        size=n_obs
+    )
+    
+    # Add autocorrelation to make it more like financial time series
+    for t in range(3, n_obs):
+        data[t] += 0.3 * data[t-1] - 0.1 * data[t-2] + 0.05 * data[t-3]
+    
+    # Add some volatility clustering
+    volatility = np.ones(n_obs)
+    for t in range(1, n_obs):
+        volatility[t] = 0.9 * volatility[t-1] + 0.1 * (data[t-1]**2).mean()
+    
+    for t in range(n_obs):
+        data[t] *= np.sqrt(volatility[t])
+    
+    # Create dataframe with meaningful column names
+    region_names = ['NorthAmerica', 'Europe', 'EastAsia']
+    col_names = []
+    
+    for i, cluster in enumerate(clusters):
+        region = region_names[i % len(region_names)]
+        for j in range(len(cluster)):
+            col_names.append(f"{region}{j+1}")
+    
+    return pd.DataFrame(data, columns=col_names)
+
+
+def test_connectedness_framework():
+    """Test the connectedness framework with simulated data"""
+    print("Testing Clustered Network Connectedness Framework")
+    print("=" * 50)
+    
+    # Define clusters
+    clusters = [[0, 1], [2, 3, 4, 5], [6, 7, 8, 9, 10, 11]]
+    
+    # Simulate data
+    print("Simulating clustered financial data...")
+    data = simulate_clustered_data(n_obs=1000, clusters=clusters)
+    
+    # Visualize correlation matrix
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(data.corr(), cmap='viridis', annot=False)
+    plt.title('Correlation Matrix of Simulated Data')
+    plt.savefig('correlation_matrix.png')
+    plt.close()
+    
+    # Initialize connectedness analysis
+    print("Fitting VAR model...")
+    ca = ConnectednessAnalysis(data, p=3, horizon=12)
+    if not ca.fit_var():
+        print("Failed to fit VAR model. Exiting.")
+        return
+    
+    # Compute variance decompositions
+    print("Computing variance decompositions...")
+    try:
+        ortho_vd = ca.orthogonalized_variance_decomposition()
+        gen_vd = ca.generalized_variance_decomposition()
+        clust_vd = ca.clustered_variance_decomposition(clusters)
+        
+        # Compute connectedness measures
+        ortho_conn = ca.compute_connectedness_measures(ortho_vd)
+        gen_conn = ca.compute_connectedness_measures(gen_vd)
+        clust_conn = ca.compute_connectedness_measures(clust_vd)
+        
+        # Compute cluster-specific connectedness
+        ortho_clust_conn = ca.compute_cluster_connectedness(ortho_vd, clusters)
+        gen_clust_conn = ca.compute_cluster_connectedness(gen_vd, clusters)
+        clust_clust_conn = ca.compute_cluster_connectedness(clust_vd, clusters)
+        
+        # Compare results
+        print("\nSystem-wide Connectedness:")
+        print(f"  Orthogonalized: {ortho_conn['system']:.4f}")
+        print(f"  Generalized:    {gen_conn['system']:.4f}")
+        print(f"  Clustered:      {clust_conn['system']:.4f}")
+        
+        print("\nWithin-Cluster Connectedness:")
+        print(f"  Orthogonalized: {ortho_clust_conn['within']:.4f}")
+        print(f"  Generalized:    {gen_clust_conn['within']:.4f}")
+        print(f"  Clustered:      {clust_clust_conn['within']:.4f}")
+        
+        print("\nCross-Cluster Connectedness:")
+        print(f"  Orthogonalized: {ortho_clust_conn['cross']:.4f}")
+        print(f"  Generalized:    {gen_clust_conn['cross']:.4f}")
+        print(f"  Clustered:      {clust_clust_conn['cross']:.4f}")
+        
+        # Visualize variance decomposition matrices
+        fig, axs = plt.subplots(1, 3, figsize=(18, 6))
+        
+        im0 = axs[0].imshow(ortho_vd, cmap='viridis')
+        axs[0].set_title('Orthogonalized VD')
+        fig.colorbar(im0, ax=axs[0])
+        
+        im1 = axs[1].imshow(gen_vd, cmap='viridis')
+        axs[1].set_title('Generalized VD')
+        fig.colorbar(im1, ax=axs[1])
+        
+        im2 = axs[2].imshow(clust_vd, cmap='viridis')
+        axs[2].set_title('Clustered VD')
+        fig.colorbar(im2, ax=axs[2])
+        
+        plt.tight_layout()
+        plt.savefig('variance_decompositions.png')
+        plt.close()
+        
+        # Visualize net connectedness
+        plt.figure(figsize=(10, 6))
+        x = np.arange(len(data.columns))
+        width = 0.25
+        
+        plt.bar(x - width, ortho_conn['net'], width, label='Orthogonalized')
+        plt.bar(x, gen_conn['net'], width, label='Generalized')
+        plt.bar(x + width, clust_conn['net'], width, label='Clustered')
+        
+        plt.xlabel('Variables')
+        plt.ylabel('Net Connectedness')
+        plt.title('Net Directional Connectedness by Variable')
+        plt.xticks(x, data.columns, rotation=45)
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig('net_connectedness.png')
+        plt.close()
+        
+        print("\nAnalysis complete. Results visualized in PNG files.")
+        
+    except Exception as e:
+        print(f"Error during connectedness analysis: {e}")
+
+
+if __name__ == "__main__":
+    test_connectedness_framework()
+```
+
+Would you like me to explain how this code implements the concepts from the paper or provide more details about any specific part of the implementation?

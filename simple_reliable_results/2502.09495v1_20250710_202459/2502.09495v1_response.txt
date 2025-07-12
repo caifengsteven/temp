@@ -1,0 +1,388 @@
+Claude-Sonnet-3.7 Response for 2502.09495v1
+Generated: 2025-07-10 20:26:10
+Time: 63.3s
+==================================================
+
+Based on the paper "Cracking the Code: Enhancing Development finance understanding with artificial intelligence," I'll create a Python test strategy that simulates the machine learning approach described for classifying development finance projects from the OECD CRS dataset.
+
+```python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""
+Development Finance Classification Test Strategy
+Based on: "Cracking the Code: Enhancing Development finance understanding with artificial intelligence"
+by Pierre Beaucoral (2025)
+
+This script simulates the NLP clustering approach described in the paper
+for categorizing development projects using BERTopic.
+"""
+
+import pandas as pd
+import numpy as np
+from sklearn.metrics import silhouette_score, davies_bouldin_score, calinski_harabasz_score
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.decomposition import PCA
+from sklearn.cluster import HDBSCAN
+import matplotlib.pyplot as plt
+import random
+import warnings
+from datetime import datetime
+warnings.filterwarnings("ignore")
+
+# Constants
+MIN_CLUSTER_SIZE = 5  # Smaller for simulation (paper used 500)
+N_COMPONENTS = 5      # Dimensionality reduction (paper used 12)
+NUM_SAMPLES = 1000    # Number of sample projects to generate
+
+class DevelopmentProject:
+    """Model for development project data based on OECD CRS dataset"""
+    
+    def __init__(self, id, title, short_desc, long_desc, year, donor, recipient, 
+                 amount, purpose_code, sector_name):
+        self.id = id
+        self.title = title
+        self.short_desc = short_desc
+        self.long_desc = long_desc
+        self.raw_text = f"{title} {short_desc} {long_desc}"
+        self.year = year
+        self.donor = donor
+        self.recipient = recipient
+        self.amount = amount
+        self.purpose_code = purpose_code
+        self.sector_name = sector_name
+
+def generate_test_data(n_samples=1000):
+    """Generate simulated development project data"""
+    
+    # Sample sectors and their themes (simplified from the paper's OECD classifications)
+    sectors = {
+        "Education": ["school construction", "teacher training", "literacy programs", 
+                     "vocational training", "education policy", "school meals"],
+        "Health": ["hospital construction", "disease prevention", "vaccination", 
+                  "medical equipment", "health policy", "malaria control", "HIV/AIDS"],
+        "Water & Sanitation": ["water supply", "sanitation", "hygiene", "waste management", 
+                              "water policy", "irrigation"],
+        "Agriculture": ["crop production", "livestock", "agricultural equipment", 
+                       "fertilizer supply", "pest control", "agricultural training"],
+        "Environment": ["climate change", "biodiversity", "conservation", 
+                       "renewable energy", "pollution control", "reforestation"],
+        "Governance": ["democratic participation", "human rights", "anti-corruption", 
+                      "judicial reform", "public finance", "election support"]
+    }
+    
+    # Sample donors and recipients
+    donors = ["France", "Germany", "Japan", "USA", "UK", "Sweden", "Canada", "Australia"]
+    recipients = ["Ethiopia", "Kenya", "Bangladesh", "Nepal", "Bolivia", "Vietnam", 
+                 "Ghana", "Mali", "Indonesia", "Jordan", "Syria"]
+    
+    # Templates for generating text
+    title_templates = [
+        "Project for {theme} in {recipient}",
+        "{theme} improvement initiative",
+        "Support to {recipient} {sector} sector",
+        "Technical assistance for {theme}",
+        "{donor}-{recipient} cooperation on {theme}"
+    ]
+    
+    short_desc_templates = [
+        "This project aims to improve {theme} in {recipient}.",
+        "Supporting {recipient}'s efforts in {theme}.",
+        "Enhancing {theme} capabilities through technical assistance.",
+        "Funding for {theme} development activities.",
+        "Capacity building for {theme} in {recipient}."
+    ]
+    
+    long_desc_templates = [
+        "The project will establish {theme} facilities in rural areas of {recipient}, benefiting approximately {num} people. Implementation period is {duration} years with a focus on sustainability and local ownership.",
+        "This initiative supports the government of {recipient} in implementing its national {sector} strategy, with particular emphasis on {theme}. Activities include training, equipment provision, and policy development.",
+        "Technical and financial support to strengthen {theme} in {recipient}, aligned with SDG targets. The project includes monitoring systems, capacity development, and community engagement components.",
+        "Comprehensive program to address {theme} challenges in {recipient}, focusing on vulnerable populations. The approach integrates technology transfer, institutional strengthening, and knowledge sharing."
+    ]
+    
+    projects = []
+    
+    for i in range(n_samples):
+        # Select sector and theme
+        sector = random.choice(list(sectors.keys()))
+        theme = random.choice(sectors[sector])
+        donor = random.choice(donors)
+        recipient = random.choice(recipients)
+        
+        # Generate text components
+        title = random.choice(title_templates).format(
+            theme=theme, recipient=recipient, donor=donor, sector=sector.lower())
+        
+        short_desc = random.choice(short_desc_templates).format(
+            theme=theme, recipient=recipient, donor=donor, sector=sector.lower())
+        
+        long_desc = random.choice(long_desc_templates).format(
+            theme=theme, recipient=recipient, donor=donor, sector=sector.lower(),
+            num=random.randint(1000, 100000), duration=random.randint(2, 5))
+        
+        # Generate other attributes
+        year = random.randint(2010, 2022)
+        amount = round(random.uniform(50000, 10000000), 2)
+        purpose_code = f"{random.randint(10, 40)}{random.randint(100, 999)}"
+        
+        # Create project
+        project = DevelopmentProject(
+            id=i,
+            title=title,
+            short_desc=short_desc,
+            long_desc=long_desc,
+            year=year,
+            donor=donor,
+            recipient=recipient,
+            amount=amount,
+            purpose_code=purpose_code,
+            sector_name=sector
+        )
+        
+        projects.append(project)
+    
+    return projects
+
+def simulate_embedding_reduction(texts):
+    """
+    Simulate the embedding and dimensionality reduction process
+    described in the paper (BERT embedding + UMAP reduction).
+    
+    For testing purposes, we'll use TF-IDF + PCA as a simplified alternative.
+    """
+    print("Simulating embedding and dimensionality reduction...")
+    
+    # TF-IDF vectorization (in place of BERT embeddings)
+    vectorizer = TfidfVectorizer(max_features=100)
+    text_vectors = vectorizer.fit_transform(texts)
+    
+    # PCA for dimensionality reduction (in place of UMAP)
+    pca = PCA(n_components=N_COMPONENTS)
+    reduced_vectors = pca.fit_transform(text_vectors.toarray())
+    
+    print(f"Reduced vectors shape: {reduced_vectors.shape}")
+    return reduced_vectors
+
+def perform_clustering(vectors):
+    """
+    Simulate the HDBSCAN clustering process described in the paper.
+    """
+    print("Performing HDBSCAN clustering...")
+    
+    # HDBSCAN clustering
+    clusterer = HDBSCAN(min_cluster_size=MIN_CLUSTER_SIZE, 
+                        min_samples=2,
+                        metric='euclidean',
+                        cluster_selection_epsilon=0.5)
+    
+    cluster_labels = clusterer.fit_predict(vectors)
+    
+    # Count clusters and outliers
+    n_clusters = len(set(cluster_labels)) - (1 if -1 in cluster_labels else 0)
+    n_outliers = list(cluster_labels).count(-1)
+    
+    print(f"Found {n_clusters} clusters")
+    print(f"Outliers: {n_outliers} ({n_outliers/len(vectors)*100:.1f}%)")
+    
+    return cluster_labels
+
+def evaluate_clustering(vectors, labels):
+    """
+    Calculate clustering quality metrics as described in the paper.
+    """
+    print("Evaluating clustering quality...")
+    
+    # Filter out noise points for metric calculation
+    if -1 in labels:
+        non_noise_idx = labels != -1
+        vectors_filtered = vectors[non_noise_idx]
+        labels_filtered = labels[non_noise_idx]
+    else:
+        vectors_filtered = vectors
+        labels_filtered = labels
+    
+    # Skip metrics if we have too few clusters or all data is noise
+    if len(set(labels_filtered)) < 2:
+        print("Too few clusters to calculate metrics")
+        return None, None, None
+    
+    # Calculate metrics
+    try:
+        silhouette = silhouette_score(vectors_filtered, labels_filtered)
+    except:
+        silhouette = None
+        
+    try:
+        davies_bouldin = davies_bouldin_score(vectors_filtered, labels_filtered)
+    except:
+        davies_bouldin = None
+        
+    try:
+        calinski_harabasz = calinski_harabasz_score(vectors_filtered, labels_filtered)
+    except:
+        calinski_harabasz = None
+    
+    print(f"Silhouette Score: {silhouette:.2f}")
+    print(f"Davies-Bouldin Score: {davies_bouldin:.2f}")
+    print(f"Calinski-Harabasz Score: {calinski_harabasz:.2f}")
+    
+    return silhouette, davies_bouldin, calinski_harabasz
+
+def extract_cluster_topics(df, cluster_labels):
+    """
+    Simulate the c-TF-IDF process to extract key terms for each cluster
+    as described in the paper.
+    """
+    print("Extracting topics for each cluster...")
+    
+    topics = {}
+    
+    # For each cluster, find the most common words
+    for cluster_id in sorted(set(cluster_labels)):
+        if cluster_id == -1:
+            continue  # Skip noise cluster
+            
+        # Get texts in this cluster
+        cluster_texts = df[df['cluster'] == cluster_id]['raw_text']
+        
+        # Create a TF-IDF vectorizer
+        vectorizer = TfidfVectorizer(max_features=50, stop_words='english')
+        tfidf_matrix = vectorizer.fit_transform(cluster_texts)
+        
+        # Get top terms
+        feature_names = vectorizer.get_feature_names_out()
+        importance = np.mean(tfidf_matrix.toarray(), axis=0)
+        indices = importance.argsort()[-10:][::-1]  # Top 10 terms
+        
+        # Store top terms
+        topics[cluster_id] = [feature_names[i] for i in indices]
+        
+        # Print example
+        if len(topics) <= 5:  # Print only first 5 clusters for brevity
+            print(f"Cluster {cluster_id}: {', '.join(topics[cluster_id])}")
+    
+    return topics
+
+def visualize_results(df, topics):
+    """Generate some basic visualizations of the results"""
+    print("Generating visualizations...")
+    
+    # 1. Cluster sizes
+    cluster_counts = df['cluster'].value_counts().sort_index()
+    plt.figure(figsize=(10, 6))
+    bars = plt.bar(cluster_counts.index.astype(str), cluster_counts.values)
+    
+    # Color the outlier cluster differently if it exists
+    if -1 in cluster_counts.index:
+        outlier_idx = list(cluster_counts.index).index(-1)
+        bars[outlier_idx].set_color('red')
+    
+    plt.title('Cluster Sizes')
+    plt.xlabel('Cluster ID')
+    plt.ylabel('Number of Projects')
+    plt.xticks(rotation=90)
+    plt.tight_layout()
+    plt.savefig('cluster_sizes.png')
+    
+    # 2. Projects by sector and year (simulating the time-based analysis in the paper)
+    years = sorted(df['year'].unique())
+    sectors = sorted(df['sector_name'].unique())
+    
+    sector_by_year = {}
+    for sector in sectors:
+        sector_by_year[sector] = [len(df[(df['sector_name'] == sector) & 
+                                        (df['year'] == year)]) for year in years]
+    
+    plt.figure(figsize=(12, 6))
+    for sector, counts in sector_by_year.items():
+        plt.plot(years, counts, marker='o', label=sector)
+    
+    plt.title('Projects by Sector and Year')
+    plt.xlabel('Year')
+    plt.ylabel('Number of Projects')
+    plt.legend()
+    plt.grid(True, linestyle='--', alpha=0.7)
+    plt.tight_layout()
+    plt.savefig('projects_by_sector_year.png')
+    
+    print("Visualizations saved as PNG files")
+
+def main():
+    """Main execution function"""
+    print(f"Development Finance Classification Test Strategy")
+    print(f"Starting at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"Generating {NUM_SAMPLES} sample projects...")
+    
+    try:
+        # Generate sample data
+        projects = generate_test_data(NUM_SAMPLES)
+        
+        # Convert to DataFrame for easier processing
+        data = {
+            'id': [p.id for p in projects],
+            'title': [p.title for p in projects],
+            'short_desc': [p.short_desc for p in projects],
+            'long_desc': [p.long_desc for p in projects],
+            'raw_text': [p.raw_text for p in projects],
+            'year': [p.year for p in projects],
+            'donor': [p.donor for p in projects],
+            'recipient': [p.recipient for p in projects],
+            'amount': [p.amount for p in projects],
+            'purpose_code': [p.purpose_code for p in projects],
+            'sector_name': [p.sector_name for p in projects]
+        }
+        
+        df = pd.DataFrame(data)
+        print(f"Sample data created with {len(df)} projects")
+        
+        # Simulate the BERT embedding and UMAP dimensionality reduction
+        vectors = simulate_embedding_reduction(df['raw_text'].tolist())
+        
+        # Perform HDBSCAN clustering
+        cluster_labels = perform_clustering(vectors)
+        df['cluster'] = cluster_labels
+        
+        # Evaluate clustering quality
+        silhouette, davies_bouldin, calinski_harabasz = evaluate_clustering(vectors, cluster_labels)
+        
+        # Extract topics for each cluster
+        topics = extract_cluster_topics(df, cluster_labels)
+        
+        # Visualize results
+        visualize_results(df, topics)
+        
+        # Simulate comparison with original OECD classification
+        matched_count = 0
+        for cluster_id in set(cluster_labels):
+            if cluster_id == -1:
+                continue
+                
+            # Get the most common sector in this cluster
+            cluster_df = df[df['cluster'] == cluster_id]
+            most_common_sector = cluster_df['sector_name'].value_counts().idxmax()
+            
+            # Count projects where ML classification matches original sector
+            matches = cluster_df[cluster_df['sector_name'] == most_common_sector]
+            matched_count += len(matches)
+        
+        if len(df[df['cluster'] != -1]) > 0:
+            accuracy = matched_count / len(df[df['cluster'] != -1])
+            print(f"\nComparison with original OECD sectors:")
+            print(f"Accuracy: {accuracy:.2%}")
+        
+        print(f"\nSimulation completed successfully at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        
+    except Exception as e:
+        print(f"Error occurred: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return 1
+        
+    return 0
+
+if __name__ == "__main__":
+    exit_code = main()
+    exit(exit_code)
+```
+
+Would you like me to explain how this code works or any specific parts of it?

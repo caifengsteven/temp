@@ -1,0 +1,6 @@
+PDF: 2502.07393v1.pdf
+Size: 1,039,482 bytes
+Processing time: 75.1 seconds
+Response length: 19,580 characters
+Code length: 19,352 characters
+Generated: 2025-07-10 19:12:13

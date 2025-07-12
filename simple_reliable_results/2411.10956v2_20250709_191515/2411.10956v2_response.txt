@@ -1,0 +1,488 @@
+Claude-Sonnet-3.7 Response for 2411.10956v2
+Generated: 2025-07-09 19:16:30
+Time: 72.5s
+==================================================
+
+Based on the paper, I'll create a Python implementation that simulates the IVE (Intraday Volume Estimator) model's approach to volume ratio prediction and tests a trading strategy.
+
+```python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.utils.data import DataLoader, TensorDataset
+import math
+from datetime import datetime, timedelta
+import random
+
+# Set random seeds for reproducibility
+random.seed(42)
+np.random.seed(42)
+torch.manual_seed(42)
+
+class PositionalEncoding(nn.Module):
+    def __init__(self, d_model, max_len=5000):
+        super(PositionalEncoding, self).__init__()
+        
+        pe = torch.zeros(max_len, d_model)
+        position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
+        div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model))
+        
+        pe[:, 0::2] = torch.sin(position * div_term)
+        pe[:, 1::2] = torch.cos(position * div_term)
+        pe = pe.unsqueeze(0)
+        
+        self.register_buffer('pe', pe)
+        
+    def forward(self, x):
+        return x + self.pe[:, :x.size(1)]
+
+class TimeEncoding(nn.Module):
+    def __init__(self, d_model):
+        super(TimeEncoding, self).__init__()
+        self.encoding = nn.Embedding(390, d_model)  # 390 minutes in a trading day
+        
+    def forward(self, x, time_idx):
+        # time_idx should be the absolute minute index in the trading day
+        return x + self.encoding(time_idx)
+
+class IVEModel(nn.Module):
+    def __init__(self, input_dim, d_model=64, nhead=4, num_encoder_layers=4, 
+                 num_decoder_layers=4, dim_feedforward=256, dropout=0.1):
+        super(IVEModel, self).__init__()
+        
+        # Input projection
+        self.input_projection = nn.Linear(input_dim, d_model)
+        
+        # Positional encoding
+        self.pos_encoder = PositionalEncoding(d_model)
+        self.time_encoder = TimeEncoding(d_model)
+        
+        # Transformer
+        self.transformer = nn.Transformer(
+            d_model=d_model,
+            nhead=nhead,
+            num_encoder_layers=num_encoder_layers,
+            num_decoder_layers=num_decoder_layers,
+            dim_feedforward=dim_feedforward,
+            dropout=dropout
+        )
+        
+        # Distribution head for Student's t-distribution
+        self.mean_head = nn.Linear(d_model, 1)
+        self.std_head = nn.Linear(d_model, 1)
+        self.df_head = nn.Linear(d_model, 1)  # Degrees of freedom
+        
+    def forward(self, src, tgt, src_time_idx, tgt_time_idx):
+        # Project input
+        src = self.input_projection(src)
+        tgt = self.input_projection(tgt)
+        
+        # Add positional encoding
+        src = self.pos_encoder(src)
+        tgt = self.pos_encoder(tgt)
+        
+        # Add time encoding
+        src = self.time_encoder(src, src_time_idx)
+        tgt = self.time_encoder(tgt, tgt_time_idx)
+        
+        # Create masks for transformer
+        src_mask = None
+        tgt_mask = self.generate_square_subsequent_mask(tgt.size(1)).to(tgt.device)
+        
+        # Pass through transformer
+        output = self.transformer(src, tgt, src_mask, tgt_mask)
+        
+        # Get distribution parameters
+        mean = self.mean_head(output)
+        std = torch.exp(self.std_head(output))  # Ensure positivity
+        df = 5.0 + torch.exp(self.df_head(output))  # Ensure df > 5
+        
+        return mean, std, df
+    
+    def generate_square_subsequent_mask(self, sz):
+        mask = (torch.triu(torch.ones(sz, sz)) == 1).transpose(0, 1)
+        mask = mask.float().masked_fill(mask == 0, float('-inf')).masked_fill(mask == 1, float(0.0))
+        return mask
+
+# Simulated data generation
+def generate_simulated_data(num_days=100, num_minutes=390):
+    """Generate simulated intraday volume data with U-shaped pattern"""
+    
+    # Create time indices
+    minutes = np.arange(num_minutes)
+    
+    # Generate base U-shaped volume pattern
+    base_pattern = 0.2 + 0.8 * (np.exp(-0.02 * (minutes - 0)) + np.exp(-0.02 * (minutes - (num_minutes-1))))
+    base_pattern = base_pattern / base_pattern.sum()  # Normalize to sum to 1
+    
+    # Initialize data structures
+    all_days_data = []
+    dates = [datetime(2023, 1, 1) + timedelta(days=i) for i in range(num_days)]
+    
+    # Generate data for each day
+    for day in range(num_days):
+        # Add random variations to base pattern
+        noise = np.random.normal(0, 0.2, num_minutes)
+        volume_ratio = base_pattern + noise
+        volume_ratio = np.maximum(volume_ratio, 0.001)  # Ensure positive values
+        volume_ratio = volume_ratio / volume_ratio.sum()  # Normalize to sum to 1
+        
+        # Convert to volume values
+        total_volume = np.random.randint(1000000, 5000000)
+        volume = volume_ratio * total_volume
+        
+        # Create accumulated volume
+        accumulated_volume = np.cumsum(volume)
+        
+        # Create turnover rate (random between 0.001 and 0.01)
+        turnover_base = np.random.uniform(0.001, 0.01)
+        turnover_rate = volume_ratio * turnover_base
+        
+        # Create trade amount
+        price = np.random.uniform(50, 200)
+        price_series = price * (1 + np.cumsum(np.random.normal(0, 0.0002, num_minutes)))
+        trade_amount = volume * price_series
+        
+        # Store data
+        day_data = pd.DataFrame({
+            'date': dates[day],
+            'minute': minutes,
+            'volume': volume,
+            'volume_ratio': volume_ratio,
+            'accumulated_volume': accumulated_volume,
+            'turnover_rate': turnover_rate,
+            'trade_amount': trade_amount,
+            'price': price_series
+        })
+        
+        all_days_data.append(day_data)
+    
+    # Concatenate all days
+    data = pd.concat(all_days_data, ignore_index=True)
+    
+    return data
+
+# Add occasional volume spikes
+def add_volume_spikes(data, spike_probability=0.05, spike_magnitude_range=(2, 5)):
+    """Add random volume spikes to the data"""
+    
+    # Get unique dates
+    dates = data['date'].unique()
+    
+    # For each date, randomly add spikes
+    for date in dates:
+        if np.random.random() < spike_probability:
+            # Choose a random minute (avoiding first and last 30 minutes)
+            minute = np.random.randint(30, 360)
+            
+            # Choose a spike magnitude
+            magnitude = np.random.uniform(*spike_magnitude_range)
+            
+            # Apply the spike
+            mask = (data['date'] == date) & (data['minute'] == minute)
+            
+            # Increase volume and related metrics
+            data.loc[mask, 'volume'] *= magnitude
+            data.loc[mask, 'volume_ratio'] *= magnitude
+            data.loc[mask, 'trade_amount'] *= magnitude
+            
+            # Recalculate accumulated volume and normalize volume_ratio
+            day_mask = data['date'] == date
+            data.loc[day_mask, 'accumulated_volume'] = data.loc[day_mask, 'volume'].cumsum()
+            total_volume = data.loc[day_mask, 'volume'].sum()
+            data.loc[day_mask, 'volume_ratio'] = data.loc[day_mask, 'volume'] / total_volume
+    
+    return data
+
+# Simple prediction model to simulate IVE's outputs
+def simulate_ive_predictions(data, error_std=0.02, std_base=0.05, std_spike_sensitivity=0.2):
+    """
+    Simulate IVE's predictions including mean and standard deviation
+    - Mean prediction includes some error from the true values
+    - Std prediction is higher for upcoming volume spikes
+    """
+    # Copy data
+    prediction_data = data.copy()
+    
+    # Add prediction columns
+    prediction_data['predicted_mean'] = 0.0
+    prediction_data['predicted_std'] = 0.0
+    
+    # Process each date separately
+    for date in prediction_data['date'].unique():
+        day_mask = prediction_data['date'] == date
+        true_values = prediction_data.loc[day_mask, 'volume_ratio'].values
+        
+        # Generate predictions with some error
+        errors = np.random.normal(0, error_std, len(true_values))
+        predicted_means = np.maximum(true_values + errors, 0.0001)
+        
+        # Generate standard deviations - higher before volume spikes
+        predicted_stds = np.ones_like(true_values) * std_base
+        
+        # For each minute, set std higher if next minute has a spike
+        for i in range(len(true_values) - 1):
+            if true_values[i+1] > 1.5 * true_values[i]:
+                predicted_stds[i] += std_spike_sensitivity * (true_values[i+1] - true_values[i])
+        
+        # Store predictions
+        prediction_data.loc[day_mask, 'predicted_mean'] = predicted_means
+        prediction_data.loc[day_mask, 'predicted_std'] = predicted_stds
+    
+    return prediction_data
+
+# Trading strategy implementation
+def execute_trading_strategy(data, total_shares=1000, adjustment_factor=0.2):
+    """
+    Simulate trading based on volume predictions
+    - Uses predicted mean and std to adjust order placement
+    - Higher std values suggest potential upcoming volume spikes
+    """
+    # Initialize results
+    results = []
+    
+    # Process each date separately
+    for date in data['date'].unique():
+        day_data = data[data['date'] == date].copy()
+        
+        # Calculate the target shares per minute based on predicted volume ratio
+        day_data['target_shares'] = day_data['predicted_mean'] * total_shares
+        
+        # Adjust target shares based on std (for potential volume spikes)
+        day_data['adjusted_target_shares'] = day_data['target_shares'] + (day_data['predicted_std'] * adjustment_factor * total_shares)
+        
+        # Simulate execution - in a real system this would place actual orders
+        # For simulation, we'll assume all orders are executed at the current price
+        
+        # Calculate VWAP for the day
+        vwap = (day_data['volume'] * day_data['price']).sum() / day_data['volume'].sum()
+        
+        # Calculate execution price based on our strategy
+        execution_price = (day_data['adjusted_target_shares'] * day_data['price']).sum() / day_data['adjusted_target_shares'].sum()
+        
+        # Calculate performance vs VWAP in basis points
+        performance_bp = (vwap - execution_price) / vwap * 10000
+        
+        # Store results
+        results.append({
+            'date': date,
+            'vwap': vwap,
+            'execution_price': execution_price,
+            'performance_bp': performance_bp
+        })
+    
+    return pd.DataFrame(results)
+
+# Evaluate strategy performance
+def evaluate_strategy(results):
+    """Evaluate the trading strategy performance"""
+    
+    avg_performance = results['performance_bp'].mean()
+    std_performance = results['performance_bp'].std()
+    beat_ratio = (results['performance_bp'] > 0).mean() * 100
+    
+    # Calculate top/bottom 20% performance
+    top_20_performance = results.nlargest(int(len(results) * 0.2), 'performance_bp')['performance_bp'].mean()
+    bottom_20_performance = results.nsmallest(int(len(results) * 0.2), 'performance_bp')['performance_bp'].mean()
+    
+    print(f"Strategy Performance:")
+    print(f"- Average Performance: {avg_performance:.2f} bp")
+    print(f"- Standard Deviation: {std_performance:.2f} bp")
+    print(f"- VWAP Beat Ratio: {beat_ratio:.2f}%")
+    print(f"- Top 20% Performance: {top_20_performance:.2f} bp")
+    print(f"- Bottom 20% Performance: {bottom_20_performance:.2f} bp")
+    
+    return {
+        'avg_performance': avg_performance,
+        'std_performance': std_performance,
+        'beat_ratio': beat_ratio,
+        'top_20_performance': top_20_performance,
+        'bottom_20_performance': bottom_20_performance
+    }
+
+# Volatility Interruption simulation
+def simulate_volatility_interruption(data, vi_probability=0.05, price_change_range=(0.1, 0.15)):
+    """
+    Simulate Volatility Interruption (VI) events
+    - VI occurs when price changes drastically
+    - Creates significant temporary price deviations
+    """
+    # Copy data
+    vi_data = data.copy()
+    vi_events = []
+    
+    # Process each date
+    for date in vi_data['date'].unique():
+        if np.random.random() < vi_probability:
+            # Choose a random minute (avoiding first and last 30 minutes)
+            vi_minute = np.random.randint(30, 360)
+            
+            # Choose a direction (up or down)
+            direction = 1 if np.random.random() > 0.5 else -1
+            
+            # Choose a magnitude
+            magnitude = np.random.uniform(*price_change_range) * direction
+            
+            # Apply price change
+            day_mask = (vi_data['date'] == date) & (vi_data['minute'] >= vi_minute)
+            
+            # Store original prices
+            original_prices = vi_data.loc[day_mask, 'price'].copy()
+            
+            # Apply price jump at VI minute
+            vi_data.loc[day_mask, 'price'] = original_prices * (1 + magnitude)
+            
+            # Record VI event
+            vi_events.append({
+                'date': date,
+                'vi_minute': vi_minute,
+                'magnitude': magnitude
+            })
+    
+    return vi_data, pd.DataFrame(vi_events)
+
+# Execute trading test during Volatility Interruption
+def test_vi_performance(data, vi_events, total_shares=1000):
+    """Test trading performance during Volatility Interruption events"""
+    
+    vi_results = []
+    
+    for _, event in vi_events.iterrows():
+        date = event['date']
+        vi_minute = event['vi_minute']
+        
+        # Get data for this day
+        day_data = data[data['date'] == date].copy()
+        
+        # Calculate what would happen if we execute before VI
+        pre_vi_data = day_data[day_data['minute'] < vi_minute]
+        post_vi_data = day_data[day_data['minute'] >= vi_minute]
+        
+        # Calculate day VWAP
+        vwap = (day_data['volume'] * day_data['price']).sum() / day_data['volume'].sum()
+        
+        # Calculate execution price if we follow predicted volumes
+        # (simplified - in reality would need to model order book dynamics)
+        execution_price = (
+            (pre_vi_data['predicted_mean'] * pre_vi_data['price']).sum() +
+            (post_vi_data['predicted_mean'] * post_vi_data['price']).sum()
+        ) / (
+            pre_vi_data['predicted_mean'].sum() + post_vi_data['predicted_mean'].sum()
+        )
+        
+        # Calculate performance vs VWAP in basis points
+        performance_bp = (vwap - execution_price) / vwap * 10000
+        
+        vi_results.append({
+            'date': date,
+            'vi_minute': vi_minute,
+            'magnitude': event['magnitude'],
+            'vwap': vwap,
+            'execution_price': execution_price,
+            'performance_bp': performance_bp
+        })
+    
+    return pd.DataFrame(vi_results)
+
+# Plot results
+def plot_results(data, date_to_plot, prediction_data=None):
+    """Plot volume ratio and predictions for a specific date"""
+    
+    # Filter data for the date
+    day_data = data[data['date'] == date_to_plot]
+    
+    # Create figure
+    fig, ax = plt.subplots(figsize=(12, 6))
+    
+    # Plot actual volume ratio
+    ax.plot(day_data['minute'], day_data['volume_ratio'], label='Actual Volume Ratio', color='blue')
+    
+    # If prediction data is provided, plot it
+    if prediction_data is not None:
+        day_pred = prediction_data[prediction_data['date'] == date_to_plot]
+        
+        # Plot predicted mean
+        ax.plot(day_pred['minute'], day_pred['predicted_mean'], label='Predicted Mean', color='green', linestyle='--')
+        
+        # Plot confidence interval
+        upper = day_pred['predicted_mean'] + day_pred['predicted_std']
+        lower = day_pred['predicted_mean'] - day_pred['predicted_std']
+        ax.fill_between(day_pred['minute'], lower, upper, alpha=0.2, color='green', label='Prediction Interval')
+    
+    # Set labels and title
+    ax.set_xlabel('Minute of Trading Day')
+    ax.set_ylabel('Volume Ratio')
+    ax.set_title(f'Volume Ratio for {date_to_plot.strftime("%Y-%m-%d")}')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    plt.show()
+
+def main():
+    try:
+        print("Generating simulated data...")
+        # Generate simulated data
+        data = generate_simulated_data(num_days=100)
+        
+        # Add volume spikes
+        data = add_volume_spikes(data)
+        
+        # Split data into train/test
+        train_data = data[data['date'] < datetime(2023, 3, 1)]
+        test_data = data[data['date'] >= datetime(2023, 3, 1)]
+        
+        print(f"Generated {len(data['date'].unique())} days of simulated data")
+        print(f"Training set: {len(train_data['date'].unique())} days")
+        print(f"Test set: {len(test_data['date'].unique())} days")
+        
+        # Simulate IVE predictions
+        print("Simulating IVE model predictions...")
+        prediction_data = simulate_ive_predictions(test_data)
+        
+        # Execute trading strategy
+        print("Executing trading strategy...")
+        results = execute_trading_strategy(prediction_data)
+        
+        # Evaluate strategy
+        performance_metrics = evaluate_strategy(results)
+        
+        # Test during Volatility Interruption
+        print("\nSimulating Volatility Interruption events...")
+        vi_data, vi_events = simulate_volatility_interruption(test_data)
+        
+        if not vi_events.empty:
+            print(f"Generated {len(vi_events)} VI events")
+            vi_prediction_data = simulate_ive_predictions(vi_data)
+            vi_results = test_vi_performance(vi_prediction_data, vi_events)
+            
+            print("\nPerformance during Volatility Interruption:")
+            vi_avg_performance = vi_results['performance_bp'].mean()
+            vi_median_performance = vi_results['performance_bp'].median()
+            vi_std_performance = vi_results['performance_bp'].std()
+            
+            print(f"- Average Performance: {vi_avg_performance:.2f} bp")
+            print(f"- Median Performance: {vi_median_performance:.2f} bp")
+            print(f"- Standard Deviation: {vi_std_performance:.2f} bp")
+        else:
+            print("No VI events generated in this run")
+        
+        # Plot an example day
+        example_date = test_data['date'].unique()[0]
+        print(f"\nPlotting example for date: {example_date}")
+        plot_results(test_data, example_date, prediction_data)
+        
+    except Exception as e:
+        print(f"Error in execution: {str(e)}")
+        import traceback
+        traceback.print_exc()
+
+if __name__ == "__main__":
+    main()
+```
+
+Would you like me to explain any particular part of this implementation?

@@ -1,0 +1,841 @@
+Claude-Sonnet-3.7 Response for 2502.00828v1
+Generated: 2025-07-09 21:27:48
+Time: 120.1s
+==================================================
+
+Based on the research paper, I'll create a Python test strategy to simulate the DINN (Decision-informed Neural Networks with Large Language Model Integration) approach for portfolio optimization. This code will include data generation, a simplified model implementation, testing, and result visualization.
+
+```python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.utils.data import DataLoader, TensorDataset
+import datetime as dt
+from typing import List, Tuple, Dict, Optional
+import random
+import seaborn as sns
+
+# Set random seeds for reproducibility
+np.random.seed(42)
+torch.manual_seed(42)
+random.seed(42)
+
+class SimulatedMarketData:
+    """Generate simulated financial market data based on the DINN paper."""
+    
+    def __init__(self, n_assets: int = 30, n_macro: int = 5, 
+                 time_steps: int = 1000, volatility: float = 0.02):
+        self.n_assets = n_assets
+        self.n_macro = n_macro
+        self.time_steps = time_steps
+        self.volatility = volatility
+        
+        # Generate sector classifications (as in paper)
+        self.sectors = np.random.choice(["Tech", "Finance", "Energy", "Healthcare", 
+                                        "Consumer", "Industrial"], n_assets)
+        
+    def generate_data(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
+        """Generate asset returns and macroeconomic variables."""
+        
+        # Generate correlated asset returns (following a factor model)
+        # Create a correlation matrix with sector-based blocks
+        corr_matrix = np.eye(self.n_assets) * 0.5
+        
+        # Add sector correlations
+        for i in range(self.n_assets):
+            for j in range(self.n_assets):
+                if i != j and self.sectors[i] == self.sectors[j]:
+                    corr_matrix[i, j] = 0.7  # Higher correlation within sectors
+                elif i != j:
+                    corr_matrix[i, j] = 0.3  # Lower correlation across sectors
+        
+        # Ensure matrix is positive definite
+        corr_matrix = (corr_matrix + corr_matrix.T) / 2
+        
+        # Generate return series
+        mean_returns = np.random.normal(0.0005, 0.0002, self.n_assets)  # Daily mean returns
+        
+        # Generate base returns
+        returns = np.random.multivariate_normal(
+            mean=mean_returns, 
+            cov=corr_matrix * self.volatility**2, 
+            size=self.time_steps
+        )
+        
+        # Add some temporal structure (autocorrelation)
+        for t in range(1, self.time_steps):
+            returns[t] = 0.1 * returns[t-1] + 0.9 * returns[t]
+        
+        # Generate macroeconomic variables
+        macro_vars = np.zeros((self.time_steps, self.n_macro))
+        
+        # Create macro variables with different frequencies and patterns
+        # ICSA (Weekly initial claims) - higher frequency
+        macro_vars[:, 0] = np.sin(np.linspace(0, 10*np.pi, self.time_steps)) + np.random.normal(0, 0.2, self.time_steps)
+        
+        # UMCSENT (Consumer sentiment) - slower moving
+        macro_vars[:, 1] = np.cumsum(np.random.normal(0, 0.05, self.time_steps))
+        
+        # HSN1F (New home sales) - cyclical with trend
+        macro_vars[:, 2] = np.linspace(0, 2, self.time_steps) + 0.5 * np.sin(np.linspace(0, 8*np.pi, self.time_steps))
+        
+        # UNRATE (Unemployment) - persistent with jumps
+        macro_vars[:, 3] = np.cumsum(np.random.normal(0, 0.02, self.time_steps))
+        for i in range(5):  # Add some "crisis" spikes
+            idx = np.random.randint(0, self.time_steps)
+            macro_vars[idx:idx+20, 3] += np.random.uniform(1, 2)
+        
+        # HYBS (High-yield bond spread) - related to market stress
+        macro_vars[:, 4] = 0.7 * macro_vars[:, 3] + np.random.normal(0, 0.3, self.time_steps)
+        
+        # Standardize macro variables
+        scaler = StandardScaler()
+        macro_vars = scaler.fit_transform(macro_vars)
+        
+        # Generate dates for the time series
+        start_date = dt.datetime(2015, 1, 1)
+        dates = [start_date + dt.timedelta(days=i) for i in range(self.time_steps)]
+        
+        # Create DataFrames
+        asset_names = [f"Asset_{i}" for i in range(self.n_assets)]
+        returns_df = pd.DataFrame(returns, index=dates, columns=asset_names)
+        
+        macro_names = ["ICSA", "UMCSENT", "HSN1F", "UNRATE", "HYBS"]
+        macro_df = pd.DataFrame(macro_vars, index=dates, columns=macro_names)
+        
+        return returns_df, macro_df
+    
+    def get_asset_sector_map(self) -> Dict[str, str]:
+        """Return mapping of assets to sectors."""
+        return {f"Asset_{i}": self.sectors[i] for i in range(self.n_assets)}
+
+
+class DecisionInformedNeuralNetwork(nn.Module):
+    """Simplified implementation of the DINN architecture from the paper."""
+    
+    def __init__(self, n_assets: int, n_macro: int, lookback: int = 60, 
+                 hidden_dim: int = 64, lambda_risk: float = 0.5, beta: float = 0.4):
+        super().__init__()
+        self.n_assets = n_assets
+        self.n_macro = n_macro
+        self.lookback = lookback
+        self.hidden_dim = hidden_dim
+        self.lambda_risk = lambda_risk  # Risk aversion parameter
+        self.beta = beta  # Balance between prediction and decision loss
+        
+        # Time series encoding
+        self.trend_encoder = nn.LSTM(
+            input_size=n_assets,
+            hidden_size=hidden_dim,
+            num_layers=2,
+            batch_first=True
+        )
+        
+        # Residual encoder
+        self.residual_encoder = nn.LSTM(
+            input_size=n_assets,
+            hidden_size=hidden_dim,
+            num_layers=2,
+            batch_first=True
+        )
+        
+        # Macro encoder (simulated LLM-enhanced)
+        self.macro_encoder = nn.LSTM(
+            input_size=n_macro,
+            hidden_size=hidden_dim,
+            num_layers=2,
+            batch_first=True
+        )
+        
+        # Cross-attention (simplified from the paper)
+        self.market_attention = nn.MultiheadAttention(
+            embed_dim=hidden_dim,
+            num_heads=4,
+            batch_first=True
+        )
+        
+        self.stock_attention = nn.MultiheadAttention(
+            embed_dim=hidden_dim,
+            num_heads=4,
+            batch_first=True
+        )
+        
+        # Output projection
+        self.projection = nn.Sequential(
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, n_assets)
+        )
+        
+    def forward(self, x_returns: torch.Tensor, x_macro: torch.Tensor, 
+                hist_returns: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+        """
+        Forward pass of the DINN model.
+        
+        Args:
+            x_returns: Asset returns [batch, lookback, n_assets]
+            x_macro: Macro variables [batch, lookback, n_macro]
+            hist_returns: Historical returns for covariance est. [batch, hist_len, n_assets]
+            
+        Returns:
+            Predicted returns and optimal portfolio weights
+        """
+        batch_size = x_returns.shape[0]
+        
+        # Extract trends and residuals (simplified from paper)
+        # In the paper, they use a kernel-based decomposition
+        mean_returns = torch.mean(x_returns, dim=1, keepdim=True)
+        trends = torch.zeros_like(x_returns)
+        for i in range(x_returns.shape[1]):
+            if i < 5:
+                trends[:, i, :] = torch.mean(x_returns[:, :i+1, :], dim=1)
+            else:
+                trends[:, i, :] = torch.mean(x_returns[:, i-5:i+1, :], dim=1)
+        
+        residuals = x_returns - trends
+        
+        # Encode time series components
+        _, (trend_hidden, _) = self.trend_encoder(trends)
+        trend_features = trend_hidden[-1]  # Use last layer hidden state
+        
+        _, (residual_hidden, _) = self.residual_encoder(residuals)
+        residual_features = residual_hidden[-1]
+        
+        _, (macro_hidden, _) = self.macro_encoder(x_macro)
+        macro_features = macro_hidden[-1]
+        
+        # Reshape for attention
+        trend_features = trend_features.unsqueeze(1)
+        residual_features = residual_features.unsqueeze(1)
+        macro_features = macro_features.unsqueeze(1)
+        
+        # Cross attention (from the paper)
+        market_context, _ = self.market_attention(
+            trend_features, macro_features, macro_features
+        )
+        
+        stock_context, _ = self.stock_attention(
+            residual_features, residual_features, residual_features
+        )
+        
+        # Combine contexts (as per the paper)
+        combined = market_context + stock_context
+        
+        # Project to return predictions
+        predicted_returns = self.projection(combined.squeeze(1))
+        
+        # Optimize portfolio weights
+        # Simplified from the paper's differentiable optimization layer
+        portfolio_weights = self._optimize_portfolio(predicted_returns, hist_returns)
+        
+        return predicted_returns, portfolio_weights
+    
+    def _optimize_portfolio(self, predicted_returns: torch.Tensor, 
+                           hist_returns: torch.Tensor) -> torch.Tensor:
+        """
+        Simplified portfolio optimization layer.
+        In the paper, they use a differentiable convex optimization layer.
+        This is a simplified mean-variance optimization.
+        """
+        batch_size = predicted_returns.shape[0]
+        weights = torch.zeros(batch_size, self.n_assets, device=predicted_returns.device)
+        
+        # Process each batch item separately
+        for b in range(batch_size):
+            # Estimate covariance matrix from historical returns
+            cov_matrix = torch.cov(hist_returns[b].T)
+            
+            # Ensure positive definite
+            cov_matrix = cov_matrix + 1e-5 * torch.eye(self.n_assets, device=cov_matrix.device)
+            
+            # Simplified mean-variance optimization
+            # In real implementation, this would be a differentiable optimization layer
+            try:
+                # Inverse of covariance matrix
+                inv_cov = torch.inverse(cov_matrix)
+                
+                # Calculate optimal weights
+                ones = torch.ones(self.n_assets, device=inv_cov.device)
+                mu = predicted_returns[b]
+                
+                # Formula from the paper's Theorem 1
+                numerator = inv_cov @ mu
+                denominator = ones @ inv_cov @ ones
+                
+                # Calculate gamma (Lagrange multiplier)
+                gamma = (ones @ inv_cov @ mu - 1) / denominator
+                
+                # Calculate weights
+                w = inv_cov @ (mu - gamma * ones) / self.lambda_risk
+                
+                # Ensure weights sum to 1 and apply long-only constraint
+                w = torch.clamp(w, min=0)
+                w = w / torch.sum(w)
+                
+                weights[b] = w
+            except:
+                # Fallback to equal weights if optimization fails
+                weights[b] = torch.ones(self.n_assets, device=predicted_returns.device) / self.n_assets
+        
+        return weights
+    
+    def compute_loss(self, predicted_returns: torch.Tensor, actual_returns: torch.Tensor,
+                    predicted_weights: torch.Tensor, optimal_weights: torch.Tensor) -> torch.Tensor:
+        """
+        Combined loss function as described in the paper.
+        Balances prediction error and decision quality.
+        """
+        # Prediction loss (MSE)
+        prediction_loss = torch.mean((predicted_returns - actual_returns) ** 2)
+        
+        # Decision loss (Portfolio performance discrepancy)
+        portfolio_returns_pred = torch.sum(predicted_weights * actual_returns, dim=1)
+        portfolio_returns_optimal = torch.sum(optimal_weights * actual_returns, dim=1)
+        decision_loss = torch.mean((portfolio_returns_pred - portfolio_returns_optimal) ** 2)
+        
+        # Combined loss with beta parameter
+        total_loss = self.beta * prediction_loss + (1 - self.beta) * decision_loss
+        
+        return total_loss, prediction_loss, decision_loss
+
+
+def prepare_data(returns_df: pd.DataFrame, macro_df: pd.DataFrame, 
+                lookback: int = 60, forecast_horizon: int = 1, 
+                train_ratio: float = 0.8) -> Tuple:
+    """Prepare the data for training and testing."""
+    
+    # Ensure indices match
+    returns_df = returns_df.loc[macro_df.index]
+    
+    # Create sequences
+    X_returns, X_macro, y_returns = [], [], []
+    
+    for i in range(lookback, len(returns_df) - forecast_horizon):
+        X_returns.append(returns_df.iloc[i-lookback:i].values)
+        X_macro.append(macro_df.iloc[i-lookback:i].values)
+        y_returns.append(returns_df.iloc[i:i+forecast_horizon].values.mean(axis=0))
+    
+    # Convert to tensors
+    X_returns = torch.tensor(np.array(X_returns), dtype=torch.float32)
+    X_macro = torch.tensor(np.array(X_macro), dtype=torch.float32)
+    y_returns = torch.tensor(np.array(y_returns), dtype=torch.float32)
+    
+    # Split train/test
+    train_size = int(len(X_returns) * train_ratio)
+    
+    train_X_returns = X_returns[:train_size]
+    train_X_macro = X_macro[:train_size]
+    train_y_returns = y_returns[:train_size]
+    
+    test_X_returns = X_returns[train_size:]
+    test_X_macro = X_macro[train_size:]
+    test_y_returns = y_returns[train_size:]
+    
+    # Create DataLoaders
+    train_dataset = TensorDataset(train_X_returns, train_X_macro, train_y_returns)
+    test_dataset = TensorDataset(test_X_returns, test_X_macro, test_y_returns)
+    
+    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+    test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+    
+    return train_loader, test_loader, train_dataset, test_dataset
+
+
+def calculate_optimal_weights(returns: torch.Tensor, lambda_risk: float = 0.5) -> torch.Tensor:
+    """
+    Calculate optimal weights with perfect foresight.
+    This simulates the w* in the paper.
+    """
+    batch_size, n_assets = returns.shape
+    weights = torch.zeros_like(returns)
+    
+    for b in range(batch_size):
+        # Simplified mean-variance optimization with perfect foresight
+        mu = returns[b]
+        
+        # Assume identity covariance for simplicity
+        cov = torch.eye(n_assets)
+        
+        # Basic mean-variance formula
+        w = mu / lambda_risk
+        
+        # Normalize and apply constraints
+        w = torch.clamp(w, min=0)
+        if torch.sum(w) > 0:
+            w = w / torch.sum(w)
+        else:
+            w = torch.ones_like(w) / n_assets
+            
+        weights[b] = w
+        
+    return weights
+
+
+def train_model(model: nn.Module, train_loader: DataLoader, 
+               test_loader: DataLoader, epochs: int = 50, 
+               learning_rate: float = 1e-4) -> Dict:
+    """Train the DINN model."""
+    
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = model.to(device)
+    optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+    
+    history = {
+        'train_loss': [],
+        'test_loss': [],
+        'train_prediction_loss': [],
+        'test_prediction_loss': [],
+        'train_decision_loss': [],
+        'test_decision_loss': [],
+    }
+    
+    for epoch in range(epochs):
+        # Training
+        model.train()
+        train_loss = 0
+        train_pred_loss = 0
+        train_dec_loss = 0
+        
+        for batch_returns, batch_macro, batch_actual in train_loader:
+            batch_returns = batch_returns.to(device)
+            batch_macro = batch_macro.to(device)
+            batch_actual = batch_actual.to(device)
+            
+            # Historical returns for covariance estimation
+            hist_returns = batch_returns[:, -30:, :]
+            
+            optimizer.zero_grad()
+            
+            # Forward pass
+            predicted_returns, predicted_weights = model(batch_returns, batch_macro, hist_returns)
+            
+            # Calculate optimal weights (with foresight)
+            optimal_weights = calculate_optimal_weights(batch_actual, model.lambda_risk)
+            
+            # Calculate loss
+            loss, pred_loss, dec_loss = model.compute_loss(
+                predicted_returns, batch_actual,
+                predicted_weights, optimal_weights
+            )
+            
+            # Backward pass
+            loss.backward()
+            optimizer.step()
+            
+            train_loss += loss.item()
+            train_pred_loss += pred_loss.item()
+            train_dec_loss += dec_loss.item()
+        
+        # Evaluation
+        model.eval()
+        test_loss = 0
+        test_pred_loss = 0
+        test_dec_loss = 0
+        
+        with torch.no_grad():
+            for batch_returns, batch_macro, batch_actual in test_loader:
+                batch_returns = batch_returns.to(device)
+                batch_macro = batch_macro.to(device)
+                batch_actual = batch_actual.to(device)
+                
+                # Historical returns for covariance estimation
+                hist_returns = batch_returns[:, -30:, :]
+                
+                # Forward pass
+                predicted_returns, predicted_weights = model(batch_returns, batch_macro, hist_returns)
+                
+                # Calculate optimal weights (with foresight)
+                optimal_weights = calculate_optimal_weights(batch_actual, model.lambda_risk)
+                
+                # Calculate loss
+                loss, pred_loss, dec_loss = model.compute_loss(
+                    predicted_returns, batch_actual,
+                    predicted_weights, optimal_weights
+                )
+                
+                test_loss += loss.item()
+                test_pred_loss += pred_loss.item()
+                test_dec_loss += dec_loss.item()
+        
+        # Record metrics
+        history['train_loss'].append(train_loss / len(train_loader))
+        history['test_loss'].append(test_loss / len(test_loader))
+        history['train_prediction_loss'].append(train_pred_loss / len(train_loader))
+        history['test_prediction_loss'].append(test_pred_loss / len(test_loader))
+        history['train_decision_loss'].append(train_dec_loss / len(train_loader))
+        history['test_decision_loss'].append(test_dec_loss / len(test_loader))
+        
+        if epoch % 5 == 0:
+            print(f"Epoch {epoch}: Train Loss = {train_loss/len(train_loader):.4f}, "
+                  f"Test Loss = {test_loss/len(test_loader):.4f}")
+    
+    return history
+
+
+def evaluate_portfolio_performance(model: nn.Module, test_dataset: TensorDataset, 
+                                  n_days: int = 252) -> Dict:
+    """Evaluate portfolio performance on test data."""
+    
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = model.to(device)
+    model.eval()
+    
+    # Extract test data
+    test_returns, test_macro, test_actual = test_dataset.tensors
+    
+    # Limit to n_days for analysis
+    n_days = min(n_days, len(test_returns))
+    test_returns = test_returns[:n_days].to(device)
+    test_macro = test_macro[:n_days].to(device)
+    test_actual = test_actual[:n_days].to(device)
+    
+    # Historical returns for covariance
+    hist_returns = test_returns[:, -30:, :]
+    
+    # Get predictions and weights
+    with torch.no_grad():
+        predicted_returns, predicted_weights = model(test_returns, test_macro, hist_returns)
+    
+    # Convert to numpy for analysis
+    predicted_returns = predicted_returns.cpu().numpy()
+    predicted_weights = predicted_weights.cpu().numpy()
+    actual_returns = test_actual.cpu().numpy()
+    
+    # Calculate portfolio returns
+    portfolio_returns = np.sum(predicted_weights * actual_returns, axis=1)
+    
+    # Create equal-weighted benchmark
+    n_assets = actual_returns.shape[1]
+    equal_weights = np.ones((len(actual_returns), n_assets)) / n_assets
+    equal_portfolio_returns = np.sum(equal_weights * actual_returns, axis=1)
+    
+    # Calculate performance metrics
+    portfolio_cumulative = np.cumprod(1 + portfolio_returns)
+    equal_cumulative = np.cumprod(1 + equal_portfolio_returns)
+    
+    # Annualized return
+    ann_return = (portfolio_cumulative[-1] ** (252 / len(portfolio_returns)) - 1)
+    ann_equal_return = (equal_cumulative[-1] ** (252 / len(equal_portfolio_returns)) - 1)
+    
+    # Annualized volatility
+    ann_vol = np.std(portfolio_returns) * np.sqrt(252)
+    ann_equal_vol = np.std(equal_portfolio_returns) * np.sqrt(252)
+    
+    # Sharpe ratio (assuming 0 risk-free rate for simplicity)
+    sharpe = ann_return / ann_vol
+    equal_sharpe = ann_equal_return / ann_equal_vol
+    
+    # Maximum drawdown
+    cumulative_max = np.maximum.accumulate(portfolio_cumulative)
+    drawdowns = 1 - portfolio_cumulative / cumulative_max
+    max_drawdown = np.max(drawdowns)
+    
+    equal_cumulative_max = np.maximum.accumulate(equal_cumulative)
+    equal_drawdowns = 1 - equal_cumulative / equal_cumulative_max
+    equal_max_drawdown = np.max(equal_drawdowns)
+    
+    # Value at Risk (95%)
+    var = np.percentile(portfolio_returns, 5)
+    equal_var = np.percentile(equal_portfolio_returns, 5)
+    
+    results = {
+        'Strategy': {
+            'Annualized Return': ann_return,
+            'Annualized Volatility': ann_vol,
+            'Sharpe Ratio': sharpe,
+            'Maximum Drawdown': max_drawdown,
+            'Value at Risk (95%)': var,
+            'Terminal Wealth': portfolio_cumulative[-1]
+        },
+        'Equal Weight': {
+            'Annualized Return': ann_equal_return,
+            'Annualized Volatility': ann_equal_vol,
+            'Sharpe Ratio': equal_sharpe,
+            'Maximum Drawdown': equal_max_drawdown,
+            'Value at Risk (95%)': equal_var,
+            'Terminal Wealth': equal_cumulative[-1]
+        },
+        'Returns': {
+            'Strategy': portfolio_returns,
+            'Equal Weight': equal_portfolio_returns
+        },
+        'Cumulative': {
+            'Strategy': portfolio_cumulative,
+            'Equal Weight': equal_cumulative
+        },
+        'Weights': predicted_weights
+    }
+    
+    return results
+
+
+def visualize_results(history: Dict, performance: Dict) -> None:
+    """Visualize training history and portfolio performance."""
+    
+    # Set up the figure layout
+    plt.figure(figsize=(15, 12))
+    
+    # 1. Training History
+    plt.subplot(2, 2, 1)
+    plt.plot(history['train_loss'], label='Train Loss')
+    plt.plot(history['test_loss'], label='Test Loss')
+    plt.title('Total Loss During Training')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.legend()
+    
+    # 2. Prediction vs Decision Loss
+    plt.subplot(2, 2, 2)
+    plt.plot(history['train_prediction_loss'], label='Train Prediction Loss')
+    plt.plot(history['train_decision_loss'], label='Train Decision Loss')
+    plt.title('Prediction vs Decision Loss Components')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.legend()
+    
+    # 3. Portfolio Performance
+    plt.subplot(2, 2, 3)
+    plt.plot(performance['Cumulative']['Strategy'], label='DINN Strategy')
+    plt.plot(performance['Cumulative']['Equal Weight'], label='Equal Weight')
+    plt.title('Cumulative Portfolio Performance')
+    plt.xlabel('Trading Day')
+    plt.ylabel('Portfolio Value')
+    plt.legend()
+    
+    # 4. Portfolio Allocation
+    plt.subplot(2, 2, 4)
+    weights = performance['Weights']
+    
+    # Just show the average weight for each asset
+    avg_weights = np.mean(weights, axis=0)
+    plt.bar(range(len(avg_weights)), avg_weights)
+    plt.title('Average Portfolio Allocation')
+    plt.xlabel('Asset')
+    plt.ylabel('Weight')
+    
+    plt.tight_layout()
+    plt.show()
+    
+    # Print performance metrics
+    print("\nPerformance Metrics:")
+    metrics = ['Annualized Return', 'Annualized Volatility', 'Sharpe Ratio', 
+               'Maximum Drawdown', 'Value at Risk (95%)', 'Terminal Wealth']
+    
+    # Create a DataFrame for better display
+    results_df = pd.DataFrame({
+        'DINN Strategy': [performance['Strategy'][m] for m in metrics],
+        'Equal Weight': [performance['Equal Weight'][m] for m in metrics]
+    }, index=metrics)
+    
+    print(results_df)
+
+
+def test_gradient_sensitivity(model: nn.Module, test_dataset: TensorDataset) -> None:
+    """
+    Test the paper's hypothesis that assets with higher gradient sensitivities
+    have lower prediction errors.
+    """
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = model.to(device)
+    model.eval()
+    
+    # Extract test data
+    test_returns, test_macro, test_actual = test_dataset.tensors
+    
+    # Use a subset for analysis
+    n_samples = 50
+    test_returns = test_returns[:n_samples].to(device)
+    test_macro = test_macro[:n_samples].to(device)
+    test_actual = test_actual[:n_samples].to(device)
+    
+    # Enable gradient computation
+    with torch.set_grad_enabled(True):
+        # Historical returns for covariance
+        hist_returns = test_returns[:, -30:, :]
+        
+        # Forward pass
+        predicted_returns, predicted_weights = model(test_returns, test_macro, hist_returns)
+        
+        # Compute gradient sensitivities (manually simplified from the paper)
+        n_assets = predicted_returns.shape[1]
+        sensitivities = torch.zeros(n_samples, n_assets, device=device)
+        
+        for i in range(n_samples):
+            for j in range(n_assets):
+                # Create a one-hot vector for the gradient
+                grad_output = torch.zeros_like(predicted_weights)
+                grad_output[i, j] = 1.0
+                
+                # Get gradient of weights with respect to predicted returns
+                predicted_weights.backward(grad_output, retain_graph=True)
+                
+                # Store the gradient magnitude
+                param_grad = next(model.parameters()).grad
+                sensitivities[i, j] = torch.norm(param_grad)
+                
+                # Reset gradients
+                model.zero_grad()
+    
+    # Convert to numpy
+    sensitivities = sensitivities.cpu().numpy().mean(axis=0)
+    predicted_returns = predicted_returns.detach().cpu().numpy()
+    actual_returns = test_actual.cpu().numpy()
+    
+    # Calculate prediction errors
+    mse_errors = np.mean((predicted_returns - actual_returns)**2, axis=0)
+    
+    # Sort assets by sensitivity
+    sorted_indices = np.argsort(sensitivities)
+    top_10_pct = sorted_indices[-int(n_assets*0.1):]
+    bottom_10_pct = sorted_indices[:int(n_assets*0.1)]
+    
+    # Calculate error differences
+    top_mse = np.mean(mse_errors[top_10_pct])
+    bottom_mse = np.mean(mse_errors[bottom_10_pct])
+    
+    print("\nGradient Sensitivity Analysis:")
+    print(f"MSE for top 10% sensitivity assets: {top_mse:.6f}")
+    print(f"MSE for bottom 10% sensitivity assets: {bottom_mse:.6f}")
+    print(f"Difference (Bottom - Top): {bottom_mse - top_mse:.6f}")
+    
+    # Visualize the relationship
+    plt.figure(figsize=(10, 6))
+    plt.scatter(sensitivities, mse_errors)
+    plt.title('Gradient Sensitivity vs. Prediction Error')
+    plt.xlabel('Gradient Sensitivity')
+    plt.ylabel('Mean Squared Error')
+    
+    # Highlight top and bottom 10%
+    plt.scatter(sensitivities[top_10_pct], mse_errors[top_10_pct], color='green', 
+                label='Top 10% Sensitivity')
+    plt.scatter(sensitivities[bottom_10_pct], mse_errors[bottom_10_pct], color='red', 
+                label='Bottom 10% Sensitivity')
+    
+    # Add trend line
+    z = np.polyfit(sensitivities, mse_errors, 1)
+    p = np.poly1d(z)
+    plt.plot(np.sort(sensitivities), p(np.sort(sensitivities)), "r--", 
+             label=f'Trend: y={z[0]:.4f}x+{z[1]:.4f}')
+    
+    plt.legend()
+    plt.show()
+
+
+def main():
+    """Main execution function."""
+    try:
+        print("Generating simulated market data...")
+        # Generate data
+        market_data = SimulatedMarketData(n_assets=30, n_macro=5, time_steps=1500)
+        returns_df, macro_df = market_data.generate_data()
+        
+        print(f"Generated {len(returns_df)} days of data for {returns_df.shape[1]} assets")
+        
+        # Prepare data
+        lookback = 60
+        forecast_horizon = 1
+        train_loader, test_loader, train_dataset, test_dataset = prepare_data(
+            returns_df, macro_df, lookback=lookback, forecast_horizon=forecast_horizon
+        )
+        
+        print("Data prepared successfully")
+        
+        # Create model
+        n_assets = returns_df.shape[1]
+        n_macro = macro_df.shape[1]
+        
+        # Create models with different beta values
+        models = {
+            "DINN (β=0.4)": DecisionInformedNeuralNetwork(
+                n_assets=n_assets, 
+                n_macro=n_macro, 
+                lookback=lookback,
+                beta=0.4
+            ),
+            "MSE Only (β=1.0)": DecisionInformedNeuralNetwork(
+                n_assets=n_assets, 
+                n_macro=n_macro, 
+                lookback=lookback,
+                beta=1.0
+            )
+        }
+        
+        results = {}
+        
+        # Train and evaluate each model
+        for name, model in models.items():
+            print(f"\nTraining {name}...")
+            history = train_model(model, train_loader, test_loader, epochs=30)
+            
+            print(f"\nEvaluating {name}...")
+            performance = evaluate_portfolio_performance(model, test_dataset)
+            
+            results[name] = {
+                'history': history,
+                'performance': performance
+            }
+            
+            # Visualize individual model results
+            print(f"\nResults for {name}:")
+            visualize_results(history, performance)
+            
+            # Test gradient sensitivity hypothesis
+            if name == "DINN (β=0.4)":
+                test_gradient_sensitivity(model, test_dataset)
+        
+        # Compare models
+        plt.figure(figsize=(12, 6))
+        for name, result in results.items():
+            plt.plot(result['performance']['Cumulative']['Strategy'], label=name)
+        
+        plt.plot(results["DINN (β=0.4)"]["performance"]['Cumulative']['Equal Weight'], 
+                 label='Equal Weight', linestyle='--')
+        
+        plt.title('Portfolio Performance Comparison')
+        plt.xlabel('Trading Day')
+        plt.ylabel('Portfolio Value')
+        plt.legend()
+        plt.show()
+        
+        # Create comparison table
+        metrics = ['Annualized Return', 'Sharpe Ratio', 'Maximum Drawdown', 'Terminal Wealth']
+        comparison = {}
+        
+        for name, result in results.items():
+            comparison[name] = [result['performance']['Strategy'][m] for m in metrics]
+        
+        comparison['Equal Weight'] = [
+            results["DINN (β=0.4)"]["performance"]['Equal Weight'][m] for m in metrics
+        ]
+        
+        comparison_df = pd.DataFrame(comparison, index=metrics)
+        print("\nModel Comparison:")
+        print(comparison_df)
+        
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        import traceback
+        traceback.print_exc()
+
+
+if __name__ == "__main__":
+    main()
+```
+
+This code implements a simplified version of the DINN approach described in the paper, including:
+
+1. A data generator that creates simulated financial market data with realistic properties like sector correlations and macroeconomic variables
+2. A simplified DINN model that implements key components mentioned in the paper:
+   - Trend-residual decomposition
+   - Cross-attention mechanism
+   - Portfolio optimization layer
+   - Combined loss function with prediction and decision components
+3. Training and evaluation functions to test the model
+4. Gradient sensitivity analysis to test the paper's key finding that assets with higher gradient sensitivity have lower prediction errors
+5. Visualization and reporting of results
+
+The code demonstrates the key concepts from the paper while being practical to run in a reasonable time on standard hardware.

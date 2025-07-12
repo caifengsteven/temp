@@ -1,0 +1,433 @@
+Claude-Sonnet-3.7 Response for 2505.05332v1
+Generated: 2025-07-10 22:17:59
+Time: 65.3s
+==================================================
+
+Based on the paper, I'll implement a Python strategy that tests the signature decomposition method for pair trading. This will include data simulation, signature calculations, and the various trading strategies mentioned in the paper.
+
+```python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from scipy.stats import norm
+from datetime import datetime, timedelta
+
+class SignatureDecomposition:
+    def __init__(self, window_size=60):
+        self.window_size = window_size
+    
+    def calculate_signature(self, path1, path2):
+        """Calculate the second-order signature between two paths"""
+        # We take log of prices first as mentioned in the paper
+        log_path1 = np.log(path1)
+        log_path2 = np.log(path2)
+        
+        # Calculate first-order differences
+        diff1 = np.diff(log_path1)
+        diff2 = np.diff(log_path2)
+        
+        # Second-order signature (iterated integral)
+        signature = 0
+        for i in range(len(diff1)):
+            for j in range(i+1, len(diff1)):
+                signature += diff1[i] * diff2[j]
+        
+        return signature
+    
+    def calculate_segmented_signature(self, path1, path2):
+        """Calculate the segmented signature between two paths"""
+        # We take log of prices first as mentioned in the paper
+        log_path1 = np.log(path1)
+        log_path2 = np.log(path2)
+        
+        # Find crossing points between path and chord
+        # For simplicity, we'll divide the path into segments
+        n_segments = 5  # Number of segments to divide the path
+        segment_size = len(log_path1) // n_segments
+        
+        segmented_sig = 0
+        for i in range(n_segments):
+            start_idx = i * segment_size
+            end_idx = (i + 1) * segment_size if i < n_segments - 1 else len(log_path1)
+            
+            if end_idx - start_idx <= 1:
+                continue
+                
+            # Calculate Lévy area for this segment
+            seg_path1 = log_path1[start_idx:end_idx]
+            seg_path2 = log_path2[start_idx:end_idx]
+            
+            # Calculate first-order differences within segment
+            diff1 = np.diff(seg_path1)
+            diff2 = np.diff(seg_path2)
+            
+            # Calculate Lévy area for this segment
+            levy_area = 0
+            for j in range(len(diff1)):
+                for k in range(j+1, len(diff1)):
+                    levy_area += diff1[j] * diff2[k] - diff2[j] * diff1[k]
+            
+            # Add absolute value of Lévy area to segmented signature
+            segmented_sig += abs(levy_area / 2)
+        
+        return segmented_sig
+    
+    def calculate_path_difference_product(self, path1, path2):
+        """Calculate the path difference product between two paths"""
+        # We're calculating (Asset1,t - Asset1,t-w) * (Asset2,t - Asset2,t-w)
+        diff1 = path1[-1] - path1[0]
+        diff2 = path2[-1] - path2[0]
+        
+        return diff1 * diff2
+
+
+class PairTrading:
+    def __init__(self, buy_threshold=2, sell_threshold=-2, window_size=60):
+        self.buy_threshold = buy_threshold
+        self.sell_threshold = sell_threshold
+        self.window_size = window_size
+        self.signature_decomp = SignatureDecomposition(window_size)
+        self.rolling_mean = 0
+        self.rolling_std = 1
+        self.position = 0  # -1: short asset1, long asset2; 0: no position; 1: long asset1, short asset2
+        self.entry_price_spread = 0
+        self.sig_history = []
+        self.seg_sig_history = []
+        
+    def calculate_zscore(self, spread):
+        """Calculate z-score based on rolling statistics"""
+        return (spread - self.rolling_mean) / self.rolling_std
+    
+    def update_rolling_stats(self, spread_history):
+        """Update rolling mean and standard deviation"""
+        self.rolling_mean = np.mean(spread_history)
+        self.rolling_std = np.std(spread_history)
+    
+    def generate_signal_no_sig(self, asset1, asset2, spread_history):
+        """Generate trading signal for normal pair trading without signature"""
+        spread = asset1[-1] - asset2[-1]
+        self.update_rolling_stats(spread_history)
+        zscore = self.calculate_zscore(spread)
+        
+        if self.position == 0:  # No position
+            if zscore > self.buy_threshold:
+                return -1  # Short asset1, long asset2
+            elif zscore < self.sell_threshold:
+                return 1   # Long asset1, short asset2
+        elif self.position == 1:  # Long asset1, short asset2
+            if zscore > 0:
+                return 0   # Close position
+        elif self.position == -1:  # Short asset1, long asset2
+            if zscore < 0:
+                return 0   # Close position
+                
+        return self.position  # Maintain current position
+    
+    def generate_signal_sig(self, asset1, asset2, spread_history):
+        """Generate trading signal with original signature filter"""
+        spread = asset1[-1] - asset2[-1]
+        self.update_rolling_stats(spread_history)
+        zscore = self.calculate_zscore(spread)
+        
+        # Calculate signature
+        signature = self.signature_decomp.calculate_signature(asset1[-self.window_size:], 
+                                                              asset2[-self.window_size:])
+        self.sig_history.append(signature)
+        
+        # Only trade if signature is below its historical mean
+        if len(self.sig_history) > 1 and signature < np.mean(self.sig_history):
+            if self.position == 0:  # No position
+                if zscore > self.buy_threshold:
+                    return -1  # Short asset1, long asset2
+                elif zscore < self.sell_threshold:
+                    return 1   # Long asset1, short asset2
+            elif self.position == 1:  # Long asset1, short asset2
+                if zscore > 0:
+                    return 0   # Close position
+            elif self.position == -1:  # Short asset1, long asset2
+                if zscore < 0:
+                    return 0   # Close position
+                    
+        return self.position  # Maintain current position
+    
+    def generate_signal_se_sig(self, asset1, asset2, spread_history):
+        """Generate trading signal with segmented signature filter"""
+        spread = asset1[-1] - asset2[-1]
+        self.update_rolling_stats(spread_history)
+        zscore = self.calculate_zscore(spread)
+        
+        # Calculate segmented signature
+        seg_sig = self.signature_decomp.calculate_segmented_signature(asset1[-self.window_size:], 
+                                                                       asset2[-self.window_size:])
+        self.seg_sig_history.append(seg_sig)
+        
+        # Only trade if segmented signature is below its historical mean
+        if len(self.seg_sig_history) > 1 and seg_sig < np.mean(self.seg_sig_history):
+            if self.position == 0:  # No position
+                if zscore > self.buy_threshold:
+                    return -1  # Short asset1, long asset2
+                elif zscore < self.sell_threshold:
+                    return 1   # Long asset1, short asset2
+            elif self.position == 1:  # Long asset1, short asset2
+                if zscore > 0:
+                    return 0   # Close position
+            elif self.position == -1:  # Short asset1, long asset2
+                if zscore < 0:
+                    return 0   # Close position
+                    
+        return self.position  # Maintain current position
+    
+    def generate_signal_se_sig_diff(self, asset1, asset2, spread_history):
+        """Generate trading signal with segmented signature and path difference product filters"""
+        spread = asset1[-1] - asset2[-1]
+        self.update_rolling_stats(spread_history)
+        zscore = self.calculate_zscore(spread)
+        
+        # Calculate segmented signature
+        seg_sig = self.signature_decomp.calculate_segmented_signature(asset1[-self.window_size:], 
+                                                                       asset2[-self.window_size:])
+        self.seg_sig_history.append(seg_sig)
+        
+        # Calculate path difference product
+        diff_product = self.signature_decomp.calculate_path_difference_product(
+            asset1[-self.window_size:], asset2[-self.window_size:])
+        
+        # Only trade if segmented signature is below its historical mean
+        # and path difference product is positive (both assets move in same direction)
+        if (len(self.seg_sig_history) > 1 and 
+            seg_sig < np.mean(self.seg_sig_history) and 
+            diff_product > 0):
+            
+            if self.position == 0:  # No position
+                if zscore > self.buy_threshold:
+                    return -1  # Short asset1, long asset2
+                elif zscore < self.sell_threshold:
+                    return 1   # Long asset1, short asset2
+            elif self.position == 1:  # Long asset1, short asset2
+                if zscore > 0:
+                    return 0   # Close position
+            elif self.position == -1:  # Short asset1, long asset2
+                if zscore < 0:
+                    return 0   # Close position
+                    
+        return self.position  # Maintain current position
+
+
+def simulate_price_series(n_days=43, minutes_per_day=240, mean_return=0, volatility=0.01, correlation=0.8):
+    """Simulate price series for two correlated assets"""
+    n_steps = n_days * minutes_per_day
+    
+    # Generate correlated returns
+    cov_matrix = np.array([[1, correlation], [correlation, 1]])
+    returns = np.random.multivariate_normal(
+        mean=[mean_return/minutes_per_day, mean_return/minutes_per_day], 
+        cov=cov_matrix * (volatility**2 / minutes_per_day), 
+        size=n_steps
+    )
+    
+    # Convert returns to prices starting at 100
+    prices1 = 100 * np.exp(np.cumsum(returns[:, 0]))
+    prices2 = 100 * np.exp(np.cumsum(returns[:, 1]))
+    
+    return prices1, prices2
+
+
+def evaluate_strategy(prices1, prices2, strategy_name, window_size=60):
+    """Evaluate a trading strategy on the given price series"""
+    pair_trader = PairTrading(window_size=window_size)
+    
+    # Initialize variables
+    position = 0
+    trades = []
+    equity_curve = [1.0]  # Start with 1.0 (100%)
+    spread_history = []
+    
+    # Select strategy function based on name
+    if strategy_name == "NO_SIG":
+        signal_func = pair_trader.generate_signal_no_sig
+    elif strategy_name == "SIG":
+        signal_func = pair_trader.generate_signal_sig
+    elif strategy_name == "SE_SIG":
+        signal_func = pair_trader.generate_signal_se_sig
+    elif strategy_name == "SE_SIG_DIFF":
+        signal_func = pair_trader.generate_signal_se_sig_diff
+    else:
+        raise ValueError(f"Unknown strategy name: {strategy_name}")
+    
+    # Run strategy
+    for i in range(window_size, len(prices1)):
+        spread = prices1[i] - prices2[i]
+        spread_history.append(spread)
+        
+        if len(spread_history) > 20:  # Use at least 20 observations for spread statistics
+            spread_history.pop(0)
+            
+            # Generate trading signal
+            new_position = signal_func(
+                prices1[max(0, i-window_size):i+1], 
+                prices2[max(0, i-window_size):i+1],
+                spread_history
+            )
+            
+            # Execute trades
+            if new_position != position:
+                # Record trade
+                trades.append({
+                    'timestamp': i,
+                    'action': 'BUY' if new_position == 1 else 'SELL' if new_position == -1 else 'CLOSE',
+                    'price1': prices1[i],
+                    'price2': prices2[i],
+                    'spread': spread
+                })
+                
+                # Update P&L if closing position
+                if position != 0 and new_position == 0:
+                    entry_spread = trades[-2]['spread']
+                    exit_spread = spread
+                    pnl = (exit_spread - entry_spread) * position
+                    equity_curve.append(equity_curve[-1] * (1 + pnl * 0.01))  # Scale PnL for better visualization
+                
+                position = new_position
+                pair_trader.position = position
+    
+    # Calculate statistics
+    if len(equity_curve) <= 1:
+        return {
+            'overall_return': 0,
+            'mean_daily_return': 0,
+            'max_drawdown': 0,
+            'std': 0,
+            'sharpe_ratio': 0,
+            'count': 0,
+            'equity_curve': [1.0] * len(prices1[window_size:])
+        }
+    
+    # Create full equity curve (fill in gaps)
+    full_equity_curve = [1.0] * window_size
+    trade_idx = 0
+    for i in range(window_size, len(prices1)):
+        if trade_idx < len(trades) and trades[trade_idx]['timestamp'] == i:
+            if trades[trade_idx]['action'] == 'CLOSE':
+                full_equity_curve.append(equity_curve[trade_idx+1])
+                trade_idx += 1
+            else:
+                full_equity_curve.append(full_equity_curve[-1])
+                trade_idx += 1
+        else:
+            full_equity_curve.append(full_equity_curve[-1])
+    
+    # Calculate performance metrics
+    overall_return = (full_equity_curve[-1] / full_equity_curve[0] - 1) * 100
+    daily_returns = np.array([(full_equity_curve[i+minutes_per_day] / full_equity_curve[i] - 1) 
+                             for i in range(0, len(full_equity_curve) - minutes_per_day, minutes_per_day)])
+    mean_daily_return = np.mean(daily_returns) * 100
+    
+    # Calculate max drawdown
+    peak = full_equity_curve[0]
+    drawdowns = []
+    for equity in full_equity_curve:
+        if equity > peak:
+            peak = equity
+        drawdown = (peak - equity) / peak
+        drawdowns.append(drawdown)
+    max_drawdown = max(drawdowns) * 100
+    
+    # Calculate Sharpe ratio
+    std = np.std(daily_returns) * 100
+    sharpe_ratio = (mean_daily_return / std) if std > 0 else 0
+    
+    return {
+        'overall_return': overall_return,
+        'mean_daily_return': mean_daily_return,
+        'max_drawdown': max_drawdown,
+        'std': std,
+        'sharpe_ratio': sharpe_ratio,
+        'count': len(trades),
+        'equity_curve': full_equity_curve
+    }
+
+
+def test_signature_decomposition_trading():
+    """Test the signature decomposition method for pair trading"""
+    
+    # Parameters
+    n_days = 43  # 43 trading days as in the paper
+    minutes_per_day = 240  # Typical trading minutes in a day
+    window_size = 60  # Window size for signature calculation
+    
+    # Generate correlated price series
+    np.random.seed(42)  # For reproducibility
+    
+    print("Testing pair trading strategies with signature decomposition...")
+    
+    # Test with different correlation values
+    correlations = [0.6, 0.7, 0.8, 0.9]
+    
+    results = {}
+    
+    for correlation in correlations:
+        print(f"\nTesting with correlation = {correlation}")
+        
+        # Generate price series
+        prices1, prices2 = simulate_price_series(
+            n_days=n_days, 
+            minutes_per_day=minutes_per_day,
+            correlation=correlation
+        )
+        
+        # Run strategies
+        strategy_results = {}
+        for strategy_name in ["NO_SIG", "SIG", "SE_SIG", "SE_SIG_DIFF"]:
+            result = evaluate_strategy(prices1, prices2, strategy_name, window_size)
+            strategy_results[strategy_name] = result
+            
+            print(f"\n{strategy_name} Strategy Results:")
+            print(f"Overall Return: {result['overall_return']:.2f}%")
+            print(f"Mean Daily Return: {result['mean_daily_return']:.4f}%")
+            print(f"Max Drawdown: {result['max_drawdown']:.2f}%")
+            print(f"Standard Deviation: {result['std']:.2f}")
+            print(f"Sharpe Ratio: {result['sharpe_ratio']:.2f}")
+            print(f"Trade Count: {result['count']}")
+        
+        results[correlation] = strategy_results
+        
+        # Plot equity curves
+        plt.figure(figsize=(12, 6))
+        for strategy_name, result in strategy_results.items():
+            plt.plot(result['equity_curve'], label=strategy_name)
+        
+        plt.title(f"Equity Curves (Correlation = {correlation})")
+        plt.xlabel("Minute")
+        plt.ylabel("Equity")
+        plt.legend()
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
+    
+    return results
+
+
+if __name__ == "__main__":
+    # Define global variables
+    minutes_per_day = 240  # Typical trading minutes in a day
+    
+    try:
+        results = test_signature_decomposition_trading()
+        print("\nTest completed successfully!")
+    except Exception as e:
+        print(f"Error during testing: {e}")
+```
+
+This Python code implements the signature decomposition method for pair trading as described in the paper. Key components include:
+
+1. `SignatureDecomposition` class - Implements the signature calculation, segmented signature, and path difference product
+2. `PairTrading` class - Implements the four trading strategies mentioned in the paper:
+   - Normal pair trading (NO_SIG)
+   - Pair trading with original signature (SIG)
+   - Pair trading with segmented signature (SE-SIG)
+   - Pair trading with segmented signature and path difference product (SE-SIG-DIFF)
+3. Testing framework - Simulates correlated price series and evaluates each strategy
+
+The code provides realistic simulations with varying correlation levels and produces metrics matching those in the paper: overall return, mean daily return, maximum drawdown, standard deviation, Sharpe ratio, and trade count.
+
+When run, it will display performance metrics for each strategy and plot equity curves for visual comparison.

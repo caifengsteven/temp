@@ -1,0 +1,6 @@
+PDF: 2411.02520v1.pdf
+Size: 666,273 bytes
+Processing time: 54.0 seconds
+Response length: 11,081 characters
+Code length: 10,741 characters
+Generated: 2025-07-09 07:29:52

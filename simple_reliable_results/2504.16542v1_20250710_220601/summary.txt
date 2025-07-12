@@ -1,0 +1,6 @@
+PDF: 2504.16542v1.pdf
+Size: 825,097 bytes
+Processing time: 56.5 seconds
+Response length: 14,662 characters
+Code length: 14,420 characters
+Generated: 2025-07-10 22:06:59

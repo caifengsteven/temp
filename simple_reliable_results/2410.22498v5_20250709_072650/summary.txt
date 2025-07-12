@@ -1,0 +1,6 @@
+PDF: 2410.22498v5.pdf
+Size: 589,766 bytes
+Processing time: 59.9 seconds
+Response length: 13,805 characters
+Code length: 13,032 characters
+Generated: 2025-07-09 07:27:51

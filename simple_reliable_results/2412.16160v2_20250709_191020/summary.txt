@@ -1,0 +1,6 @@
+PDF: 2412.16160v2.pdf
+Size: 417,220 bytes
+Processing time: 71.7 seconds
+Response length: 18,124 characters
+Code length: 17,046 characters
+Generated: 2025-07-09 19:11:33

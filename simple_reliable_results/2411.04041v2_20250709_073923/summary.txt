@@ -1,0 +1,6 @@
+PDF: 2411.04041v2.pdf
+Size: 3,683,508 bytes
+Processing time: 75.7 seconds
+Response length: 17,133 characters
+Code length: 16,065 characters
+Generated: 2025-07-09 07:40:40

@@ -1,0 +1,6 @@
+PDF: 2411.05013v1.pdf
+Size: 2,155,030 bytes
+Processing time: 70.0 seconds
+Response length: 18,410 characters
+Code length: 18,090 characters
+Generated: 2025-07-09 20:25:31

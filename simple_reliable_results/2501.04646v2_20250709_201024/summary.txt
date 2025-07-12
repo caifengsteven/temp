@@ -1,0 +1,6 @@
+PDF: 2501.04646v2.pdf
+Size: 1,791,363 bytes
+Processing time: 96.8 seconds
+Response length: 23,853 characters
+Code length: 22,442 characters
+Generated: 2025-07-09 20:12:02

@@ -1,0 +1,375 @@
+Claude-Sonnet-3.7 Response for 2412.18405v1
+Generated: 2025-07-09 20:39:31
+Time: 54.7s
+==================================================
+
+Based on the PDF, I'll create a Python implementation that tests the Generalized Mean Absolute Directional Loss (GMADL) function compared to traditional loss functions like MSE and MADL for algorithmic trading strategies.
+
+```python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.metrics import mean_squared_error, mean_absolute_error
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, LSTM
+import random
+import seaborn as sns
+from datetime import datetime, timedelta
+
+# Set random seeds for reproducibility
+np.random.seed(42)
+tf.random.set_seed(42)
+random.seed(42)
+
+class LossFunctions:
+    @staticmethod
+    def madl(y_true, y_pred):
+        """
+        Mean Absolute Directional Loss as defined in the paper
+        """
+        # Convert tensors to numpy for calculation
+        y_true_np = tf.keras.backend.get_value(y_true)
+        y_pred_np = tf.keras.backend.get_value(y_pred)
+        
+        # Calculate MADL
+        direction = np.sign(y_true_np * y_pred_np)
+        loss = -1 * direction * np.abs(y_true_np)
+        return np.mean(loss)
+    
+    @staticmethod
+    def gmadl_loss(a=1000, b=1):
+        """
+        Generalized Mean Absolute Directional Loss (GMADL) as defined in the paper
+        Parameters:
+        - a: controls the slope of the function around 0
+        - b: controls the reward for higher actual returns
+        """
+        def loss(y_true, y_pred):
+            # Ensure tensors are compatible with TF operations
+            y_true = tf.cast(y_true, tf.float32)
+            y_pred = tf.cast(y_pred, tf.float32)
+            
+            # Calculate the sigmoid-like term
+            sigmoid_term = 1.0 / (1.0 + tf.exp(-a * y_true * y_pred)) - 0.5
+            
+            # Calculate the loss
+            return -1.0 * tf.reduce_mean(sigmoid_term * tf.pow(tf.abs(y_true), b))
+        
+        return loss
+
+class DataGenerator:
+    @staticmethod
+    def generate_price_series(n_points=1000, volatility=0.01, trend=0.0001):
+        """Generate a synthetic price series with random walk characteristics"""
+        # Start with a base price
+        price = 100
+        prices = [price]
+        
+        # Generate returns with random noise
+        for _ in range(n_points-1):
+            # Random return with trend and volatility
+            ret = np.random.normal(trend, volatility)
+            price = price * (1 + ret)
+            prices.append(price)
+            
+        return np.array(prices)
+    
+    @staticmethod
+    def create_features(prices, window_size=10):
+        """Create features from price series using windowing"""
+        X = []
+        y = []
+        
+        # Calculate returns
+        returns = np.diff(prices) / prices[:-1]
+        
+        for i in range(len(returns) - window_size):
+            X.append(returns[i:i+window_size])
+            y.append(returns[i+window_size])
+            
+        return np.array(X), np.array(y)
+    
+    @staticmethod
+    def generate_dataset(asset_name, n_points=1000, window_size=10):
+        """Generate a complete dataset for a given asset"""
+        print(f"Generating synthetic {asset_name} dataset...")
+        
+        # Adjust volatility and trend based on asset type
+        if asset_name == "Bitcoin":
+            volatility = 0.03
+            trend = 0.0003
+        elif asset_name == "Crude Oil":
+            volatility = 0.015
+            trend = 0.0001
+        else:
+            volatility = 0.01
+            trend = 0.0001
+            
+        # Generate price series
+        prices = DataGenerator.generate_price_series(n_points, volatility, trend)
+        
+        # Create features and target
+        X, y = DataGenerator.create_features(prices, window_size)
+        
+        # Create dates for the dataset
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=n_points)
+        dates = pd.date_range(start=start_date, end=end_date, periods=n_points)
+        
+        # Create DataFrame
+        df = pd.DataFrame({
+            'Date': dates[:len(prices)],
+            'Price': prices,
+            'Return': np.append([0], np.diff(prices) / prices[:-1])
+        })
+        
+        return df, X, y
+
+class ModelTrainer:
+    def __init__(self, X, y, asset_name):
+        self.X = X
+        self.y = y
+        self.asset_name = asset_name
+        
+        # Split data
+        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
+            X, y, test_size=0.2, shuffle=False
+        )
+        
+        # Standardize features
+        self.scaler = StandardScaler()
+        self.X_train_scaled = self.scaler.fit_transform(self.X_train.reshape(-1, self.X_train.shape[-1])).reshape(self.X_train.shape)
+        self.X_test_scaled = self.scaler.transform(self.X_test.reshape(-1, self.X_test.shape[-1])).reshape(self.X_test.shape)
+    
+    def create_lstm_model(self, input_shape):
+        """Create an LSTM model for time series prediction"""
+        model = Sequential([
+            LSTM(50, return_sequences=True, input_shape=input_shape),
+            LSTM(50),
+            Dense(1)
+        ])
+        return model
+    
+    def train_models(self):
+        """Train models with different loss functions and compare results"""
+        input_shape = (self.X_train_scaled.shape[1], 1)
+        
+        # Reshape data for LSTM
+        X_train_reshaped = self.X_train_scaled.reshape((self.X_train_scaled.shape[0], self.X_train_scaled.shape[1], 1))
+        X_test_reshaped = self.X_test_scaled.reshape((self.X_test_scaled.shape[0], self.X_test_scaled.shape[1], 1))
+        
+        results = {}
+        
+        # Train with MSE
+        print(f"\nTraining {self.asset_name} model with MSE loss...")
+        model_mse = self.create_lstm_model(input_shape)
+        model_mse.compile(optimizer='adam', loss='mse')
+        model_mse.fit(
+            X_train_reshaped, self.y_train, 
+            epochs=10, batch_size=32, verbose=0
+        )
+        
+        # Train with GMADL (a=1000, b=1)
+        print(f"Training {self.asset_name} model with GMADL loss (a=1000, b=1)...")
+        model_gmadl1 = self.create_lstm_model(input_shape)
+        model_gmadl1.compile(optimizer='adam', loss=LossFunctions.gmadl_loss(a=1000, b=1))
+        model_gmadl1.fit(
+            X_train_reshaped, self.y_train, 
+            epochs=10, batch_size=32, verbose=0
+        )
+        
+        # Train with GMADL (a=1000, b=2)
+        print(f"Training {self.asset_name} model with GMADL loss (a=1000, b=2)...")
+        model_gmadl2 = self.create_lstm_model(input_shape)
+        model_gmadl2.compile(optimizer='adam', loss=LossFunctions.gmadl_loss(a=1000, b=2))
+        model_gmadl2.fit(
+            X_train_reshaped, self.y_train, 
+            epochs=10, batch_size=32, verbose=0
+        )
+        
+        # Get predictions
+        y_pred_mse = model_mse.predict(X_test_reshaped, verbose=0).flatten()
+        y_pred_gmadl1 = model_gmadl1.predict(X_test_reshaped, verbose=0).flatten()
+        y_pred_gmadl2 = model_gmadl2.predict(X_test_reshaped, verbose=0).flatten()
+        
+        # Store results
+        results['MSE'] = {
+            'predictions': y_pred_mse,
+            'model': model_mse
+        }
+        
+        results['GMADL (a=1000, b=1)'] = {
+            'predictions': y_pred_gmadl1,
+            'model': model_gmadl1
+        }
+        
+        results['GMADL (a=1000, b=2)'] = {
+            'predictions': y_pred_gmadl2,
+            'model': model_gmadl2
+        }
+        
+        return results
+
+class StrategyEvaluator:
+    def __init__(self, y_true, predictions_dict, asset_name):
+        self.y_true = y_true
+        self.predictions_dict = predictions_dict
+        self.asset_name = asset_name
+        
+    def calculate_trading_metrics(self, y_true, y_pred, transaction_cost=0.001):
+        """Calculate trading metrics based on predictions"""
+        # Generate trading signals (1 for buy, -1 for sell, 0 for hold)
+        signals = np.sign(y_pred)
+        
+        # Calculate returns from signals
+        strategy_returns = signals[:-1] * y_true[1:]  # Shift by 1 as signal based on previous prediction
+        
+        # Apply transaction costs when signal changes
+        signal_changes = np.diff(np.append(0, signals))
+        transaction_costs = np.abs(signal_changes) * transaction_cost
+        
+        # Net returns after transaction costs
+        net_returns = strategy_returns - transaction_costs
+        
+        # Calculate metrics
+        total_return = np.sum(net_returns)
+        sharpe_ratio = np.mean(net_returns) / np.std(net_returns) if np.std(net_returns) > 0 else 0
+        num_trades = np.sum(np.abs(signal_changes))
+        
+        return {
+            'total_return': total_return,
+            'sharpe_ratio': sharpe_ratio,
+            'num_trades': num_trades,
+            'returns': net_returns
+        }
+    
+    def evaluate_strategies(self):
+        """Evaluate and compare different strategies"""
+        results = {}
+        
+        for name, data in self.predictions_dict.items():
+            y_pred = data['predictions']
+            
+            # Skip if predictions are not available
+            if y_pred is None or len(y_pred) == 0:
+                continue
+                
+            # Calculate metrics for different transaction costs
+            results[name] = {}
+            for tc in [0.0001, 0.001, 0.005]:  # Different transaction cost scenarios
+                metrics = self.calculate_trading_metrics(self.y_true, y_pred, tc)
+                results[name][f'tc_{tc}'] = metrics
+        
+        return results
+    
+    def plot_results(self, results):
+        """Plot strategy performance metrics"""
+        # Prepare data for plotting
+        models = list(results.keys())
+        tc_levels = ['tc_0.0001', 'tc_0.001', 'tc_0.005']
+        tc_labels = ['0.01%', '0.1%', '0.5%']
+        
+        # Create figure for returns and Sharpe ratios
+        fig, axes = plt.subplots(2, 1, figsize=(12, 10))
+        
+        # Plot total returns
+        returns_data = {model: [results[model][tc]['total_return'] for tc in tc_levels] for model in models}
+        returns_df = pd.DataFrame(returns_data, index=tc_labels)
+        returns_df.plot(kind='bar', ax=axes[0], title=f'{self.asset_name} - Total Returns by Transaction Cost')
+        axes[0].set_ylabel('Total Return')
+        axes[0].set_xlabel('Transaction Cost')
+        
+        # Plot Sharpe ratios
+        sharpe_data = {model: [results[model][tc]['sharpe_ratio'] for tc in tc_levels] for model in models}
+        sharpe_df = pd.DataFrame(sharpe_data, index=tc_labels)
+        sharpe_df.plot(kind='bar', ax=axes[1], title=f'{self.asset_name} - Sharpe Ratio by Transaction Cost')
+        axes[1].set_ylabel('Sharpe Ratio')
+        axes[1].set_xlabel('Transaction Cost')
+        
+        plt.tight_layout()
+        
+        # Create figure for number of trades
+        plt.figure(figsize=(10, 6))
+        trades_data = {model: [results[model][tc]['num_trades'] for tc in tc_levels] for model in models}
+        trades_df = pd.DataFrame(trades_data, index=tc_labels)
+        trades_df.plot(kind='bar', title=f'{self.asset_name} - Number of Trades by Transaction Cost')
+        plt.ylabel('Number of Trades')
+        plt.xlabel('Transaction Cost')
+        plt.tight_layout()
+        
+        # Plot cumulative returns for medium transaction cost
+        plt.figure(figsize=(12, 6))
+        for model in models:
+            cum_returns = np.cumsum(results[model]['tc_0.001']['returns'])
+            plt.plot(cum_returns, label=model)
+        
+        plt.title(f'{self.asset_name} - Cumulative Returns (0.1% Transaction Cost)')
+        plt.xlabel('Trading Period')
+        plt.ylabel('Cumulative Return')
+        plt.legend()
+        plt.grid(True, alpha=0.3)
+        plt.tight_layout()
+        plt.show()
+
+def main():
+    try:
+        print("GMADL Testing Framework for Algorithmic Trading Strategies")
+        print("--------------------------------------------------------")
+        
+        # Generate datasets for Bitcoin and Crude Oil
+        assets = ["Bitcoin", "Crude Oil"]
+        datasets = {}
+        
+        for asset in assets:
+            df, X, y = DataGenerator.generate_dataset(asset_name=asset, n_points=1500, window_size=10)
+            datasets[asset] = {
+                'df': df,
+                'X': X,
+                'y': y
+            }
+            
+        # Test models for each asset
+        for asset in assets:
+            print(f"\n\nTesting models for {asset}:")
+            print("-" * 40)
+            
+            X = datasets[asset]['X']
+            y = datasets[asset]['y']
+            
+            # Train models
+            trainer = ModelTrainer(X, y, asset)
+            model_results = trainer.train_models()
+            
+            # Evaluate strategies
+            evaluator = StrategyEvaluator(trainer.y_test, model_results, asset)
+            strategy_results = evaluator.evaluate_strategies()
+            
+            # Display results
+            print(f"\n{asset} Trading Strategy Results:")
+            print("-" * 40)
+            
+            for model_name, tc_results in strategy_results.items():
+                print(f"\nModel: {model_name}")
+                for tc, metrics in tc_results.items():
+                    tc_value = tc.split('_')[1]
+                    print(f"  Transaction Cost {tc_value}:")
+                    print(f"    Total Return: {metrics['total_return']:.4f}")
+                    print(f"    Sharpe Ratio: {metrics['sharpe_ratio']:.4f}")
+                    print(f"    Number of Trades: {int(metrics['num_trades'])}")
+            
+            # Plot results
+            evaluator.plot_results(strategy_results)
+            
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        import traceback
+        traceback.print_exc()
+
+if __name__ == "__main__":
+    main()
+```
+
+Would you like me to explain or break down the code?

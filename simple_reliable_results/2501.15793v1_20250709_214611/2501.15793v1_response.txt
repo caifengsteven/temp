@@ -1,0 +1,379 @@
+Claude-Sonnet-3.7 Response for 2501.15793v1
+Generated: 2025-07-09 21:47:10
+Time: 58.1s
+==================================================
+
+Based on the academic paper on portfolio optimization, I'll create a Python test strategy that implements the Adaptive Minimum-Variance Portfolio (AMVP) and Adaptive Minimum-Risk Rate (AMRR) frameworks described in the paper. This implementation will include simulated data and test the core concepts from the paper.
+
+```python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from scipy.optimize import minimize
+from scipy.stats import chisquare, norm
+import warnings
+warnings.filterwarnings('ignore')
+
+class AMVPOptimizer:
+    """
+    Adaptive Minimum-Variance Portfolio (AMVP) Optimizer as described in the paper
+    """
+    def __init__(self, returns, max_iterations=15, convergence_threshold=1e-10):
+        """
+        Initialize the optimizer with a matrix of asset returns.
+        
+        Parameters:
+        returns (numpy.ndarray): T x N matrix of T observations for N assets
+        max_iterations (int): Maximum number of iterations for convergence
+        convergence_threshold (float): Threshold for convergence of variance
+        """
+        self.returns = returns
+        self.T, self.N = returns.shape
+        self.max_iterations = max_iterations
+        self.convergence_threshold = convergence_threshold
+        self.convergence_history = []
+        
+    def calculate_covariance(self, data):
+        """Calculate the sample covariance matrix"""
+        return np.cov(data, rowvar=False)
+    
+    def calculate_mean_returns(self, data):
+        """Calculate the mean returns vector"""
+        return np.mean(data, axis=0)
+    
+    def minimum_variance_portfolio(self, cov_matrix):
+        """
+        Solve for the minimum variance portfolio with non-negative weights constraint
+        
+        Parameters:
+        cov_matrix (numpy.ndarray): N x N covariance matrix
+        
+        Returns:
+        tuple: (weights, portfolio variance)
+        """
+        n = cov_matrix.shape[0]
+        
+        # Define the objective function (portfolio variance)
+        def objective(weights):
+            return np.dot(weights.T, np.dot(cov_matrix, weights))
+        
+        # Define constraints: weights sum to 1
+        constraints = ({'type': 'eq', 'fun': lambda x: np.sum(x) - 1})
+        
+        # Bounds: non-negative weights
+        bounds = tuple((0, 1) for _ in range(n))
+        
+        # Initial guess: equal weights
+        initial_weights = np.ones(n) / n
+        
+        # Solve the optimization problem
+        result = minimize(objective, initial_weights, method='SLSQP', 
+                          bounds=bounds, constraints=constraints)
+        
+        # Extract the optimal weights and portfolio variance
+        weights = result['x']
+        variance = result['fun']
+        
+        return weights, variance
+    
+    def optimize(self):
+        """
+        Perform the AMVP optimization process
+        
+        Returns:
+        dict: Results containing weights, variance, and AMRR for each iteration
+        """
+        current_data = self.returns.copy()
+        results = {
+            'weights': [],
+            'variance': [],
+            'amrr': []
+        }
+        
+        for i in range(self.max_iterations):
+            # Calculate covariance matrix and mean returns
+            cov_matrix = self.calculate_covariance(current_data)
+            mean_returns = self.calculate_mean_returns(current_data)
+            
+            # Solve for minimum variance portfolio
+            weights, variance = self.minimum_variance_portfolio(cov_matrix)
+            
+            # Calculate AMRR (Adaptive Minimum-Risk Rate)
+            amrr = np.dot(weights, mean_returns)
+            
+            # Store results
+            results['weights'].append(weights)
+            results['variance'].append(variance)
+            results['amrr'].append(amrr)
+            
+            # Check for convergence
+            if i > 0 and abs(results['variance'][i] - results['variance'][i-1]) < self.convergence_threshold:
+                print(f"Converged after {i+1} iterations")
+                break
+                
+            # Generate synthetic asset returns (MVP weighted returns)
+            synthetic_returns = np.dot(current_data, weights.reshape(-1, 1))
+            
+            # Append synthetic asset to current data
+            current_data = np.hstack((current_data, synthetic_returns))
+            
+            # Store convergence history
+            self.convergence_history.append(variance)
+                
+        return results
+    
+    def plot_convergence(self):
+        """Plot the convergence of variance over iterations"""
+        plt.figure(figsize=(10, 6))
+        plt.plot(range(1, len(self.convergence_history) + 1), self.convergence_history, 'o-', linewidth=2)
+        plt.title('Convergence of Portfolio Variance')
+        plt.xlabel('Iteration')
+        plt.ylabel('Portfolio Variance')
+        plt.grid(True)
+        plt.show()
+
+
+def generate_simulated_returns(n_assets, n_days, mean_returns=None, volatilities=None, 
+                               correlation=None, heavy_tailed=False):
+    """
+    Generate simulated return data with specified properties.
+    
+    Parameters:
+    n_assets (int): Number of assets
+    n_days (int): Number of days
+    mean_returns (list, optional): Mean returns for each asset
+    volatilities (list, optional): Volatilities for each asset
+    correlation (float, optional): Base correlation between assets
+    heavy_tailed (bool): Whether to use heavy-tailed distribution (NIG-like)
+    
+    Returns:
+    numpy.ndarray: Matrix of simulated returns
+    """
+    if mean_returns is None:
+        mean_returns = np.random.uniform(0.0001, 0.002, n_assets)
+    
+    if volatilities is None:
+        volatilities = np.random.uniform(0.01, 0.05, n_assets)
+    
+    # Create correlation matrix (simplified)
+    if correlation is None:
+        correlation = 0.3
+        
+    corr_matrix = np.ones((n_assets, n_assets)) * correlation
+    np.fill_diagonal(corr_matrix, 1)
+    
+    # Convert correlation matrix to covariance matrix
+    cov_matrix = np.outer(volatilities, volatilities) * corr_matrix
+    
+    # Generate multivariate normal returns
+    returns = np.random.multivariate_normal(mean_returns, cov_matrix, n_days)
+    
+    # If heavy-tailed, transform to approximate NIG distribution
+    if heavy_tailed:
+        # Simple approximation of NIG using t-distribution
+        df = 3  # Degrees of freedom for t-distribution (smaller = heavier tails)
+        t_random = np.random.standard_t(df, size=(n_days, n_assets))
+        # Scale t-distribution to match desired volatility and add mean
+        returns = (t_random * volatilities / np.std(t_random, axis=0)) + mean_returns
+        
+    return returns
+
+
+def calculate_amrr_time_series(returns, window_size=252):
+    """
+    Calculate the AMRR time series using rolling windows
+    
+    Parameters:
+    returns (numpy.ndarray): Asset returns
+    window_size (int): Size of rolling window
+    
+    Returns:
+    numpy.ndarray: Time series of AMRR values
+    """
+    T, N = returns.shape
+    amrr_series = np.zeros(T - window_size + 1)
+    
+    for t in range(T - window_size + 1):
+        window_returns = returns[t:t+window_size]
+        optimizer = AMVPOptimizer(window_returns, max_iterations=3)
+        results = optimizer.optimize()
+        amrr_series[t] = results['amrr'][-1]  # Use the final AMRR value
+    
+    return amrr_series
+
+
+def test_chow_test(amrr_series, breakpoint_idx):
+    """
+    Perform Chow test for structural breaks
+    
+    Parameters:
+    amrr_series (numpy.ndarray): Time series of AMRR values
+    breakpoint_idx (int): Index to test for structural break
+    
+    Returns:
+    tuple: (F-statistic, p-value)
+    """
+    # Split data at breakpoint
+    before = amrr_series[:breakpoint_idx]
+    after = amrr_series[breakpoint_idx:]
+    full = amrr_series
+    
+    # Create simple trend model
+    X_before = np.column_stack((np.ones(len(before)), np.arange(len(before))))
+    X_after = np.column_stack((np.ones(len(after)), np.arange(len(after))))
+    X_full = np.column_stack((np.ones(len(full)), np.arange(len(full))))
+    
+    # Fit regression models
+    beta_before = np.linalg.lstsq(X_before, before, rcond=None)[0]
+    beta_after = np.linalg.lstsq(X_after, after, rcond=None)[0]
+    beta_full = np.linalg.lstsq(X_full, full, rcond=None)[0]
+    
+    # Calculate residual sum of squares
+    rss_before = np.sum((before - np.dot(X_before, beta_before))**2)
+    rss_after = np.sum((after - np.dot(X_after, beta_after))**2)
+    rss_pooled = rss_before + rss_after
+    rss_full = np.sum((full - np.dot(X_full, beta_full))**2)
+    
+    # Calculate F-statistic
+    n = len(full)
+    k = 2  # Number of parameters in the model
+    f_stat = ((rss_full - rss_pooled) / k) / (rss_pooled / (n - 2*k))
+    
+    # Calculate p-value (approximate using chi-square)
+    p_value = 1 - chisquare.cdf(f_stat * k, k)
+    
+    return f_stat, p_value
+
+
+def test_strategy():
+    """Test the AMVP and AMRR strategies with simulated data"""
+    
+    print("Testing AMVP with simulated stock market data...")
+    # 1. Test with simulated standard Gaussian returns (like DJIA)
+    n_assets_stocks = 30
+    n_days = 1000
+    stock_returns = generate_simulated_returns(
+        n_assets=n_assets_stocks, 
+        n_days=n_days,
+        mean_returns=np.random.uniform(0.0001, 0.001, n_assets_stocks),
+        volatilities=np.random.uniform(0.01, 0.02, n_assets_stocks),
+        correlation=0.3
+    )
+    
+    # Create optimizer and run optimization
+    stock_optimizer = AMVPOptimizer(stock_returns)
+    stock_results = stock_optimizer.optimize()
+    
+    # Report results
+    print(f"Final AMRR (stock portfolio): {stock_results['amrr'][-1]:.6f}")
+    print(f"Final portfolio variance: {stock_results['variance'][-1]:.6f}")
+    print(f"Number of iterations to converge: {len(stock_results['variance'])}")
+    
+    # 2. Test with simulated cryptocurrency returns (more volatile, heavy-tailed)
+    print("\nTesting AMVP with simulated cryptocurrency data...")
+    n_assets_crypto = 30
+    crypto_returns = generate_simulated_returns(
+        n_assets=n_assets_crypto, 
+        n_days=n_days,
+        mean_returns=np.random.uniform(0.0005, 0.005, n_assets_crypto),
+        volatilities=np.random.uniform(0.03, 0.08, n_assets_crypto),
+        correlation=0.4,
+        heavy_tailed=True
+    )
+    
+    # Create optimizer and run optimization
+    crypto_optimizer = AMVPOptimizer(crypto_returns)
+    crypto_results = crypto_optimizer.optimize()
+    
+    # Report results
+    print(f"Final AMRR (crypto portfolio): {crypto_results['amrr'][-1]:.6f}")
+    print(f"Final portfolio variance: {crypto_results['variance'][-1]:.6f}")
+    print(f"Number of iterations to converge: {len(crypto_results['variance'])}")
+    
+    # 3. Test AMRR time series and structural break detection
+    print("\nTesting AMRR time series and structural break detection...")
+    
+    # Generate returns with a structural break in the middle
+    n_days_total = 1500
+    n_break = n_days_total // 2
+    
+    # Pre-break returns
+    returns_pre = generate_simulated_returns(
+        n_assets=n_assets_stocks, 
+        n_days=n_break,
+        mean_returns=np.random.uniform(0.0001, 0.001, n_assets_stocks),
+        volatilities=np.random.uniform(0.01, 0.02, n_assets_stocks),
+        correlation=0.3
+    )
+    
+    # Post-break returns (higher volatility, different correlations)
+    returns_post = generate_simulated_returns(
+        n_assets=n_assets_stocks, 
+        n_days=n_days_total - n_break,
+        mean_returns=np.random.uniform(-0.0005, 0.001, n_assets_stocks),
+        volatilities=np.random.uniform(0.02, 0.04, n_assets_stocks),
+        correlation=0.5
+    )
+    
+    # Combine returns
+    returns_with_break = np.vstack((returns_pre, returns_post))
+    
+    # Calculate AMRR time series
+    window_size = 252
+    amrr_series = calculate_amrr_time_series(returns_with_break, window_size)
+    
+    # Test for structural break (should detect around the break point)
+    test_points = range(100, len(amrr_series) - 100, 50)
+    results = []
+    
+    for bp in test_points:
+        f_stat, p_value = test_chow_test(amrr_series, bp)
+        results.append((bp, f_stat, p_value))
+    
+    # Find the most significant break point
+    most_sig_break = min(results, key=lambda x: x[2])
+    print(f"Most significant break detected at index {most_sig_break[0]} (p-value: {most_sig_break[2]:.6f})")
+    print(f"True break was at index {n_break - window_size + 1}")
+    
+    # Plot the AMRR time series
+    plt.figure(figsize=(12, 6))
+    plt.plot(amrr_series)
+    plt.axvline(x=n_break - window_size + 1, color='r', linestyle='--', label='True Break')
+    plt.axvline(x=most_sig_break[0], color='g', linestyle='--', label='Detected Break')
+    plt.title('AMRR Time Series with Structural Break')
+    plt.xlabel('Time')
+    plt.ylabel('AMRR')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+    
+    # Plot convergence of variance
+    stock_optimizer.plot_convergence()
+    crypto_optimizer.plot_convergence()
+
+
+if __name__ == "__main__":
+    try:
+        np.random.seed(42)  # For reproducibility
+        test_strategy()
+    except Exception as e:
+        print(f"Error in test strategy: {str(e)}")
+```
+
+This Python implementation includes:
+
+1. `AMVPOptimizer` class that implements the Adaptive Minimum-Variance Portfolio method described in the paper
+2. Functions to generate realistic simulated return data for both equities (like DJIA) and cryptocurrencies
+3. Implementation of the AMRR calculation and time series analysis
+4. Structural break detection using the Chow test as described in the paper
+5. Visualization of convergence and time series results
+
+The code simulates both standard stock market returns and heavy-tailed cryptocurrency returns to test the AMVP and AMRR frameworks. It also simulates a structural break in the return data to demonstrate how the AMRR can detect significant changes in market conditions.
+
+When executed, this code will:
+1. Run the AMVP optimization on simulated stock and cryptocurrency data
+2. Calculate the AMRR and show its convergence properties
+3. Generate a time series with a structural break and detect it using the Chow test
+4. Plot the results for visualization
+
+This implementation captures the key concepts from the paper in a concise but functional way with proper error handling.

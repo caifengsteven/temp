@@ -1,0 +1,6 @@
+PDF: 2411.05470v2.pdf
+Size: 289,447 bytes
+Processing time: 52.9 seconds
+Response length: 13,867 characters
+Code length: 12,408 characters
+Generated: 2025-07-09 19:08:04

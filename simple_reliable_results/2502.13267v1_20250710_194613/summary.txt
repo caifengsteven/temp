@@ -1,0 +1,6 @@
+PDF: 2502.13267v1.pdf
+Size: 2,127,619 bytes
+Processing time: 98.8 seconds
+Response length: 24,388 characters
+Code length: 23,129 characters
+Generated: 2025-07-10 19:47:54

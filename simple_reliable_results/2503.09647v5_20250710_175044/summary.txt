@@ -1,0 +1,6 @@
+PDF: 2503.09647v5.pdf
+Size: 272,453 bytes
+Processing time: 105.4 seconds
+Response length: 25,432 characters
+Code length: 25,142 characters
+Generated: 2025-07-10 17:52:31

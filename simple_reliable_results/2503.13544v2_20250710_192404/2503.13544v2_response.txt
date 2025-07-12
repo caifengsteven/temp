@@ -1,0 +1,701 @@
+Claude-Sonnet-3.7 Response for 2503.13544v2
+Generated: 2025-07-10 19:25:47
+Time: 101.7s
+==================================================
+
+Based on the paper, I'll create a Python implementation of the Semi-Decision-Focused Learning with Deep Ensembles for portfolio optimization. The code will simulate the approach described in the paper using synthetic market data.
+
+```python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.utils.data import DataLoader, TensorDataset
+import warnings
+warnings.filterwarnings('ignore')
+
+# Set random seeds for reproducibility
+np.random.seed(42)
+torch.manual_seed(42)
+
+class FinancialDataset:
+    """Generate synthetic financial data for testing"""
+    
+    def __init__(self, n_assets=24, n_days=1000, trend='upward'):
+        self.n_assets = n_assets
+        self.n_days = n_days
+        self.trend = trend
+        self.data = self._generate_data()
+        
+    def _generate_data(self):
+        # Generate daily returns
+        if self.trend == 'upward':
+            # Upward trending universe (similar to Universe 1 in paper)
+            base_return = np.random.normal(0.0003, 0.01, (self.n_days, self.n_assets))
+            trend_component = np.linspace(0, 0.001, self.n_days).reshape(-1, 1)
+        else:
+            # Range-bound universe (similar to Universe 2 in paper)
+            base_return = np.random.normal(0.0001, 0.008, (self.n_days, self.n_assets))
+            trend_component = np.zeros((self.n_days, 1))
+        
+        daily_returns = base_return + trend_component
+        
+        # Generate prices from returns
+        prices = np.exp(np.cumsum(daily_returns, axis=0))
+        
+        # Start all prices at 100
+        prices = prices * 100
+        
+        # Create OHLCV data
+        opens = prices[:-1] * np.exp(np.random.normal(0, 0.002, (self.n_days-1, self.n_assets)))
+        highs = np.maximum(prices[:-1] * np.exp(np.random.normal(0.002, 0.003, (self.n_days-1, self.n_assets))), opens)
+        lows = np.minimum(prices[:-1] * np.exp(np.random.normal(-0.002, 0.003, (self.n_days-1, self.n_assets))), opens)
+        closes = prices[1:]
+        volumes = np.exp(np.random.normal(13, 1, (self.n_days-1, self.n_assets)))
+        
+        # Create DataFrame
+        data = []
+        for i in range(self.n_assets):
+            asset_data = pd.DataFrame({
+                'open': opens[:, i],
+                'high': highs[:, i],
+                'low': lows[:, i],
+                'close': closes[:, i],
+                'volume': volumes[:, i]
+            })
+            asset_data['asset'] = f'Asset_{i+1}'
+            data.append(asset_data)
+        
+        data = pd.concat(data)
+        data['date'] = np.repeat(pd.date_range('2020-01-01', periods=self.n_days-1), self.n_assets)
+        return data
+    
+    def get_processed_features(self, window_size=252):
+        """Process raw OHLCV data into the features described in the paper"""
+        features = []
+        for asset_name, asset_data in self.data.groupby('asset'):
+            asset_data = asset_data.sort_values('date')
+            
+            # Transformations as described in the paper
+            o_prime = np.log(asset_data['open'] / asset_data['close'])
+            h_prime = np.log(asset_data['high'] / asset_data['close'])
+            l_prime = np.log(asset_data['low'] / asset_data['close'])
+            c_prime = np.log(asset_data['close'] / asset_data['close'].shift(1))
+            v_prime = np.log(asset_data['volume'])
+            
+            # Replace NaNs
+            c_prime = c_prime.fillna(0)
+            
+            # Create feature DataFrame
+            asset_features = pd.DataFrame({
+                'o_prime': o_prime,
+                'h_prime': h_prime,
+                'l_prime': l_prime, 
+                'c_prime': c_prime,
+                'v_prime': v_prime,
+                'date': asset_data['date'],
+                'asset': asset_name
+            })
+            
+            features.append(asset_features)
+        
+        features = pd.concat(features)
+        
+        # Standardize features
+        scaler = StandardScaler()
+        for asset_name, asset_data in features.groupby('asset'):
+            numeric_cols = ['o_prime', 'h_prime', 'l_prime', 'c_prime', 'v_prime']
+            features.loc[asset_data.index, numeric_cols] = scaler.fit_transform(asset_data[numeric_cols])
+        
+        return features
+    
+    def get_training_data(self, window_size=252):
+        """Prepare training data with rolling windows"""
+        features = self.get_processed_features(window_size)
+        
+        X_list = []
+        dates_list = []
+        assets_list = []
+        
+        for asset_name, asset_data in features.groupby('asset'):
+            asset_data = asset_data.sort_values('date')
+            
+            for i in range(len(asset_data) - window_size):
+                window = asset_data.iloc[i:i+window_size]
+                X_list.append(window[['o_prime', 'h_prime', 'l_prime', 'c_prime', 'v_prime']].values)
+                dates_list.append(asset_data.iloc[i+window_size]['date'])
+                assets_list.append(asset_name)
+        
+        X = np.array(X_list)
+        
+        return X, dates_list, assets_list
+    
+    def get_future_returns(self, horizon=20):
+        """Calculate future returns for target portfolio generation"""
+        future_returns = {}
+        
+        for asset_name, asset_data in self.data.groupby('asset'):
+            asset_data = asset_data.sort_values('date')
+            future_ret = np.log(asset_data['close'].shift(-horizon) / asset_data['close'])
+            future_returns[asset_name] = future_ret
+        
+        future_returns_df = pd.DataFrame(future_returns)
+        future_returns_df.index = self.data['date'].unique()
+        
+        return future_returns_df
+
+
+class TargetPortfolioGenerator:
+    """Generate target portfolios for training"""
+    
+    @staticmethod
+    def max_sortino_portfolio(future_returns):
+        """Generate Max-Sortino target portfolio"""
+        # Calculate mean returns
+        mean_returns = future_returns.mean()
+        
+        # Calculate semi-variance matrix (only negative deviations)
+        neg_returns = future_returns - mean_returns
+        neg_returns[neg_returns > 0] = 0
+        semi_var = neg_returns.T @ neg_returns / len(future_returns)
+        
+        # Simple optimization for Max-Sortino
+        n_assets = len(mean_returns)
+        
+        # Use a simplified optimization for this example
+        # This is a naive approach - in practice, you'd use the Dinkelbach method
+        # or another convex optimization technique as mentioned in the paper
+        
+        # Ensure semi_var is invertible
+        semi_var = semi_var + np.eye(n_assets) * 1e-6
+        
+        # Simplified optimization
+        weights = np.dot(np.linalg.inv(semi_var), mean_returns)
+        
+        # Ensure non-negative weights (long-only)
+        weights = np.maximum(weights, 0)
+        
+        # Normalize to sum to 1
+        if np.sum(weights) > 0:
+            weights = weights / np.sum(weights)
+        else:
+            # If all weights are 0, use equal weights
+            weights = np.ones(n_assets) / n_assets
+            
+        return weights
+    
+    @staticmethod
+    def one_hot_portfolio(future_returns):
+        """Generate One-Hot target portfolio (invest in best performing asset)"""
+        mean_returns = future_returns.mean()
+        weights = np.zeros_like(mean_returns)
+        weights[np.argmax(mean_returns)] = 1.0
+        return weights
+
+
+class LSTMModel(nn.Module):
+    """LSTM model for portfolio optimization"""
+    
+    def __init__(self, input_dim=5, hidden_dim=64, n_assets=24):
+        super(LSTMModel, self).__init__()
+        self.lstm = nn.LSTM(input_dim, hidden_dim, batch_first=True)
+        self.fc = nn.Linear(hidden_dim, n_assets)
+        self.softmax = nn.Softmax(dim=1)
+        
+    def forward(self, x):
+        # x shape: [batch_size, seq_len, input_dim]
+        _, (hidden, _) = self.lstm(x)
+        out = self.fc(hidden.squeeze(0))
+        return self.softmax(out)
+
+
+class MambaModel(nn.Module):
+    """Simplified Mamba-inspired model (since true Mamba implementation is complex)"""
+    
+    def __init__(self, input_dim=5, hidden_dim=64, n_assets=24):
+        super(MambaModel, self).__init__()
+        # Using GRU as a simplified substitute for Mamba
+        self.gru = nn.GRU(input_dim, hidden_dim, batch_first=True)
+        self.fc1 = nn.Linear(hidden_dim, hidden_dim)
+        self.relu = nn.ReLU()
+        self.fc2 = nn.Linear(hidden_dim, n_assets)
+        self.softmax = nn.Softmax(dim=1)
+        
+    def forward(self, x):
+        # x shape: [batch_size, seq_len, input_dim]
+        _, hidden = self.gru(x)
+        out = self.fc1(hidden.squeeze(0))
+        out = self.relu(out)
+        out = self.fc2(out)
+        return self.softmax(out)
+
+
+class TransformerModel(nn.Module):
+    """Simplified Transformer model for portfolio optimization"""
+    
+    def __init__(self, input_dim=5, hidden_dim=64, n_heads=4, n_assets=24):
+        super(TransformerModel, self).__init__()
+        self.embedding = nn.Linear(input_dim, hidden_dim)
+        self.pos_encoder = nn.Sequential(
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.ReLU()
+        )
+        encoder_layer = nn.TransformerEncoderLayer(
+            d_model=hidden_dim, nhead=n_heads, batch_first=True
+        )
+        self.transformer_encoder = nn.TransformerEncoder(encoder_layer, num_layers=2)
+        self.fc = nn.Linear(hidden_dim, n_assets)
+        self.softmax = nn.Softmax(dim=1)
+        
+    def forward(self, x):
+        # x shape: [batch_size, seq_len, input_dim]
+        x = self.embedding(x)
+        x = self.pos_encoder(x)
+        x = self.transformer_encoder(x)
+        # Use the last sequence element for prediction
+        out = self.fc(x[:, -1, :])
+        return self.softmax(out)
+
+
+class DeepEnsemble:
+    """Implement Deep Ensemble for portfolio optimization"""
+    
+    def __init__(self, model_class, model_args, n_models=10):
+        self.n_models = n_models
+        self.models = [model_class(**model_args) for _ in range(n_models)]
+        
+    def train(self, train_loader, val_loader, epochs=100, lr=0.001):
+        """Train all models in the ensemble"""
+        for i, model in enumerate(self.models):
+            optimizer = optim.Adam(model.parameters(), lr=lr)
+            criterion = nn.CrossEntropyLoss()
+            
+            best_val_loss = float('inf')
+            best_model_state = None
+            
+            print(f"Training model {i+1}/{self.n_models}")
+            for epoch in range(epochs):
+                # Training
+                model.train()
+                train_loss = 0
+                for X_batch, y_batch in train_loader:
+                    optimizer.zero_grad()
+                    output = model(X_batch)
+                    loss = criterion(output, y_batch)
+                    loss.backward()
+                    optimizer.step()
+                    train_loss += loss.item()
+                
+                # Validation
+                model.eval()
+                val_loss = 0
+                with torch.no_grad():
+                    for X_batch, y_batch in val_loader:
+                        output = model(X_batch)
+                        loss = criterion(output, y_batch)
+                        val_loss += loss.item()
+                
+                if epoch % 10 == 0:
+                    print(f"Epoch {epoch}: Train Loss = {train_loss/len(train_loader):.6f}, Val Loss = {val_loss/len(val_loader):.6f}")
+                
+                # Save best model
+                if val_loss < best_val_loss:
+                    best_val_loss = val_loss
+                    best_model_state = model.state_dict().copy()
+            
+            # Load best model
+            model.load_state_dict(best_model_state)
+    
+    def predict(self, X):
+        """Get ensemble predictions"""
+        predictions = []
+        
+        for model in self.models:
+            model.eval()
+            with torch.no_grad():
+                pred = model(X)
+                predictions.append(pred)
+        
+        # Average predictions
+        ensemble_pred = torch.mean(torch.stack(predictions), dim=0)
+        return ensemble_pred
+
+
+class PortfolioBacktester:
+    """Backtest portfolio performance"""
+    
+    def __init__(self, returns_data, trading_cost=0.0040, rebalance_lag=2):
+        """
+        Initialize backtester
+        
+        Parameters:
+        - returns_data: DataFrame with daily returns for each asset
+        - trading_cost: Trading cost in decimal (40 bp = 0.0040)
+        - rebalance_lag: Lag in days for rebalancing implementation
+        """
+        self.returns_data = returns_data
+        self.trading_cost = trading_cost
+        self.rebalance_lag = rebalance_lag
+        
+    def backtest(self, portfolio_weights, strategy_name="Strategy"):
+        """
+        Run backtest for a given set of portfolio weights
+        
+        Parameters:
+        - portfolio_weights: DataFrame with portfolio weights indexed by date
+        - strategy_name: Name of the strategy for plotting
+        
+        Returns:
+        - DataFrame with backtest results
+        """
+        # Align dates
+        common_dates = sorted(set(portfolio_weights.index) & set(self.returns_data.index))
+        portfolio_weights = portfolio_weights.loc[common_dates]
+        returns_subset = self.returns_data.loc[common_dates]
+        
+        # Apply rebalancing lag
+        if self.rebalance_lag > 0:
+            portfolio_weights = portfolio_weights.shift(self.rebalance_lag)
+            portfolio_weights = portfolio_weights.dropna()
+            common_dates = portfolio_weights.index
+            returns_subset = returns_subset.loc[common_dates]
+        
+        # Initialize result variables
+        portfolio_values = [1.0]  # Start with $1
+        current_weights = portfolio_weights.iloc[0]
+        
+        # Run backtest
+        for i in range(1, len(common_dates)):
+            date = common_dates[i]
+            prev_date = common_dates[i-1]
+            
+            # Calculate daily return based on current weights
+            daily_return = np.sum(current_weights * returns_subset.loc[date])
+            
+            # Update portfolio value
+            portfolio_values.append(portfolio_values[-1] * (1 + daily_return))
+            
+            # Rebalance if needed
+            if i < len(common_dates) - 1:  # Skip last day
+                new_weights = portfolio_weights.loc[date]
+                
+                # Calculate trading cost
+                if not np.array_equal(current_weights, new_weights):
+                    turnover = np.sum(np.abs(new_weights - current_weights))
+                    cost = turnover * self.trading_cost
+                    portfolio_values[-1] *= (1 - cost)
+                
+                current_weights = new_weights
+        
+        # Create results DataFrame
+        results = pd.DataFrame({
+            'value': portfolio_values,
+            'strategy': strategy_name
+        }, index=common_dates)
+        
+        # Calculate metrics
+        daily_returns = results['value'].pct_change().dropna()
+        
+        # Cumulative return
+        cum_return = portfolio_values[-1] / portfolio_values[0]
+        
+        # Sharpe ratio (annualized)
+        sharpe_ratio = np.sqrt(252) * daily_returns.mean() / daily_returns.std()
+        
+        # Sortino ratio (annualized)
+        downside_returns = daily_returns[daily_returns < 0]
+        sortino_ratio = np.sqrt(252) * daily_returns.mean() / downside_returns.std()
+        
+        print(f"{strategy_name} Metrics:")
+        print(f"Cumulative Return: {cum_return:.3f}")
+        print(f"Sharpe Ratio: {sharpe_ratio:.3f}")
+        print(f"Sortino Ratio: {sortino_ratio:.3f}")
+        print("")
+        
+        return results, {
+            'cum_return': cum_return,
+            'sharpe_ratio': sharpe_ratio,
+            'sortino_ratio': sortino_ratio
+        }
+
+
+def main():
+    print("Semi-Decision-Focused Learning with Deep Ensembles for Portfolio Optimization")
+    print("="*80)
+    
+    # Generate synthetic data
+    print("\nGenerating synthetic financial data...")
+    universe1 = FinancialDataset(n_assets=24, n_days=1000, trend='upward')
+    universe2 = FinancialDataset(n_assets=84, n_days=1000, trend='range_bound')
+    
+    # Prepare data for Universe 1 (upward-trending)
+    print("\nPreparing data for Universe 1 (upward-trending)...")
+    X1, dates1, assets1 = universe1.get_training_data(window_size=252)
+    
+    # Calculate future returns for target generation
+    future_returns1 = universe1.get_future_returns(horizon=20)
+    
+    # Generate target portfolios
+    print("Generating target portfolios...")
+    target_dates = []
+    max_sortino_targets = []
+    one_hot_targets = []
+    
+    for date in sorted(set(dates1)):
+        if date in future_returns1.index:
+            future_ret = future_returns1.loc[date].dropna()
+            if len(future_ret) > 0:
+                max_sortino = TargetPortfolioGenerator.max_sortino_portfolio(future_ret.values.reshape(1, -1))
+                one_hot = TargetPortfolioGenerator.one_hot_portfolio(future_ret.values.reshape(1, -1))
+                
+                target_dates.append(date)
+                max_sortino_targets.append(max_sortino)
+                one_hot_targets.append(one_hot)
+    
+    # Create target DataFrames
+    max_sortino_df = pd.DataFrame(max_sortino_targets, index=target_dates)
+    one_hot_df = pd.DataFrame(one_hot_targets, index=target_dates)
+    
+    # Select a subset for this example
+    train_size = int(0.7 * len(target_dates))
+    val_size = int(0.1 * len(target_dates))
+    
+    train_dates = target_dates[:train_size]
+    val_dates = target_dates[train_size:train_size+val_size]
+    test_dates = target_dates[train_size+val_size:]
+    
+    # Prepare training data for deep learning
+    train_indices = [i for i, date in enumerate(dates1) if date in train_dates]
+    val_indices = [i for i, date in enumerate(dates1) if date in val_dates]
+    test_indices = [i for i, date in enumerate(dates1) if date in test_dates]
+    
+    # Prepare target indices
+    train_target_indices = [i for i, date in enumerate(target_dates) if date in train_dates]
+    val_target_indices = [i for i, date in enumerate(target_dates) if date in val_dates]
+    
+    # Prepare PyTorch datasets and dataloaders
+    X_train = torch.FloatTensor(X1[train_indices])
+    y_train_max_sortino = torch.FloatTensor(np.array(max_sortino_targets)[train_target_indices])
+    y_train_one_hot = torch.FloatTensor(np.array(one_hot_targets)[train_target_indices])
+    
+    X_val = torch.FloatTensor(X1[val_indices])
+    y_val_max_sortino = torch.FloatTensor(np.array(max_sortino_targets)[val_target_indices])
+    y_val_one_hot = torch.FloatTensor(np.array(one_hot_targets)[val_target_indices])
+    
+    # Create dataloaders for Max-Sortino target
+    train_dataset_max_sortino = TensorDataset(X_train, y_train_max_sortino)
+    val_dataset_max_sortino = TensorDataset(X_val, y_val_max_sortino)
+    
+    train_loader_max_sortino = DataLoader(train_dataset_max_sortino, batch_size=32, shuffle=True)
+    val_loader_max_sortino = DataLoader(val_dataset_max_sortino, batch_size=32)
+    
+    # Create dataloaders for One-Hot target
+    train_dataset_one_hot = TensorDataset(X_train, y_train_one_hot)
+    val_dataset_one_hot = TensorDataset(X_val, y_val_one_hot)
+    
+    train_loader_one_hot = DataLoader(train_dataset_one_hot, batch_size=32, shuffle=True)
+    val_loader_one_hot = DataLoader(val_dataset_one_hot, batch_size=32)
+    
+    # Train models with Deep Ensemble
+    print("\nTraining models...")
+    
+    # For demonstration, we'll use a small ensemble size and few epochs
+    n_models = 5  # In the paper they use 100
+    n_epochs = 10  # In the paper they use more epochs
+    
+    # Initialize LSTM model with Max-Sortino target
+    print("\nTraining LSTM with Max-Sortino target:")
+    lstm_ensemble_max_sortino = DeepEnsemble(
+        LSTMModel, 
+        {'input_dim': 5, 'hidden_dim': 64, 'n_assets': universe1.n_assets},
+        n_models=n_models
+    )
+    
+    # Train with reduced epochs for demonstration
+    lstm_ensemble_max_sortino.train(
+        train_loader_max_sortino, 
+        val_loader_max_sortino,
+        epochs=n_epochs
+    )
+    
+    # Initialize Mamba (simplified) model with One-Hot target
+    print("\nTraining Mamba with One-Hot target:")
+    mamba_ensemble_one_hot = DeepEnsemble(
+        MambaModel,
+        {'input_dim': 5, 'hidden_dim': 64, 'n_assets': universe1.n_assets},
+        n_models=n_models
+    )
+    
+    # Train with reduced epochs for demonstration
+    mamba_ensemble_one_hot.train(
+        train_loader_one_hot,
+        val_loader_one_hot,
+        epochs=n_epochs
+    )
+    
+    # Backtest models
+    print("\nBacktesting models...")
+    
+    # Prepare test data
+    X_test = torch.FloatTensor(X1[test_indices])
+    test_dates = [dates1[i] for i in test_indices]
+    
+    # Get predictions from ensembles
+    lstm_max_sortino_preds = lstm_ensemble_max_sortino.predict(X_test)
+    mamba_one_hot_preds = mamba_ensemble_one_hot.predict(X_test)
+    
+    # Convert predictions to portfolio weights
+    lstm_max_sortino_weights = pd.DataFrame(
+        lstm_max_sortino_preds.numpy(),
+        index=test_dates
+    )
+    
+    mamba_one_hot_weights = pd.DataFrame(
+        mamba_one_hot_preds.numpy(),
+        index=test_dates
+    )
+    
+    # Create equal weight and value weight baseline portfolios
+    equal_weights = pd.DataFrame(
+        np.ones((len(test_dates), universe1.n_assets)) / universe1.n_assets,
+        index=test_dates
+    )
+    
+    # For value weights, we'll use market caps proportional to the price
+    # For simplicity, we'll use the closing price as a proxy for market cap
+    prices = []
+    for date in test_dates:
+        date_prices = []
+        for asset in range(universe1.n_assets):
+            asset_data = universe1.data[
+                (universe1.data['date'] == date) & 
+                (universe1.data['asset'] == f'Asset_{asset+1}')
+            ]
+            if len(asset_data) > 0:
+                date_prices.append(asset_data['close'].values[0])
+            else:
+                # Use last known price if not available
+                date_prices.append(prices[-1][asset] if prices else 100)
+        prices.append(date_prices)
+    
+    value_weights = pd.DataFrame(prices, index=test_dates)
+    value_weights = value_weights.div(value_weights.sum(axis=1), axis=0)
+    
+    # Create daily returns DataFrame for backtesting
+    daily_returns = pd.DataFrame()
+    for asset in range(universe1.n_assets):
+        asset_data = universe1.data[universe1.data['asset'] == f'Asset_{asset+1}']
+        asset_data = asset_data.sort_values('date')
+        returns = np.log(asset_data['close'] / asset_data['close'].shift(1))
+        daily_returns[f'Asset_{asset+1}'] = returns
+    
+    daily_returns.index = asset_data['date'].values
+    
+    # Run backtests
+    backtester = PortfolioBacktester(daily_returns, trading_cost=0.0040, rebalance_lag=2)
+    
+    # Backtest equal weight portfolio
+    equal_weight_results, equal_weight_metrics = backtester.backtest(
+        equal_weights, 
+        strategy_name="Equal Weight"
+    )
+    
+    # Backtest value weight portfolio
+    value_weight_results, value_weight_metrics = backtester.backtest(
+        value_weights, 
+        strategy_name="Value Weight"
+    )
+    
+    # Backtest LSTM with Max-Sortino target
+    lstm_max_sortino_results, lstm_max_sortino_metrics = backtester.backtest(
+        lstm_max_sortino_weights, 
+        strategy_name="LSTM Max-Sortino"
+    )
+    
+    # Backtest Mamba with One-Hot target
+    mamba_one_hot_results, mamba_one_hot_metrics = backtester.backtest(
+        mamba_one_hot_weights, 
+        strategy_name="Mamba One-Hot"
+    )
+    
+    # Plot results
+    plt.figure(figsize=(12, 6))
+    plt.plot(equal_weight_results.index, equal_weight_results['value'], label='Equal Weight')
+    plt.plot(value_weight_results.index, value_weight_results['value'], label='Value Weight')
+    plt.plot(lstm_max_sortino_results.index, lstm_max_sortino_results['value'], label='LSTM Max-Sortino')
+    plt.plot(mamba_one_hot_results.index, mamba_one_hot_results['value'], label='Mamba One-Hot')
+    plt.xlabel('Date')
+    plt.ylabel('Portfolio Value ($)')
+    plt.title('Portfolio Backtesting Results')
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    
+    # Demonstrate Deep Ensemble effect
+    print("\nDemonstrating Deep Ensemble effect...")
+    
+    # Compare different ensemble sizes
+    ensemble_sizes = [1, 2, 4, 8]
+    ensemble_metrics = []
+    
+    for size in ensemble_sizes:
+        print(f"\nTesting ensemble size: {size}")
+        
+        # Create a subset of models
+        subset_models = mamba_one_hot_preds[:size]
+        ensemble_pred = torch.mean(torch.stack(subset_models), dim=0)
+        
+        # Convert to portfolio weights
+        ensemble_weights = pd.DataFrame(
+            ensemble_pred.numpy(),
+            index=test_dates
+        )
+        
+        # Backtest
+        _, metrics = backtester.backtest(
+            ensemble_weights, 
+            strategy_name=f"Ensemble Size {size}"
+        )
+        
+        ensemble_metrics.append({
+            'size': size,
+            'metrics': metrics
+        })
+    
+    # Print summary of ensemble effect
+    print("\nSummary of Deep Ensemble effect:")
+    print("-" * 50)
+    print("Ensemble Size | Cumulative Return | Sharpe Ratio | Sortino Ratio")
+    print("-" * 50)
+    
+    for result in ensemble_metrics:
+        size = result['size']
+        metrics = result['metrics']
+        print(f"{size:13} | {metrics['cum_return']:17.3f} | {metrics['sharpe_ratio']:12.3f} | {metrics['sortino_ratio']:13.3f}")
+    
+    print("\nCompleted Semi-Decision-Focused Learning with Deep Ensembles demonstration")
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+```
+
+This implementation includes:
+
+1. Synthetic financial data generation that mimics the upward-trending and range-bound universes described in the paper
+2. Implementation of the Semi-Decision-Focused Learning framework using:
+   - LSTM, Transformer, and simplified Mamba models
+   - Max-Sortino and One-Hot target portfolios
+   - Cross-entropy loss function as described in the paper
+3. Deep Ensemble implementation to reduce variance and stabilize performance
+4. Portfolio backtesting with trading costs and rebalancing lag
+5. Demonstration of the Deep Ensemble effect with different ensemble sizes
+
+Note that for simplicity and execution speed, I've used smaller models and fewer ensemble members than recommended in the paper. In a real implementation, you would want to use the full 100-model ensemble as described in the paper for optimal results.

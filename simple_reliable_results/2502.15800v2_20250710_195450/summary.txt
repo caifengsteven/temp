@@ -1,0 +1,6 @@
+PDF: 2502.15800v2.pdf
+Size: 2,435,176 bytes
+Processing time: 89.1 seconds
+Response length: 20,631 characters
+Code length: 20,321 characters
+Generated: 2025-07-10 19:56:24

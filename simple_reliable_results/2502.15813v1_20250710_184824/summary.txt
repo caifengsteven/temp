@@ -1,0 +1,6 @@
+PDF: 2502.15813v1.pdf
+Size: 590,768 bytes
+Processing time: 70.4 seconds
+Response length: 18,991 characters
+Code length: 18,703 characters
+Generated: 2025-07-10 18:49:36

@@ -1,0 +1,425 @@
+Claude-Sonnet-3.7 Response for 2503.06707v2
+Generated: 2025-07-10 19:08:09
+Time: 59.3s
+==================================================
+
+Based on the PDF content, I'll create a Python implementation to test differential PCA on a simulated financial derivatives scenario. The paper introduces differential PCA as a dimension reduction technique that uses pathwise differentials to identify the most relevant risk factors for derivatives pricing.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+
+class DifferentialPCA:
+    """
+    Differential PCA implementation based on the paper by Brian Huge and Antoine Savine.
+    Uses pathwise differentials to identify the most relevant risk factors.
+    """
+    def __init__(self, n_components=None, threshold=0.95):
+        self.n_components = n_components
+        self.threshold = threshold
+        self.projection_matrix = None
+        self.eigenvectors = None
+        self.eigenvalues = None
+        
+    def fit(self, Z):
+        """
+        Fit the model using pathwise differentials Z
+        Z: array-like, shape (n_samples, n_features)
+            The pathwise differentials
+        """
+        # Compute covariance matrix of pathwise differentials
+        cov_Z = np.cov(Z, rowvar=False)
+        
+        # Compute eigenvalues and eigenvectors
+        eigenvalues, eigenvectors = np.linalg.eigh(cov_Z)
+        
+        # Sort in descending order
+        idx = np.argsort(eigenvalues)[::-1]
+        eigenvalues = eigenvalues[idx]
+        eigenvectors = eigenvectors[:, idx]
+        
+        # Determine number of components
+        if self.n_components is None:
+            total_variance = np.sum(eigenvalues)
+            cumulative_variance_ratio = np.cumsum(eigenvalues) / total_variance
+            self.n_components = np.argmax(cumulative_variance_ratio >= self.threshold) + 1
+        
+        # Store results
+        self.eigenvalues = eigenvalues
+        self.eigenvectors = eigenvectors
+        self.projection_matrix = eigenvectors[:, :self.n_components].T
+        
+        return self
+    
+    def transform(self, X):
+        """
+        Transform data X to lower-dimensional representation
+        """
+        return np.dot(X, self.eigenvectors[:, :self.n_components])
+    
+    def inverse_transform(self, L):
+        """
+        Reconstruct original representation from lower-dimensional space
+        """
+        return np.dot(L, self.eigenvectors[:, :self.n_components].T)
+
+
+class DifferentialRegression:
+    """
+    Differential Linear Regression implementation
+    Uses both values and pathwise differentials for better approximation
+    """
+    def __init__(self, lambda_diff=1.0):
+        self.lambda_diff = lambda_diff
+        self.beta = None
+        
+    def fit(self, X, Y, Z):
+        """
+        Fit the model using features X, values Y, and pathwise differentials Z
+        """
+        # For simplicity, we'll use polynomial basis of degree 2
+        n_samples, n_features = X.shape
+        
+        # Create basis functions (including constant, linear, and quadratic terms)
+        phi = self._create_basis(X)
+        
+        # Compute derivatives of basis functions
+        dphi = self._compute_basis_derivatives(X)
+        
+        # Compute matrices for normal equation
+        C_phi = np.dot(phi.T, phi) / n_samples
+        C_phi_Y = np.dot(phi.T, Y) / n_samples
+        
+        C_dphi_sum = np.zeros_like(C_phi)
+        C_dphi_Z_sum = np.zeros_like(C_phi_Y)
+        
+        # Sum over all dimensions
+        for i in range(n_features):
+            C_dphi = np.dot(dphi[i].T, dphi[i]) / n_samples
+            C_dphi_Z = np.dot(dphi[i].T, Z[:, i]) / n_samples
+            
+            C_dphi_sum += self.lambda_diff * C_dphi
+            C_dphi_Z_sum += self.lambda_diff * C_dphi_Z
+        
+        # Solve modified normal equation
+        A = C_phi + C_dphi_sum
+        b = C_phi_Y + C_dphi_Z_sum
+        
+        # Add small regularization for numerical stability
+        A = A + 1e-8 * np.eye(A.shape[0])
+        
+        self.beta = np.linalg.solve(A, b)
+        self.basis_dim = phi.shape[1]
+        
+        return self
+    
+    def predict(self, X):
+        """
+        Predict values for features X
+        """
+        phi = self._create_basis(X)
+        return np.dot(phi, self.beta)
+    
+    def _create_basis(self, X):
+        """
+        Create polynomial basis functions of degree 2
+        """
+        n_samples, n_features = X.shape
+        
+        # Constant term
+        phi = np.ones((n_samples, 1))
+        
+        # Linear terms
+        phi = np.hstack((phi, X))
+        
+        # Quadratic terms
+        for i in range(n_features):
+            phi = np.hstack((phi, X[:, i:i+1]**2))
+            
+        # Cross terms
+        for i in range(n_features):
+            for j in range(i+1, n_features):
+                phi = np.hstack((phi, (X[:, i] * X[:, j]).reshape(-1, 1)))
+                
+        return phi
+    
+    def _compute_basis_derivatives(self, X):
+        """
+        Compute derivatives of basis functions
+        """
+        n_samples, n_features = X.shape
+        basis_dim = 1 + n_features + n_features + n_features * (n_features - 1) // 2
+        
+        # Initialize derivatives for each dimension
+        dphi = [np.zeros((n_samples, basis_dim)) for _ in range(n_features)]
+        
+        for i in range(n_features):
+            # Derivative of constant term is zero (already initialized)
+            
+            # Derivative of linear terms
+            col_idx = 1 + i
+            dphi[i][:, col_idx] = 1.0
+            
+            # Derivative of quadratic terms
+            col_idx = 1 + n_features + i
+            dphi[i][:, col_idx] = 2 * X[:, i]
+            
+            # Derivative of cross terms
+            cross_term_offset = 1 + n_features + n_features
+            for j in range(n_features):
+                if j < i:
+                    col_idx = cross_term_offset + j * (2 * n_features - j - 1) // 2 + (i - j - 1)
+                    dphi[i][:, col_idx] = X[:, j]
+                elif j > i:
+                    col_idx = cross_term_offset + i * (2 * n_features - i - 1) // 2 + (j - i - 1)
+                    dphi[i][:, col_idx] = X[:, j]
+                    
+        return dphi
+
+
+# Simulating a five-factor Gaussian interest rate model as mentioned in the paper
+def simulate_interest_rate_model(n_samples=10000, n_factors=5, seed=42):
+    """
+    Simulate a five-factor Gaussian interest rate model
+    Returns state variables X, prices Y, and pathwise differentials Z
+    """
+    np.random.seed(seed)
+    
+    # Generate random state variables
+    X = np.random.normal(0, 1, (n_samples, n_factors))
+    
+    # Define "true" model parameters (these would typically be calibrated to market data)
+    # We'll define a non-linear function that represents a Bermudan option price
+    weights = np.array([0.5, 0.3, 0.1, 0.05, 0.05])  # Weights for different factors
+    
+    # Function to compute option price (non-linear function of state variables)
+    def option_price(x):
+        # Main factor is a weighted sum of state variables
+        main_factor = np.dot(x, weights)
+        
+        # Non-linear transformation (similar to option payoff)
+        return np.maximum(main_factor, 0.1) + 0.2 * np.exp(0.5 * main_factor) + 0.1 * main_factor**2
+    
+    # Compute prices
+    Y = np.array([option_price(x) for x in X])
+    
+    # Compute pathwise differentials (analytic for this example)
+    Z = np.zeros_like(X)
+    for i in range(n_samples):
+        x = X[i]
+        main_factor = np.dot(x, weights)
+        
+        # Differentials for the max term
+        max_diff = weights * (main_factor > 0)
+        
+        # Differentials for the exp term
+        exp_diff = 0.2 * 0.5 * np.exp(0.5 * main_factor) * weights
+        
+        # Differentials for the quadratic term
+        quad_diff = 0.1 * 2 * main_factor * weights
+        
+        Z[i] = max_diff + exp_diff + quad_diff
+    
+    # Add some noise to the differentials to simulate Monte Carlo noise
+    Z += np.random.normal(0, 0.01, Z.shape)
+    
+    return X, Y, Z
+
+
+def test_pca_vs_diff_pca(X, Y, Z, test_size=0.2):
+    """
+    Compare standard PCA with differential PCA
+    """
+    n_samples = X.shape[0]
+    n_test = int(n_samples * test_size)
+    n_train = n_samples - n_test
+    
+    # Split data into training and test sets
+    X_train, X_test = X[:n_train], X[n_train:]
+    Y_train, Y_test = Y[:n_train], Y[n_train:]
+    Z_train, Z_test = Z[:n_train], Z[n_train:]
+    
+    # Apply standard PCA
+    n_components_range = range(1, X.shape[1] + 1)
+    pca_errors = []
+    
+    for n_components in n_components_range:
+        pca = PCA(n_components=n_components)
+        L_train = pca.fit_transform(X_train)
+        
+        # Train a regressor on the reduced data
+        reg = LinearRegression()
+        reg.fit(L_train, Y_train)
+        
+        # Test on test set
+        L_test = pca.transform(X_test)
+        Y_pred = reg.predict(L_test)
+        error = mean_squared_error(Y_test, Y_pred)
+        pca_errors.append(error)
+    
+    # Apply differential PCA
+    diff_pca_errors = []
+    
+    for n_components in n_components_range:
+        diff_pca = DifferentialPCA(n_components=n_components)
+        diff_pca.fit(Z_train)
+        L_train = diff_pca.transform(X_train)
+        
+        # Train a regressor on the reduced data
+        reg = LinearRegression()
+        reg.fit(L_train, Y_train)
+        
+        # Test on test set
+        L_test = diff_pca.transform(X_test)
+        Y_pred = reg.predict(L_test)
+        error = mean_squared_error(Y_test, Y_pred)
+        diff_pca_errors.append(error)
+    
+    return n_components_range, pca_errors, diff_pca_errors
+
+
+def test_differential_regression(X, Y, Z, test_size=0.2):
+    """
+    Test differential regression vs standard regression
+    """
+    n_samples = X.shape[0]
+    n_test = int(n_samples * test_size)
+    n_train = n_samples - n_test
+    
+    # Split data into training and test sets
+    X_train, X_test = X[:n_train], X[n_train:]
+    Y_train, Y_test = Y[:n_train], Y[n_train:]
+    Z_train, Z_test = Z[:n_train], Z[n_train:]
+    
+    # Standard regression (with polynomial basis)
+    reg = DifferentialRegression(lambda_diff=0.0)  # Lambda=0 means no differential regularization
+    reg.fit(X_train, Y_train, Z_train)
+    Y_pred_std = reg.predict(X_test)
+    std_error = mean_squared_error(Y_test, Y_pred_std)
+    
+    # Differential regression
+    diff_reg = DifferentialRegression(lambda_diff=1.0)
+    diff_reg.fit(X_train, Y_train, Z_train)
+    Y_pred_diff = diff_reg.predict(X_test)
+    diff_error = mean_squared_error(Y_test, Y_pred_diff)
+    
+    return std_error, diff_error, Y_test, Y_pred_std, Y_pred_diff
+
+
+def plot_eigenvalues(diff_pca):
+    """
+    Plot eigenvalues from differential PCA
+    """
+    plt.figure(figsize=(10, 6))
+    plt.bar(range(1, len(diff_pca.eigenvalues) + 1), diff_pca.eigenvalues)
+    plt.title('Eigenvalues from Differential PCA')
+    plt.xlabel('Principal Component')
+    plt.ylabel('Eigenvalue')
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
+
+
+def main():
+    try:
+        print("Starting Differential PCA and Regression Tests")
+        print("=============================================")
+        
+        # Simulate data
+        print("Simulating five-factor Gaussian interest rate model...")
+        n_samples = 10000
+        n_factors = 5
+        X, Y, Z = simulate_interest_rate_model(n_samples, n_factors)
+        
+        print(f"Generated {n_samples} samples with {n_factors} factors")
+        print(f"X shape: {X.shape}, Y shape: {Y.shape}, Z shape: {Z.shape}")
+        print("Sample X:\n", X[:3])
+        print("Sample Y:\n", Y[:3])
+        print("Sample Z:\n", Z[:3])
+        
+        # Test PCA vs Differential PCA
+        print("\nComparing PCA vs Differential PCA...")
+        n_components_range, pca_errors, diff_pca_errors = test_pca_vs_diff_pca(X, Y, Z)
+        
+        plt.figure(figsize=(10, 6))
+        plt.plot(n_components_range, pca_errors, 'o-', label='Standard PCA')
+        plt.plot(n_components_range, diff_pca_errors, 's-', label='Differential PCA')
+        plt.title('MSE vs Number of Components')
+        plt.xlabel('Number of Components')
+        plt.ylabel('Mean Squared Error')
+        plt.legend()
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
+        
+        # Show eigenvalues from differential PCA
+        print("\nFitting differential PCA and analyzing eigenvalues...")
+        diff_pca = DifferentialPCA()
+        diff_pca.fit(Z)
+        print("Eigenvalues:", diff_pca.eigenvalues)
+        plot_eigenvalues(diff_pca)
+        
+        # Determine recommended dimension
+        total_variance = np.sum(diff_pca.eigenvalues)
+        cum_variance_ratio = np.cumsum(diff_pca.eigenvalues) / total_variance
+        recommended_dim = np.argmax(cum_variance_ratio >= 0.95) + 1
+        print(f"Recommended dimension (95% variance): {recommended_dim}")
+        
+        # Test differential regression
+        print("\nComparing standard regression vs differential regression...")
+        std_error, diff_error, Y_test, Y_pred_std, Y_pred_diff = test_differential_regression(X, Y, Z)
+        
+        print(f"Standard regression MSE: {std_error:.6f}")
+        print(f"Differential regression MSE: {diff_error:.6f}")
+        print(f"Improvement: {(1 - diff_error/std_error) * 100:.2f}%")
+        
+        plt.figure(figsize=(10, 6))
+        plt.scatter(Y_test, Y_pred_std, alpha=0.5, label='Standard Regression')
+        plt.scatter(Y_test, Y_pred_diff, alpha=0.5, label='Differential Regression')
+        plt.plot([Y_test.min(), Y_test.max()], [Y_test.min(), Y_test.max()], 'k--')
+        plt.title('Predicted vs True Values')
+        plt.xlabel('True Values')
+        plt.ylabel('Predicted Values')
+        plt.legend()
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
+        
+        # Test dimension reduction + regression
+        print("\nTesting dimension reduction + regression...")
+        # Use the recommended dimension
+        diff_pca = DifferentialPCA(n_components=recommended_dim)
+        diff_pca.fit(Z)
+        
+        # Transform data
+        L_train = diff_pca.transform(X[:8000])
+        L_test = diff_pca.transform(X[8000:])
+        
+        # Apply differential regression in reduced space
+        diff_reg = DifferentialRegression(lambda_diff=1.0)
+        
+        # Transform differentials
+        Z_reduced_train = np.dot(Z[:8000], diff_pca.eigenvectors[:, :recommended_dim])
+        
+        diff_reg.fit(L_train, Y[:8000], Z_reduced_train)
+        Y_pred_reduced = diff_reg.predict(L_test)
+        reduced_error = mean_squared_error(Y[8000:], Y_pred_reduced)
+        
+        print(f"MSE with dimension reduction to {recommended_dim} factors: {reduced_error:.6f}")
+        
+        print("\nTests completed successfully!")
+    
+    except Exception as e:
+        print(f"Error occurred: {e}")
+        import traceback
+        traceback.print_exc()
+
+
+if __name__ == "__main__":
+    main()
+```
+
+Would you like me to explain how this implementation works, or would you prefer me to modify any aspects of the code?

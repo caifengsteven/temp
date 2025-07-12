@@ -1,0 +1,6 @@
+PDF: 2411.11059v1.pdf
+Size: 1,055,042 bytes
+Processing time: 127.2 seconds
+Response length: 34,049 characters
+Code length: 33,739 characters
+Generated: 2025-07-09 19:50:19

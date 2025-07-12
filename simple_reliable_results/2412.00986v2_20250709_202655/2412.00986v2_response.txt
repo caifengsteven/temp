@@ -1,0 +1,406 @@
+Claude-Sonnet-3.7 Response for 2412.00986v2
+Generated: 2025-07-09 20:28:10
+Time: 71.1s
+==================================================
+
+Based on the paper "A Model of Strategic Sustainable Investment," I'll create a Python simulation that implements the key elements of the model described, focusing on the deterministic case with zero noise.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.optimize import fsolve
+from dataclasses import dataclass
+
+
+@dataclass
+class ModelParams:
+    """Parameters for the strategic sustainable investment model"""
+    mu: float          # Drift of production capacity
+    rho_firm: float    # Firm's discount rate
+    rho_investor: float # Investor's discount rate
+    alpha: float       # Investment cost weight
+    beta: float        # Cobb-Douglas parameter for production capacity
+    gamma: float       # Cobb-Douglas parameter for abatement
+    eta_max: float     # Maximum abatement rate
+
+
+class SustainableInvestmentModel:
+    """Implementation of the strategic sustainable investment model"""
+    
+    def __init__(self, params: ModelParams):
+        self.params = params
+        self.delta = params.rho_investor - params.mu
+        
+        # Validate parameters
+        if not (0 < params.beta < 1 and 0 < params.gamma < 1):
+            raise ValueError("Beta and gamma must be between 0 and 1")
+        if params.eta_max <= 0:
+            raise ValueError("Maximum abatement rate must be positive")
+        if params.alpha <= 0:
+            raise ValueError("Investment cost weight must be positive")
+        if params.delta < 0:
+            raise ValueError("Discount rate minus drift must be positive")
+    
+    def investment_boundary_a(self, r):
+        """Calculate the investment boundary a(r)
+        This is the threshold that triggers investor's actions"""
+        # Based on the Cobb-Douglas utility function and eq (79) in the paper
+        return ((self.params.beta * r**self.params.gamma) / 
+                (self.params.alpha * self.delta))**(1/(1-self.params.beta))
+    
+    def calc_h(self, r, x, b_val=None):
+        """Calculate h(r, x) function from eq (57) in the paper"""
+        if b_val is None:
+            b_val = x
+            
+        # For the Cobb-Douglas utility with π(x) = x
+        if x <= self.investment_boundary_a(r):
+            return -1  # Below investment boundary
+        
+        # Calculate τM according to eq (45)
+        def tau_equation(tau):
+            return x - self.fM(tau) - np.exp(abs(self.params.mu)*tau) * self.investment_boundary_a(r + self.params.eta_max*tau)
+        
+        if tau_equation(0) <= 0:
+            tau_m = 0
+        else:
+            # Find τM (time to reach investment boundary)
+            tau_m = fsolve(tau_equation, 1.0)[0]
+            if tau_m < 0:
+                tau_m = 0
+        
+        # Return h(r, x) according to eq (57)
+        if self.params.mu == 0:
+            # Special case for mu = 0
+            return -self.params.eta_max * self.partial_r_w1_minus_partial_x_w1(r, x, tau_m)
+        else:
+            # General case
+            return -abs(self.params.mu) * x * self.partial_x_w1(r, x, tau_m) - \
+                   self.params.rho_firm * self.w1(r, x, tau_m) + x
+    
+    def fM(self, t):
+        """Calculate fM(t) from eq (43)"""
+        if self.params.mu == 0:
+            return self.params.eta_max * t
+        else:
+            return (self.params.eta_max / abs(self.params.mu)) * (np.exp(abs(self.params.mu)*t) - 1)
+    
+    def Y_t(self, t):
+        """Calculate Y_t = e^(μt)"""
+        return np.exp(self.params.mu * t)
+    
+    def w1(self, r, x, tau_m):
+        """Calculate w1(r, x) from eq (44)"""
+        # This is a simplified approximation
+        if tau_m == 0:
+            return x / self.params.rho_firm + \
+                   self.params.eta_max / (self.params.rho_firm**2)
+        else:
+            return (1 - np.exp(-self.params.rho_firm * tau_m)) * x / self.params.rho_firm + \
+                   np.exp(-self.params.rho_firm * tau_m) * self.investment_boundary_a(r + self.params.eta_max * tau_m) / self.params.rho_firm
+    
+    def partial_x_w1(self, r, x, tau_m):
+        """Calculate ∂w1/∂x from eq (51)"""
+        # Simplified version
+        return (1 - np.exp(-self.params.rho_firm * tau_m)) / self.params.rho_firm
+    
+    def partial_r_w1_minus_partial_x_w1(self, r, x, tau_m):
+        """Calculate (∂rw1 - ∂xw1)(r, x) from eq (52)"""
+        # This is a rough approximation for demonstration
+        if tau_m == 0:
+            return 1.0
+        else:
+            return np.exp(-self.params.rho_firm * tau_m) * \
+                   (self.investment_boundary_a(r + self.params.eta_max * tau_m) - x) / \
+                   (self.params.eta_max * tau_m)
+    
+    def find_abatement_boundary_b(self, r_values):
+        """Find the abatement boundary b(r) for each r value"""
+        b_values = np.zeros_like(r_values)
+        
+        # For each r, find b(r) such that h(r, b(r)) = 0
+        for i, r in enumerate(r_values):
+            a_r = self.investment_boundary_a(r)
+            
+            # Initial guess: slightly above a(r)
+            initial_guess = 1.5 * a_r
+            
+            def objective(b):
+                return self.calc_h(r, b)
+            
+            b_r = fsolve(objective, initial_guess)[0]
+            
+            # Ensure b(r) > a(r)
+            b_values[i] = max(b_r, 1.01 * a_r)
+            
+        return b_values
+    
+    def simulate_dynamics(self, r0, x0, T, dt):
+        """Simulate the dynamics of the system over time T with step dt"""
+        # Number of time steps
+        n_steps = int(T / dt)
+        
+        # Initialize arrays
+        t_values = np.linspace(0, T, n_steps)
+        r_values = np.zeros(n_steps)
+        x_values = np.zeros(n_steps)
+        a_values = np.zeros(n_steps)
+        b_values = np.zeros(n_steps)
+        investor_action = np.zeros(n_steps)
+        firm_action = np.zeros(n_steps)
+        
+        # Set initial values
+        r_values[0] = r0
+        x_values[0] = x0
+        
+        # Pre-calculate some boundaries
+        r_range = np.linspace(r0, r0 + self.params.eta_max * T, 100)
+        b_range = self.find_abatement_boundary_b(r_range)
+        
+        # Simulate dynamics
+        for i in range(1, n_steps):
+            # Current state
+            r_prev = r_values[i-1]
+            x_prev = x_values[i-1]
+            
+            # Calculate current boundaries
+            a_values[i-1] = self.investment_boundary_a(r_prev)
+            
+            # Interpolate b value from pre-calculated range
+            idx = np.searchsorted(r_range, r_prev)
+            if idx == 0:
+                b_values[i-1] = b_range[0]
+            elif idx == len(r_range):
+                b_values[i-1] = b_range[-1]
+            else:
+                weight = (r_prev - r_range[idx-1]) / (r_range[idx] - r_range[idx-1])
+                b_values[i-1] = b_range[idx-1] + weight * (b_range[idx] - b_range[idx-1])
+            
+            # Determine firm's action
+            if self.params.mu == 0:
+                # Deterministic case with μ = 0
+                if x_prev <= b_values[i-1]:
+                    firm_action[i-1] = self.params.eta_max
+                else:
+                    firm_action[i-1] = 0
+            else:
+                # Deterministic case with μ < 0
+                if x_prev <= b_values[i-1]:
+                    firm_action[i-1] = self.params.eta_max
+                else:
+                    firm_action[i-1] = 0
+            
+            # Update abatement level
+            r_values[i] = r_prev + firm_action[i-1] * dt
+            
+            # Calculate natural evolution of production capacity
+            x_natural = x_prev * np.exp(self.params.mu * dt)
+            
+            # Reduce capacity due to abatement
+            x_after_abatement = x_natural - firm_action[i-1] * dt
+            
+            # Determine investor's action (reflecting boundary)
+            a_curr = self.investment_boundary_a(r_values[i])
+            if x_after_abatement < a_curr:
+                investor_action[i-1] = a_curr - x_after_abatement
+                x_values[i] = a_curr
+            else:
+                investor_action[i-1] = 0
+                x_values[i] = x_after_abatement
+        
+        # Calculate last values
+        a_values[-1] = self.investment_boundary_a(r_values[-1])
+        idx = np.searchsorted(r_range, r_values[-1])
+        if idx == 0:
+            b_values[-1] = b_range[0]
+        elif idx == len(r_range):
+            b_values[-1] = b_range[-1]
+        else:
+            weight = (r_values[-1] - r_range[idx-1]) / (r_range[idx] - r_range[idx-1])
+            b_values[-1] = b_range[idx-1] + weight * (b_range[idx] - b_range[idx-1])
+        
+        return {
+            "time": t_values,
+            "abatement": r_values,
+            "production": x_values,
+            "investment_boundary": a_values,
+            "abatement_boundary": b_values,
+            "investor_action": investor_action,
+            "firm_action": firm_action
+        }
+
+
+def test_investment_model():
+    """Test the sustainable investment model with deterministic setup"""
+    # Parameters based on the paper
+    params = ModelParams(
+        mu=-0.0741,  # Negative drift (decreasing profits)
+        rho_firm=0.3,
+        rho_investor=0.3,
+        alpha=1.0,
+        beta=0.5,
+        gamma=0.55,
+        eta_max=1.0
+    )
+    
+    # Create model
+    model = SustainableInvestmentModel(params)
+    
+    # Test investment boundary function
+    r_values = np.linspace(0, 10, 50)
+    a_values = [model.investment_boundary_a(r) for r in r_values]
+    
+    # Find abatement boundary
+    b_values = model.find_abatement_boundary_b(r_values)
+    
+    # Simulation parameters
+    r0 = 0.5  # Initial abatement
+    x0 = 2.0  # Initial production capacity
+    T = 20.0  # Time horizon
+    dt = 0.1  # Time step
+    
+    # Simulate system dynamics
+    results = model.simulate_dynamics(r0, x0, T, dt)
+    
+    # Visualize results
+    plt.figure(figsize=(12, 10))
+    
+    # Plot 1: Boundaries and trajectory in (r,x) space
+    plt.subplot(2, 2, 1)
+    plt.plot(r_values, a_values, 'b-', label='Investment boundary a(r)')
+    plt.plot(r_values, b_values, 'r-', label='Abatement boundary b(r)')
+    plt.plot(results["abatement"], results["production"], 'g-', linewidth=1.5, label='System trajectory')
+    plt.scatter(results["abatement"][0], results["production"][0], c='green', s=100, marker='o', label='Initial state')
+    plt.xlabel('Abatement (r)')
+    plt.ylabel('Production capacity (X)')
+    plt.title('Boundaries and System Trajectory')
+    plt.legend()
+    plt.grid(True)
+    
+    # Plot 2: Production capacity and boundaries over time
+    plt.subplot(2, 2, 2)
+    plt.plot(results["time"], results["production"], 'g-', linewidth=1.5, label='Production capacity X')
+    plt.plot(results["time"], results["investment_boundary"], 'b-', label='Investment boundary a(r(t))')
+    plt.plot(results["time"], results["abatement_boundary"], 'r-', label='Abatement boundary b(r(t))')
+    plt.xlabel('Time')
+    plt.ylabel('Value')
+    plt.title('Production Capacity and Boundaries Over Time')
+    plt.legend()
+    plt.grid(True)
+    
+    # Plot 3: Abatement and investment over time
+    plt.subplot(2, 2, 3)
+    plt.plot(results["time"][:-1], results["firm_action"], 'r-', label='Firm abatement rate')
+    plt.plot(results["time"][:-1], results["investor_action"], 'b-', label='Investor investment rate')
+    plt.xlabel('Time')
+    plt.ylabel('Rate')
+    plt.title('Control Actions Over Time')
+    plt.legend()
+    plt.grid(True)
+    
+    # Plot 4: Cumulative abatement and investment
+    plt.subplot(2, 2, 4)
+    cumulative_abatement = np.cumsum(results["firm_action"] * dt)
+    cumulative_investment = np.cumsum(results["investor_action"] * dt)
+    plt.plot(results["time"][:-1], results["abatement"][1:] - results["abatement"][0], 'r-', 
+             label='Cumulative abatement')
+    plt.plot(results["time"][:-1], cumulative_investment, 'b-', 
+             label='Cumulative investment')
+    plt.xlabel('Time')
+    plt.ylabel('Cumulative value')
+    plt.title('Cumulative Abatement and Investment')
+    plt.legend()
+    plt.grid(True)
+    
+    plt.tight_layout()
+    plt.savefig('strategic_sustainable_investment_simulation.png')
+    plt.show()
+    
+    return {
+        "model": model,
+        "results": results
+    }
+
+
+def sensitivity_analysis(base_params):
+    """Perform sensitivity analysis by varying gamma parameter"""
+    gamma_values = [0.35, 0.45, 0.55, 0.65, 0.75]
+    r_values = np.linspace(0, 10, 50)
+    
+    plt.figure(figsize=(12, 6))
+    
+    # Plot investment and abatement boundaries for different gamma values
+    for gamma in gamma_values:
+        params = ModelParams(**{**base_params.__dict__, "gamma": gamma})
+        model = SustainableInvestmentModel(params)
+        
+        a_values = [model.investment_boundary_a(r) for r in r_values]
+        b_values = model.find_abatement_boundary_b(r_values)
+        
+        plt.plot(r_values, a_values, '--', label=f'a(r), γ={gamma}')
+        plt.plot(r_values, b_values, '-', label=f'b(r), γ={gamma}')
+    
+    plt.xlabel('Abatement (r)')
+    plt.ylabel('Production capacity (X)')
+    plt.title('Sensitivity of Boundaries to Environmental Impact Parameter γ')
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig('sensitivity_analysis.png')
+    plt.show()
+
+
+if __name__ == "__main__":
+    print("Testing the Strategic Sustainable Investment Model...")
+    
+    try:
+        # Base test with deterministic setup
+        test_results = test_investment_model()
+        print("Base test completed successfully!")
+        
+        # Sensitivity analysis
+        base_params = ModelParams(
+            mu=-0.0741,
+            rho_firm=0.3,
+            rho_investor=0.3,
+            alpha=1.0,
+            beta=0.5,
+            gamma=0.55,
+            eta_max=1.0
+        )
+        
+        print("Performing sensitivity analysis...")
+        sensitivity_analysis(base_params)
+        print("Sensitivity analysis completed successfully!")
+        
+        # Print some key metrics from the simulation
+        results = test_results["results"]
+        print("\nSummary statistics:")
+        print(f"Final abatement level: {results['abatement'][-1]:.2f}")
+        print(f"Final production capacity: {results['production'][-1]:.2f}")
+        print(f"Total investor contribution: {np.sum(results['investor_action']*0.1):.2f}")
+        
+    except Exception as e:
+        print(f"Error during simulation: {str(e)}")
+        raise
+```
+
+This implementation simulates the deterministic case of the model presented in the paper, with a focus on the zero-noise limit. The code includes:
+
+1. A `ModelParams` class to hold the model parameters
+2. A `SustainableInvestmentModel` class that implements the key components:
+   - Investment boundary function a(r)
+   - Functions to determine the abatement boundary b(r)
+   - Simulation of the system dynamics
+
+3. Testing functions:
+   - `test_investment_model()`: Sets up a model with realistic parameters and simulates the dynamics
+   - `sensitivity_analysis()`: Tests how varying the environmental parameter γ affects the boundaries
+
+4. Visualization of results:
+   - Boundaries and system trajectory in (r,x) space
+   - Production capacity and boundaries over time
+   - Control actions (abatement and investment rates)
+   - Cumulative abatement and investment
+
+The simulation shows how the firm and investor act strategically based on the boundaries defined in the paper, with the firm abating when profits are below the abatement boundary b(r), and the investor injecting capital when profits fall below the investment boundary a(r).

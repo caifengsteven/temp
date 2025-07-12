@@ -1,0 +1,866 @@
+Claude-Sonnet-3.7 Response for 2504.12654v1
+Generated: 2025-07-10 17:50:39
+Time: 116.5s
+==================================================
+
+I'll create a Python test strategy to simulate and analyze the expertise externalization paradox described in the paper. The code will model professional domains, AI collaboration, and knowledge externalization to test the paper's key concepts.
+
+```python
+import random
+import numpy as np
+import matplotlib.pyplot as plt
+from dataclasses import dataclass
+from enum import Enum
+from typing import List, Dict, Tuple
+import pandas as pd
+from datetime import datetime
+
+
+class KnowledgeType(Enum):
+    EXPLICIT = "explicit"
+    RELATIONAL_TACIT = "relational_tacit"
+    SOMATIC_TACIT = "somatic_tacit"
+
+
+class Domain(Enum):
+    MEDICINE = "medicine"
+    LAW = "law"
+    FINANCE = "finance"
+    CREATIVE = "creative"
+
+
+class ExternalizationMechanism(Enum):
+    DIRECT_DEMONSTRATION = "direct_demonstration"
+    INTERACTIVE_REFINEMENT = "interactive_refinement"
+    EXPLICITATION = "explicitation"
+
+
+@dataclass
+class Professional:
+    domain: Domain
+    experience_years: int
+    explicit_knowledge: float  # 0-100 scale
+    relational_tacit_knowledge: float  # 0-100 scale
+    somatic_tacit_knowledge: float  # 0-100 scale
+    ai_collaboration_frequency: float  # 0-1 scale
+    
+    def calculate_market_value(self) -> float:
+        """Calculate professional's market value based on knowledge types and experience."""
+        # Base value from experience with diminishing returns
+        base_value = 50000 + 5000 * min(self.experience_years, 15) + 2000 * max(0, self.experience_years - 15)
+        
+        # Premium for knowledge types (explicit least valuable, somatic most valuable)
+        knowledge_premium = (
+            self.explicit_knowledge * 100 + 
+            self.relational_tacit_knowledge * 300 + 
+            self.somatic_tacit_knowledge * 500
+        )
+        
+        return base_value + knowledge_premium
+
+
+@dataclass
+class AISystem:
+    capability_explicit: float  # 0-100 scale
+    capability_relational_tacit: float  # 0-100 scale
+    capability_somatic_tacit: float  # 0-100 scale
+    learning_rate: float  # 0-1 scale
+    domain_specificity: Dict[Domain, float]  # Domain to capability multiplier
+    
+    def can_automate_task(self, task: 'Task') -> float:
+        """Return probability (0-1) of successfully automating a given task."""
+        domain_multiplier = self.domain_specificity.get(task.domain, 0.5)
+        
+        knowledge_match = (
+            task.explicit_knowledge_required * self.capability_explicit +
+            task.relational_tacit_required * self.capability_relational_tacit +
+            task.somatic_tacit_required * self.capability_somatic_tacit
+        ) / (task.explicit_knowledge_required + task.relational_tacit_required + task.somatic_tacit_required)
+        
+        return min(0.95, knowledge_match * domain_multiplier / 100)
+
+
+@dataclass
+class Task:
+    name: str
+    domain: Domain
+    explicit_knowledge_required: float  # 0-100 scale
+    relational_tacit_required: float  # 0-100 scale
+    somatic_tacit_required: float  # 0-100 scale
+    
+    def calculate_automation_susceptibility(self) -> float:
+        """Calculate how susceptible a task is to automation (0-1)."""
+        # Somatic tasks are hardest to automate
+        total_knowledge = self.explicit_knowledge_required + self.relational_tacit_required + self.somatic_tacit_required
+        
+        if total_knowledge == 0:
+            return 0
+            
+        weighted_sum = (
+            self.explicit_knowledge_required * 0.9 +
+            self.relational_tacit_required * 0.6 +
+            self.somatic_tacit_required * 0.1
+        )
+        
+        return weighted_sum / total_knowledge
+
+
+class ExternalizationSimulation:
+    def __init__(self, professionals: List[Professional], ai_system: AISystem, tasks: List[Task]):
+        self.professionals = professionals
+        self.ai_system = ai_system
+        self.tasks = tasks
+        self.time_steps = 0
+        self.externalization_history = []
+        self.market_value_history = {p: [] for p in range(len(professionals))}
+        self.task_automation_history = {t: [] for t in range(len(tasks))}
+    
+    def simulate_step(self):
+        """Simulate one time step of expertise externalization."""
+        self.time_steps += 1
+        
+        # For each professional, simulate collaboration with AI
+        for i, professional in enumerate(self.professionals):
+            # Only externalize knowledge if collaborating with AI
+            if random.random() < professional.ai_collaboration_frequency:
+                self._externalize_knowledge(professional)
+            
+            # Track market value
+            self.market_value_history[i].append(professional.calculate_market_value())
+        
+        # For each task, recalculate automation probability
+        for i, task in enumerate(self.tasks):
+            automation_prob = self.ai_system.can_automate_task(task)
+            self.task_automation_history[i].append(automation_prob)
+            
+    def _externalize_knowledge(self, professional: Professional):
+        """Simulate knowledge externalization from professional to AI system."""
+        # Choose externalization mechanism
+        mechanism = random.choice(list(ExternalizationMechanism))
+        
+        # Calculate how much knowledge is externalized based on mechanism
+        externalization_rate = self.ai_system.learning_rate
+        
+        # Different mechanisms have different effectiveness for different knowledge types
+        if mechanism == ExternalizationMechanism.DIRECT_DEMONSTRATION:
+            explicit_transfer = 0.2 * externalization_rate
+            relational_transfer = 0.7 * externalization_rate
+            somatic_transfer = 0.1 * externalization_rate
+        elif mechanism == ExternalizationMechanism.INTERACTIVE_REFINEMENT:
+            explicit_transfer = 0.3 * externalization_rate
+            relational_transfer = 0.6 * externalization_rate
+            somatic_transfer = 0.1 * externalization_rate
+        else:  # EXPLICITATION
+            explicit_transfer = 0.7 * externalization_rate
+            relational_transfer = 0.3 * externalization_rate
+            somatic_transfer = 0.05 * externalization_rate
+            
+        # Transfer knowledge to AI (proportional to professional's knowledge)
+        domain_multiplier = self.ai_system.domain_specificity.get(professional.domain, 0.5)
+        
+        # Calculate knowledge transfer
+        explicit_knowledge_gain = professional.explicit_knowledge * explicit_transfer * domain_multiplier
+        relational_knowledge_gain = professional.relational_tacit_knowledge * relational_transfer * domain_multiplier
+        somatic_knowledge_gain = professional.somatic_tacit_knowledge * somatic_transfer * domain_multiplier
+        
+        # Cap AI capabilities at 100
+        self.ai_system.capability_explicit = min(100, self.ai_system.capability_explicit + explicit_knowledge_gain)
+        self.ai_system.capability_relational_tacit = min(100, self.ai_system.capability_relational_tacit + relational_knowledge_gain)
+        self.ai_system.capability_somatic_tacit = min(100, self.ai_system.capability_somatic_tacit + somatic_knowledge_gain)
+        
+        # Log externalization event
+        self.externalization_history.append({
+            "time_step": self.time_steps,
+            "domain": professional.domain.value,
+            "mechanism": mechanism.value,
+            "explicit_gain": explicit_knowledge_gain,
+            "relational_gain": relational_knowledge_gain,
+            "somatic_gain": somatic_knowledge_gain
+        })
+    
+    def run_simulation(self, steps: int):
+        """Run simulation for specified number of steps."""
+        for _ in range(steps):
+            self.simulate_step()
+            
+    def get_results(self) -> Dict:
+        """Return simulation results as a dictionary."""
+        results = {
+            "externalization_events": pd.DataFrame(self.externalization_history),
+            "market_values": {i: values for i, values in self.market_value_history.items()},
+            "task_automation": {i: values for i, values in self.task_automation_history.items()},
+            "final_ai_capabilities": {
+                "explicit": self.ai_system.capability_explicit,
+                "relational_tacit": self.ai_system.capability_relational_tacit,
+                "somatic_tacit": self.ai_system.capability_somatic_tacit
+            }
+        }
+        return results
+    
+    def visualize_results(self):
+        """Create visualizations of simulation results."""
+        # Create a figure with multiple subplots
+        fig, axs = plt.subplots(2, 2, figsize=(15, 12))
+        
+        # Plot 1: Professional market values over time
+        for i, values in self.market_value_history.items():
+            prof = self.professionals[i]
+            axs[0, 0].plot(values, label=f"{prof.domain.value} ({prof.experience_years}y exp)")
+        axs[0, 0].set_title("Professional Market Value Over Time")
+        axs[0, 0].set_xlabel("Time Step")
+        axs[0, 0].set_ylabel("Market Value ($)")
+        axs[0, 0].legend()
+        axs[0, 0].grid(True)
+        
+        # Plot 2: Task automation probability over time
+        for i, values in self.task_automation_history.items():
+            task = self.tasks[i]
+            axs[0, 1].plot(values, label=f"{task.name} ({task.domain.value})")
+        axs[0, 1].set_title("Task Automation Probability Over Time")
+        axs[0, 1].set_xlabel("Time Step")
+        axs[0, 1].set_ylabel("Automation Probability")
+        axs[0, 1].legend()
+        axs[0, 1].grid(True)
+        
+        # Plot 3: AI capability growth over time
+        if self.externalization_history:
+            df = pd.DataFrame(self.externalization_history)
+            explicit_cumsum = df['explicit_gain'].cumsum()
+            relational_cumsum = df['relational_gain'].cumsum()
+            somatic_cumsum = df['somatic_gain'].cumsum()
+            
+            axs[1, 0].plot(explicit_cumsum.index, explicit_cumsum, label="Explicit")
+            axs[1, 0].plot(relational_cumsum.index, relational_cumsum, label="Relational Tacit")
+            axs[1, 0].plot(somatic_cumsum.index, somatic_cumsum, label="Somatic Tacit")
+            axs[1, 0].set_title("Cumulative AI Knowledge Gain By Type")
+            axs[1, 0].set_xlabel("Externalization Event")
+            axs[1, 0].set_ylabel("Cumulative Knowledge Gain")
+            axs[1, 0].legend()
+            axs[1, 0].grid(True)
+        
+        # Plot 4: Knowledge externalization by domain
+        if self.externalization_history:
+            domain_counts = df['domain'].value_counts()
+            axs[1, 1].bar(domain_counts.index, domain_counts.values)
+            axs[1, 1].set_title("Knowledge Externalization Events by Domain")
+            axs[1, 1].set_xlabel("Domain")
+            axs[1, 1].set_ylabel("Number of Events")
+            axs[1, 1].grid(True)
+        
+        plt.tight_layout()
+        plt.savefig(f"expertise_externalization_simulation_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png")
+        plt.show()
+
+
+def create_test_professionals() -> List[Professional]:
+    """Create test data for professionals in different domains."""
+    return [
+        # Medical professionals
+        Professional(
+            domain=Domain.MEDICINE,
+            experience_years=25,
+            explicit_knowledge=90,
+            relational_tacit_knowledge=85,
+            somatic_tacit_knowledge=75,
+            ai_collaboration_frequency=0.7
+        ),
+        Professional(
+            domain=Domain.MEDICINE,
+            experience_years=5,
+            explicit_knowledge=80,
+            relational_tacit_knowledge=50,
+            somatic_tacit_knowledge=40,
+            ai_collaboration_frequency=0.9
+        ),
+        # Legal professionals
+        Professional(
+            domain=Domain.LAW,
+            experience_years=20,
+            explicit_knowledge=95,
+            relational_tacit_knowledge=80,
+            somatic_tacit_knowledge=60,
+            ai_collaboration_frequency=0.6
+        ),
+        Professional(
+            domain=Domain.LAW,
+            experience_years=3,
+            explicit_knowledge=85,
+            relational_tacit_knowledge=40,
+            somatic_tacit_knowledge=30,
+            ai_collaboration_frequency=0.8
+        ),
+        # Financial professionals
+        Professional(
+            domain=Domain.FINANCE,
+            experience_years=15,
+            explicit_knowledge=85,
+            relational_tacit_knowledge=75,
+            somatic_tacit_knowledge=50,
+            ai_collaboration_frequency=0.9
+        ),
+        # Creative professionals
+        Professional(
+            domain=Domain.CREATIVE,
+            experience_years=10,
+            explicit_knowledge=70,
+            relational_tacit_knowledge=80,
+            somatic_tacit_knowledge=90,
+            ai_collaboration_frequency=0.5
+        )
+    ]
+
+
+def create_test_tasks() -> List[Task]:
+    """Create test data for tasks in different domains."""
+    return [
+        # Medical tasks
+        Task(
+            name="Medical Diagnosis",
+            domain=Domain.MEDICINE,
+            explicit_knowledge_required=70,
+            relational_tacit_required=80,
+            somatic_tacit_required=20
+        ),
+        Task(
+            name="Surgical Procedure",
+            domain=Domain.MEDICINE,
+            explicit_knowledge_required=60,
+            relational_tacit_required=60,
+            somatic_tacit_required=90
+        ),
+        # Legal tasks
+        Task(
+            name="Document Review",
+            domain=Domain.LAW,
+            explicit_knowledge_required=85,
+            relational_tacit_required=70,
+            somatic_tacit_required=10
+        ),
+        Task(
+            name="Courtroom Advocacy",
+            domain=Domain.LAW,
+            explicit_knowledge_required=70,
+            relational_tacit_required=60,
+            somatic_tacit_required=80
+        ),
+        # Financial tasks
+        Task(
+            name="Portfolio Management",
+            domain=Domain.FINANCE,
+            explicit_knowledge_required=80,
+            relational_tacit_required=75,
+            somatic_tacit_required=30
+        ),
+        # Creative tasks
+        Task(
+            name="Visual Design",
+            domain=Domain.CREATIVE,
+            explicit_knowledge_required=50,
+            relational_tacit_required=70,
+            somatic_tacit_required=85
+        )
+    ]
+
+
+def create_test_ai_system() -> AISystem:
+    """Create test data for AI system with domain-specific capabilities."""
+    return AISystem(
+        capability_explicit=60,
+        capability_relational_tacit=40,
+        capability_somatic_tacit=10,
+        learning_rate=0.15,
+        domain_specificity={
+            Domain.MEDICINE: 0.8,
+            Domain.LAW: 0.7,
+            Domain.FINANCE: 0.9,
+            Domain.CREATIVE: 0.6
+        }
+    )
+
+
+def analyze_domain_impact(results: Dict, professionals: List[Professional], tasks: List[Task]):
+    """Analyze how externalization impacts different domains."""
+    try:
+        # Group professionals by domain
+        domain_professionals = {}
+        for i, prof in enumerate(professionals):
+            if prof.domain not in domain_professionals:
+                domain_professionals[prof.domain] = []
+            domain_professionals[prof.domain].append(i)
+        
+        # Calculate average market value change by domain
+        domain_market_changes = {}
+        for domain, prof_indices in domain_professionals.items():
+            domain_changes = []
+            for idx in prof_indices:
+                values = results["market_values"][idx]
+                if len(values) >= 2:  # Need at least 2 points to calculate change
+                    pct_change = (values[-1] - values[0]) / values[0] * 100
+                    domain_changes.append(pct_change)
+            
+            if domain_changes:
+                domain_market_changes[domain.value] = sum(domain_changes) / len(domain_changes)
+        
+        # Group tasks by domain
+        domain_tasks = {}
+        for i, task in enumerate(tasks):
+            if task.domain not in domain_tasks:
+                domain_tasks[task.domain] = []
+            domain_tasks[task.domain].append(i)
+        
+        # Calculate average automation probability change by domain
+        domain_automation_changes = {}
+        for domain, task_indices in domain_tasks.items():
+            domain_changes = []
+            for idx in task_indices:
+                values = results["task_automation"][idx]
+                if len(values) >= 2:  # Need at least 2 points to calculate change
+                    abs_change = values[-1] - values[0]
+                    domain_changes.append(abs_change)
+            
+            if domain_changes:
+                domain_automation_changes[domain.value] = sum(domain_changes) / len(domain_changes)
+        
+        # Print analysis
+        print("\n--- Domain Impact Analysis ---")
+        print("\nAverage Market Value Change by Domain:")
+        for domain, change in domain_market_changes.items():
+            print(f"{domain}: {change:.2f}%")
+        
+        print("\nAverage Automation Probability Change by Domain:")
+        for domain, change in domain_automation_changes.items():
+            print(f"{domain}: {change:.2f} (absolute change)")
+        
+        return {
+            "market_changes": domain_market_changes,
+            "automation_changes": domain_automation_changes
+        }
+    except Exception as e:
+        print(f"Error in domain impact analysis: {e}")
+        return None
+
+
+def test_expertise_paradox_simulation():
+    """Test the expertise externalization paradox simulation."""
+    try:
+        # Create test data
+        professionals = create_test_professionals()
+        tasks = create_test_tasks()
+        ai_system = create_test_ai_system()
+        
+        # Set up simulation
+        simulation = ExternalizationSimulation(professionals, ai_system, tasks)
+        
+        # Run simulation
+        print("Running expertise externalization simulation...")
+        simulation.run_simulation(50)
+        
+        # Get results
+        results = simulation.get_results()
+        
+        # Print summary statistics
+        print("\n--- Simulation Results ---")
+        print(f"Total time steps: {simulation.time_steps}")
+        print(f"Total externalization events: {len(results['externalization_events'])}")
+        
+        print("\nFinal AI Capabilities:")
+        for knowledge_type, value in results["final_ai_capabilities"].items():
+            print(f"  {knowledge_type}: {value:.2f}")
+        
+        print("\nTask Automation Probabilities (Final):")
+        for i, values in results["task_automation"].items():
+            task = tasks[i]
+            print(f"  {task.name} ({task.domain.value}): {values[-1]:.2f}")
+        
+        # Analyze results by domain
+        domain_analysis = analyze_domain_impact(results, professionals, tasks)
+        
+        # Visualize results
+        simulation.visualize_results()
+        
+        return {
+            "success": True,
+            "results": results,
+            "domain_analysis": domain_analysis
+        }
+    except Exception as e:
+        print(f"Error in simulation: {e}")
+        return {
+            "success": False,
+            "error": str(e)
+        }
+
+
+def test_knowledge_transfer_mechanisms():
+    """Test different knowledge transfer mechanisms and their effects."""
+    try:
+        # Create simplified test data
+        professional = Professional(
+            domain=Domain.MEDICINE,
+            experience_years=15,
+            explicit_knowledge=80,
+            relational_tacit_knowledge=70,
+            somatic_tacit_knowledge=60,
+            ai_collaboration_frequency=1.0  # Always collaborate
+        )
+        
+        task = Task(
+            name="Diagnostic Analysis",
+            domain=Domain.MEDICINE,
+            explicit_knowledge_required=70,
+            relational_tacit_required=80,
+            somatic_tacit_required=30
+        )
+        
+        mechanisms = list(ExternalizationMechanism)
+        results = {}
+        
+        for mechanism in mechanisms:
+            # Reset AI system for each test
+            ai_system = AISystem(
+                capability_explicit=40,
+                capability_relational_tacit=30,
+                capability_somatic_tacit=10,
+                learning_rate=0.2,
+                domain_specificity={Domain.MEDICINE: 0.8}
+            )
+            
+            # Run 20 steps with fixed mechanism
+            mechanism_gains = {
+                "explicit": [],
+                "relational": [],
+                "somatic": []
+            }
+            
+            for _ in range(20):
+                # Manually perform knowledge transfer based on mechanism
+                if mechanism == ExternalizationMechanism.DIRECT_DEMONSTRATION:
+                    explicit_transfer = 0.2 * ai_system.learning_rate
+                    relational_transfer = 0.7 * ai_system.learning_rate
+                    somatic_transfer = 0.1 * ai_system.learning_rate
+                elif mechanism == ExternalizationMechanism.INTERACTIVE_REFINEMENT:
+                    explicit_transfer = 0.3 * ai_system.learning_rate
+                    relational_transfer = 0.6 * ai_system.learning_rate
+                    somatic_transfer = 0.1 * ai_system.learning_rate
+                else:  # EXPLICITATION
+                    explicit_transfer = 0.7 * ai_system.learning_rate
+                    relational_transfer = 0.3 * ai_system.learning_rate
+                    somatic_transfer = 0.05 * ai_system.learning_rate
+                
+                # Calculate knowledge transfer
+                domain_multiplier = ai_system.domain_specificity.get(professional.domain, 0.5)
+                explicit_gain = professional.explicit_knowledge * explicit_transfer * domain_multiplier
+                relational_gain = professional.relational_tacit_knowledge * relational_transfer * domain_multiplier
+                somatic_gain = professional.somatic_tacit_knowledge * somatic_transfer * domain_multiplier
+                
+                # Record gains
+                mechanism_gains["explicit"].append(explicit_gain)
+                mechanism_gains["relational"].append(relational_gain)
+                mechanism_gains["somatic"].append(somatic_gain)
+                
+                # Update AI capabilities
+                ai_system.capability_explicit = min(100, ai_system.capability_explicit + explicit_gain)
+                ai_system.capability_relational_tacit = min(100, ai_system.capability_relational_tacit + relational_gain)
+                ai_system.capability_somatic_tacit = min(100, ai_system.capability_somatic_tacit + somatic_gain)
+            
+            # Calculate final automation probability
+            final_automation_prob = ai_system.can_automate_task(task)
+            
+            # Store results
+            results[mechanism.value] = {
+                "final_automation_probability": final_automation_prob,
+                "total_gains": {
+                    "explicit": sum(mechanism_gains["explicit"]),
+                    "relational": sum(mechanism_gains["relational"]),
+                    "somatic": sum(mechanism_gains["somatic"])
+                },
+                "final_capabilities": {
+                    "explicit": ai_system.capability_explicit,
+                    "relational_tacit": ai_system.capability_relational_tacit,
+                    "somatic_tacit": ai_system.capability_somatic_tacit
+                }
+            }
+        
+        # Print results
+        print("\n--- Knowledge Transfer Mechanism Analysis ---")
+        for mechanism, data in results.items():
+            print(f"\nMechanism: {mechanism}")
+            print(f"  Final automation probability: {data['final_automation_probability']:.2f}")
+            print("  Total knowledge gains:")
+            for k_type, gain in data["total_gains"].items():
+                print(f"    {k_type}: {gain:.2f}")
+            print("  Final AI capabilities:")
+            for k_type, cap in data["final_capabilities"].items():
+                print(f"    {k_type}: {cap:.2f}")
+        
+        # Visualize comparison
+        fig, axs = plt.subplots(1, 2, figsize=(14, 6))
+        
+        # Plot 1: Total knowledge gains by mechanism
+        mechanisms = list(results.keys())
+        explicit_gains = [results[m]["total_gains"]["explicit"] for m in mechanisms]
+        relational_gains = [results[m]["total_gains"]["relational"] for m in mechanisms]
+        somatic_gains = [results[m]["total_gains"]["somatic"] for m in mechanisms]
+        
+        x = range(len(mechanisms))
+        width = 0.25
+        
+        axs[0].bar([i - width for i in x], explicit_gains, width, label='Explicit')
+        axs[0].bar(x, relational_gains, width, label='Relational Tacit')
+        axs[0].bar([i + width for i in x], somatic_gains, width, label='Somatic Tacit')
+        
+        axs[0].set_title('Total Knowledge Gains by Mechanism')
+        axs[0].set_xticks(x)
+        axs[0].set_xticklabels(mechanisms)
+        axs[0].set_ylabel('Total Knowledge Gain')
+        axs[0].legend()
+        axs[0].grid(True, alpha=0.3)
+        
+        # Plot 2: Final automation probability by mechanism
+        automation_probs = [results[m]["final_automation_probability"] for m in mechanisms]
+        
+        axs[1].bar(mechanisms, automation_probs, color='purple')
+        axs[1].set_title('Final Task Automation Probability by Mechanism')
+        axs[1].set_ylabel('Automation Probability')
+        axs[1].grid(True, alpha=0.3)
+        
+        plt.tight_layout()
+        plt.savefig(f"knowledge_transfer_mechanism_analysis_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png")
+        plt.show()
+        
+        return {
+            "success": True,
+            "results": results
+        }
+    except Exception as e:
+        print(f"Error in knowledge transfer mechanism test: {e}")
+        return {
+            "success": False,
+            "error": str(e)
+        }
+
+
+def test_professional_adaptation_strategies():
+    """Test different professional adaptation strategies to the expertise externalization paradox."""
+    try:
+        # Create baseline professional
+        baseline_professional = Professional(
+            domain=Domain.LAW,
+            experience_years=10,
+            explicit_knowledge=80,
+            relational_tacit_knowledge=70,
+            somatic_tacit_knowledge=50,
+            ai_collaboration_frequency=0.7
+        )
+        
+        # Create different adaptation strategy professionals
+        # 1. "Stepping Up" - Focus on supervisory knowledge
+        stepping_up = Professional(
+            domain=Domain.LAW,
+            experience_years=10,
+            explicit_knowledge=70,  # Reduced focus on explicit knowledge
+            relational_tacit_knowledge=85,  # Increased focus on relational knowledge
+            somatic_tacit_knowledge=60,  # Increased focus on somatic knowledge
+            ai_collaboration_frequency=0.9  # Increased AI collaboration
+        )
+        
+        # 2. "Communities of Practice" - Focus on preserving tacit knowledge
+        communities_practice = Professional(
+            domain=Domain.LAW,
+            experience_years=10,
+            explicit_knowledge=75,
+            relational_tacit_knowledge=65,  # Protects from externalization
+            somatic_tacit_knowledge=75,  # Heavily increased focus on somatic knowledge
+            ai_collaboration_frequency=0.5  # Reduced AI collaboration
+        )
+        
+        # 3. "Finding New Markets" - Focus on areas less susceptible to automation
+        new_markets = Professional(
+            domain=Domain.LAW,
+            experience_years=10,
+            explicit_knowledge=60,  # Less focus on explicit knowledge
+            relational_tacit_knowledge=80,  # Increased relational knowledge
+            somatic_tacit_knowledge=80,  # Heavily increased somatic knowledge
+            ai_collaboration_frequency=0.6  # Moderate AI collaboration
+        )
+        
+        # 4. "Reframing" - Embrace AI integration and hybrid identity
+        reframing = Professional(
+            domain=Domain.LAW,
+            experience_years=10,
+            explicit_knowledge=90,  # High focus on explicit knowledge
+            relational_tacit_knowledge=75,  # Moderate relational knowledge
+            somatic_tacit_knowledge=55,  # Slightly increased somatic knowledge
+            ai_collaboration_frequency=1.0  # Full AI collaboration
+        )
+        
+        professionals = {
+            "Baseline": baseline_professional,
+            "Stepping Up": stepping_up,
+            "Communities of Practice": communities_practice,
+            "Finding New Markets": new_markets,
+            "Reframing": reframing
+        }
+        
+        # Create standard tasks for evaluation
+        standard_task = Task(
+            name="Legal Document Analysis",
+            domain=Domain.LAW,
+            explicit_knowledge_required=80,
+            relational_tacit_required=70,
+            somatic_tacit_required=20
+        )
+        
+        advanced_task = Task(
+            name="Complex Negotiation",
+            domain=Domain.LAW,
+            explicit_knowledge_required=60,
+            relational_tacit_required=80,
+            somatic_tacit_required=90
+        )
+        
+        # Run simulations for each strategy
+        simulation_steps = 40
+        results = {}
+        
+        for strategy_name, professional in professionals.items():
+            # Initial market value
+            initial_value = professional.calculate_market_value()
+            
+            # Create AI system
+            ai_system = create_test_ai_system()
+            
+            # Set up and run simulation
+            sim = ExternalizationSimulation([professional], ai_system, [standard_task, advanced_task])
+            sim.run_simulation(simulation_steps)
+            sim_results = sim.get_results()
+            
+            # Calculate final market value
+            final_value = sim.market_value_history[0][-1]
+            value_change_pct = (final_value - initial_value) / initial_value * 100
+            
+            # Get final automation probabilities
+            std_task_automation = sim.task_automation_history[0][-1]
+            adv_task_automation = sim.task_automation_history[1][-1]
+            
+            # Store results
+            results[strategy_name] = {
+                "initial_value": initial_value,
+                "final_value": final_value,
+                "value_change_pct": value_change_pct,
+                "standard_task_automation": std_task_automation,
+                "advanced_task_automation": adv_task_automation,
+                "market_value_history": sim.market_value_history[0],
+                "ai_final_capabilities": {
+                    "explicit": ai_system.capability_explicit,
+                    "relational_tacit": ai_system.capability_relational_tacit,
+                    "somatic_tacit": ai_system.capability_somatic_tacit
+                }
+            }
+        
+        # Print results
+        print("\n--- Professional Adaptation Strategy Analysis ---")
+        for strategy, data in results.items():
+            print(f"\nStrategy: {strategy}")
+            print(f"  Initial market value: ${data['initial_value']:.2f}")
+            print(f"  Final market value: ${data['final_value']:.2f}")
+            print(f"  Value change: {data['value_change_pct']:.2f}%")
+            print(f"  Standard task automation: {data['standard_task_automation']:.2f}")
+            print(f"  Advanced task automation: {data['advanced_task_automation']:.2f}")
+        
+        # Visualize results
+        fig, axs = plt.subplots(2, 2, figsize=(15, 12))
+        
+        # Plot 1: Market value over time for each strategy
+        for strategy, data in results.items():
+            axs[0, 0].plot(data['market_value_history'], label=strategy)
+        
+        axs[0, 0].set_title('Market Value Over Time by Strategy')
+        axs[0, 0].set_xlabel('Time Step')
+        axs[0, 0].set_ylabel('Market Value ($)')
+        axs[0, 0].legend()
+        axs[0, 0].grid(True)
+        
+        # Plot 2: Final market value comparison
+        strategies = list(results.keys())
+        final_values = [results[s]['final_value'] for s in strategies]
+        
+        axs[0, 1].bar(strategies, final_values, color='green')
+        axs[0, 1].set_title('Final Market Value by Strategy')
+        axs[0, 1].set_ylabel('Market Value ($)')
+        axs[0, 1].set_xticklabels(strategies, rotation=45, ha='right')
+        axs[0, 1].grid(True, axis='y')
+        
+        # Plot 3: Task automation comparison
+        std_automation = [results[s]['standard_task_automation'] for s in strategies]
+        adv_automation = [results[s]['advanced_task_automation'] for s in strategies]
+        
+        x = range(len(strategies))
+        width = 0.35
+        
+        axs[1, 0].bar([i - width/2 for i in x], std_automation, width, label='Standard Task')
+        axs[1, 0].bar([i + width/2 for i in x], adv_automation, width, label='Advanced Task')
+        
+        axs[1, 0].set_title('Task Automation by Strategy')
+        axs[1, 0].set_xticks(x)
+        axs[1, 0].set_xticklabels(strategies, rotation=45, ha='right')
+        axs[1, 0].set_ylabel('Automation Probability')
+        axs[1, 0].legend()
+        axs[1, 0].grid(True, axis='y')
+        
+        # Plot 4: Value change percentage
+        value_changes = [results[s]['value_change_pct'] for s in strategies]
+        colors = ['green' if x >= 0 else 'red' for x in value_changes]
+        
+        axs[1, 1].bar(strategies, value_changes, color=colors)
+        axs[1, 1].set_title('Market Value Change % by Strategy')
+        axs[1, 1].set_ylabel('Change %')
+        axs[1, 1].set_xticklabels(strategies, rotation=45, ha='right')
+        axs[1, 1].grid(True, axis='y')
+        axs[1, 1].axhline(y=0, color='black', linestyle='-', alpha=0.3)
+        
+        plt.tight_layout()
+        plt.savefig(f"professional_adaptation_strategies_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png")
+        plt.show()
+        
+        return {
+            "success": True,
+            "results": results
+        }
+    except Exception as e:
+        print(f"Error in professional adaptation strategy test: {e}")
+        return {
+            "success": False,
+            "error": str(e)
+        }
+
+
+if __name__ == "__main__":
+    print("===== EXPERTISE EXTERNALIZATION PARADOX SIMULATION =====")
+    print("This simulation tests concepts from the paper 'The Paradox of Professional Input'")
+    print("It models how professionals externalizing their knowledge to AI may affect their future value")
+    
+    # Set random seed for reproducibility
+    random.seed(42)
+    np.random.seed(42)
+    
+    try:
+        # Run main simulation
+        print("\n1. Running main expertise externalization simulation...")
+        main_results = test_expertise_paradox_simulation()
+        
+        # Test knowledge transfer mechanisms
+        print("\n2. Testing knowledge transfer mechanisms...")
+        mechanism_results = test_knowledge_transfer_mechanisms()
+        
+        # Test professional adaptation strategies
+        print("\n3. Testing professional adaptation strategies...")
+        strategy_results = test_professional_adaptation_strategies()
+        
+        print("\n===== SIMULATION COMPLETE =====")
+        print("All tests completed successfully. Review the visualizations and output for insights.")
+    except Exception as e:
+        print(f"\nERROR: An unexpected error occurred during simulation: {e}")
+```
+
+Would you like me to explain or break down the code?

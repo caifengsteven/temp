@@ -1,0 +1,6 @@
+PDF: 2502.07071v2.pdf
+Size: 5,406,439 bytes
+Processing time: 72.3 seconds
+Response length: 19,975 characters
+Code length: 19,723 characters
+Generated: 2025-07-10 20:09:00

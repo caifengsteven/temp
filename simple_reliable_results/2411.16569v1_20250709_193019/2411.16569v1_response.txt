@@ -1,0 +1,542 @@
+Claude-Sonnet-3.7 Response for 2411.16569v1
+Generated: 2025-07-09 19:31:47
+Time: 86.3s
+==================================================
+
+Based on the PDF, I'll create a Python script to simulate and test the financial prediction strategies described in the paper, focusing on the comparison between GPT and BERT models for predicting correlations between stocks and bonds using Beige Book data.
+
+```python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.metrics import mean_squared_error
+from datetime import datetime, timedelta
+import random
+from scipy import stats
+
+class SimulatedData:
+    def __init__(self, start_date='1980-01-01', end_date='2024-06-30'):
+        """Initialize simulated financial data based on paper specifications"""
+        self.start_date = pd.to_datetime(start_date)
+        self.end_date = pd.to_datetime(end_date)
+        self.training_cutoff = pd.to_datetime('2021-09-30')
+        self.test_start = pd.to_datetime('2021-10-01')
+        
+        # Generate dates for monthly data
+        self.dates = pd.date_range(start=self.start_date, end=self.end_date, freq='MS')
+        
+        # Create true correlations between stocks and bonds
+        np.random.seed(42)
+        self.true_correlations = self._generate_true_correlations()
+        
+        # Generate Beige Book data (represented as correlation predictions)
+        self.beige_book_data = self._generate_beige_book_data()
+        
+        # Generate stock and bond price data
+        self.stock_prices, self.bond_prices = self._generate_price_data()
+        
+    def _generate_true_correlations(self):
+        """Generate simulated true correlations between stocks and bonds"""
+        # Create base correlations with some seasonal patterns and trends
+        n_months = len(self.dates)
+        base_correlations = np.zeros(n_months)
+        
+        # Long-term trend from positive to negative correlation
+        trend = np.linspace(0.5, -0.3, n_months)
+        
+        # Add seasonality
+        seasonality = 0.2 * np.sin(np.linspace(0, 24*np.pi, n_months))
+        
+        # Add random noise
+        noise = np.random.normal(0, 0.3, n_months)
+        
+        # Combine components
+        correlations = trend + seasonality + noise
+        
+        # Ensure correlations are between -1 and 1
+        correlations = np.clip(correlations, -1, 1)
+        
+        return pd.Series(correlations, index=self.dates)
+    
+    def _generate_beige_book_data(self):
+        """Generate simulated Beige Book data (as district reports)"""
+        # For simplicity, we'll just simulate the predictions that would come from the Beige Book
+        # rather than actual text data
+        data = {}
+        
+        # Generate GPT predictions with look-ahead bias
+        gpt_predictions = self.true_correlations.copy()
+        
+        # Add more error to test set to simulate look-ahead bias
+        train_mask = gpt_predictions.index <= self.training_cutoff
+        test_mask = gpt_predictions.index > self.training_cutoff
+        
+        # Add small errors in training period
+        gpt_predictions[train_mask] += np.random.normal(0, 0.15, sum(train_mask))
+        
+        # Add larger errors in test period
+        gpt_predictions[test_mask] += np.random.normal(0, 0.3, sum(test_mask))
+        
+        # Generate BERT predictions with consistent error but no look-ahead bias
+        bert_predictions = self.true_correlations.copy()
+        bert_predictions += np.random.normal(0, 0.2, len(bert_predictions))
+        
+        # Discretize to bins (0, 1, 2) for original model
+        gpt_original = pd.cut(gpt_predictions, bins=[-1.1, -0.15, 0.15, 1.1], labels=[0, 1, 2])
+        bert_original = pd.cut(bert_predictions, bins=[-1.1, -0.15, 0.15, 1.1], labels=[0, 1, 2])
+        
+        # Discretize to bins (0-10) for binned model
+        gpt_binned = pd.cut(gpt_predictions, bins=np.linspace(-1.1, 1.1, 12), labels=range(11))
+        bert_binned = pd.cut(bert_predictions, bins=np.linspace(-1.1, 1.1, 12), labels=range(11))
+        
+        # Store all predictions
+        data['gpt_original'] = gpt_original
+        data['bert_original'] = bert_original
+        data['gpt_binned'] = gpt_binned
+        data['bert_binned'] = bert_binned
+        
+        # Add strength versions
+        for key in ['gpt_original', 'bert_original', 'gpt_binned', 'bert_binned']:
+            # Create v1 - raw predictions
+            data[f'{key}_v1'] = data[key].astype(float)
+            
+            # Create v2 - predictions scaled by probability
+            prob = np.random.uniform(0.5, 1.0, len(data[key]))
+            data[f'{key}_v2'] = data[key].astype(float) * prob
+            
+            # Create v3 - predictions scaled by probability difference
+            prob_diff = 2*prob - 1  # p-(1-p) = 2p-1
+            data[f'{key}_v3'] = data[key].astype(float) * prob_diff
+        
+        return data
+    
+    def _generate_price_data(self):
+        """Generate simulated daily stock and bond price data"""
+        # Create daily date range
+        daily_dates = pd.date_range(start=self.start_date, end=self.end_date)
+        
+        # Initialize price series
+        stock_prices = pd.Series(index=daily_dates, dtype=float)
+        bond_prices = pd.Series(index=daily_dates, dtype=float)
+        
+        # Starting prices
+        stock_price = 100.0
+        bond_price = 100.0
+        
+        # For each month, generate daily returns with the appropriate correlation
+        current_month = self.start_date.replace(day=1)
+        
+        for i, date in enumerate(daily_dates):
+            month_start = date.replace(day=1)
+            
+            if month_start != current_month:
+                # Update correlation for new month
+                current_month = month_start
+                current_corr = self.true_correlations.loc[current_month]
+                
+                # Create correlation matrix
+                corr_matrix = np.array([[1.0, current_corr], [current_corr, 1.0]])
+                
+                # Volatilities
+                stock_vol = 0.01  # 1% daily vol for stocks
+                bond_vol = 0.005  # 0.5% daily vol for bonds
+                
+                # Create covariance matrix
+                cov_matrix = np.array([
+                    [stock_vol**2, current_corr * stock_vol * bond_vol],
+                    [current_corr * stock_vol * bond_vol, bond_vol**2]
+                ])
+            
+            # Generate correlated returns
+            returns = np.random.multivariate_normal([0.0004, 0.0002], cov_matrix)  # Small positive drift
+            
+            # Update prices
+            stock_price *= (1 + returns[0])
+            bond_price *= (1 + returns[1])
+            
+            # Store prices
+            stock_prices[date] = stock_price
+            bond_prices[date] = bond_price
+        
+        return stock_prices, bond_prices
+
+
+class PortfolioOptimizer:
+    def __init__(self, data):
+        """Initialize optimizer with simulated data"""
+        self.data = data
+        
+    def _calculate_optimal_weights_2asset(self, stock_vol, bond_vol, correlation):
+        """Calculate optimal weights for 2-asset portfolio using minimum variance"""
+        numerator = bond_vol**2 - correlation * stock_vol * bond_vol
+        denominator = stock_vol**2 + bond_vol**2 - 2 * correlation * stock_vol * bond_vol
+        
+        # Ensure weight is between 0 and 1
+        w_stock = np.clip(numerator / denominator, 0, 1)
+        w_bond = 1 - w_stock
+        
+        return w_stock, w_bond
+    
+    def run_portfolio_simulation(self, correlation_model, version='v3', 
+                                 rebalance_freq='MS', window=60):
+        """
+        Run portfolio simulation using the specified correlation model
+        
+        Parameters:
+        - correlation_model: str, which model to use ('gpt_original', 'bert_original', etc.)
+        - version: str, which version of the model (v1, v2, v3)
+        - rebalance_freq: str, how often to rebalance
+        - window: int, lookback window for volatility calculation
+        
+        Returns:
+        - portfolio values over time
+        """
+        # Create daily date range for portfolio
+        daily_dates = pd.date_range(start=self.data.start_date, end=self.data.end_date)
+        
+        # Initialize portfolio
+        portfolio_value = pd.Series(index=daily_dates, dtype=float)
+        portfolio_value.iloc[0] = 1000.0  # Start with $1000
+        
+        # Initialize weights
+        w_stock = 0.5
+        w_bond = 0.5
+        
+        # For each rebalance date
+        rebalance_dates = pd.date_range(start=self.data.start_date, end=self.data.end_date, freq=rebalance_freq)
+        
+        for i, rebalance_date in enumerate(rebalance_dates):
+            if i == 0:
+                continue  # Skip first date, use initial weights
+                
+            # Find the corresponding month for correlation
+            month_start = rebalance_date.replace(day=1)
+            
+            # Calculate stock and bond volatilities using past window days
+            end_idx = daily_dates.get_loc(rebalance_date)
+            if end_idx < window:
+                # Not enough history, use initial weights
+                continue
+                
+            start_idx = end_idx - window
+            
+            # Calculate daily returns
+            stock_returns = self.data.stock_prices.iloc[start_idx:end_idx].pct_change().dropna()
+            bond_returns = self.data.bond_prices.iloc[start_idx:end_idx].pct_change().dropna()
+            
+            # Calculate volatilities
+            stock_vol = stock_returns.std()
+            bond_vol = bond_returns.std()
+            
+            # Get predicted correlation
+            model_key = f"{correlation_model}_{version}"
+            if month_start in self.data.beige_book_data[model_key].index:
+                predicted_corr = self.data.beige_book_data[model_key].loc[month_start]
+                
+                # Convert from binned/discretized form to continuous correlation
+                if 'original' in correlation_model:
+                    # Map 0->-0.5, 1->0, 2->0.5
+                    if predicted_corr == 0:
+                        predicted_corr = -0.5
+                    elif predicted_corr == 1:
+                        predicted_corr = 0
+                    elif predicted_corr == 2:
+                        predicted_corr = 0.5
+                elif 'binned' in correlation_model:
+                    # Map from 0-10 to -1 to 1
+                    predicted_corr = (predicted_corr - 5) / 5
+            else:
+                # If no prediction available, use 0 correlation
+                predicted_corr = 0
+            
+            # Calculate new weights
+            w_stock, w_bond = self._calculate_optimal_weights_2asset(
+                stock_vol, bond_vol, predicted_corr
+            )
+            
+            # Find all dates until next rebalance
+            if i < len(rebalance_dates) - 1:
+                next_rebalance = rebalance_dates[i+1]
+                date_indices = (daily_dates >= rebalance_date) & (daily_dates < next_rebalance)
+            else:
+                date_indices = daily_dates >= rebalance_date
+            
+            # Set initial portfolio allocation for this period
+            if i > 0:  # Skip first rebalance date
+                last_date_idx = daily_dates.get_loc(rebalance_date) - 1
+                initial_value = portfolio_value.iloc[last_date_idx]
+                
+                stock_units = (w_stock * initial_value) / self.data.stock_prices.iloc[last_date_idx]
+                bond_units = (w_bond * initial_value) / self.data.bond_prices.iloc[last_date_idx]
+                
+                # Calculate portfolio value for the period
+                period_dates = daily_dates[date_indices]
+                for date in period_dates:
+                    date_idx = daily_dates.get_loc(date)
+                    stock_value = stock_units * self.data.stock_prices.iloc[date_idx]
+                    bond_value = bond_units * self.data.bond_prices.iloc[date_idx]
+                    portfolio_value.iloc[date_idx] = stock_value + bond_value
+        
+        return portfolio_value
+    
+    def calculate_sharpe_ratio(self, portfolio_values, risk_free_rate=0.0002, period='all'):
+        """Calculate Sharpe ratio for portfolio"""
+        # Select period
+        if period == 'pre-covid':
+            mask = (portfolio_values.index >= pd.to_datetime('2018-01-01')) & \
+                   (portfolio_values.index < pd.to_datetime('2020-03-01'))
+        elif period == 'post-covid':
+            mask = (portfolio_values.index >= pd.to_datetime('2020-03-01')) & \
+                   (portfolio_values.index <= pd.to_datetime('2023-12-31'))
+        else:
+            mask = portfolio_values.index >= portfolio_values.index[0]
+            
+        selected_values = portfolio_values[mask]
+        
+        # Calculate daily returns
+        returns = selected_values.pct_change().dropna()
+        
+        # Calculate annualized Sharpe ratio
+        excess_returns = returns - risk_free_rate
+        sharpe = (excess_returns.mean() / excess_returns.std()) * np.sqrt(252)  # Annualize
+        
+        return sharpe
+
+
+class ModelEvaluator:
+    def __init__(self, data):
+        """Initialize evaluator with simulated data"""
+        self.data = data
+        
+    def calculate_rmse(self, model, version, period='train', n_months=1):
+        """
+        Calculate RMSE for model predictions
+        
+        Parameters:
+        - model: str, which model to use ('gpt_original', 'bert_original', etc.)
+        - version: str, which version of the model (v1, v2, v3)
+        - period: str, 'train' or 'test'
+        - n_months: int, chunk size for RMSE calculation
+        
+        Returns:
+        - RMSE values
+        """
+        # Select period
+        if period == 'train':
+            mask = self.data.true_correlations.index <= self.data.training_cutoff
+        else:
+            mask = self.data.true_correlations.index > self.data.training_cutoff
+            
+        true_corr = self.data.true_correlations[mask]
+        
+        # Get model predictions
+        model_key = f"{model}_{version}"
+        pred_corr = self.data.beige_book_data[model_key][mask]
+        
+        # Convert predictions to continuous correlation values
+        if 'original' in model:
+            # Map 0->-0.5, 1->0, 2->0.5
+            pred_corr = pred_corr.replace({0: -0.5, 1: 0, 2: 0.5})
+        elif 'binned' in model:
+            # Map from 0-10 to -1 to 1
+            pred_corr = (pred_corr - 5) / 5
+        
+        # Calculate RMSE in chunks
+        rmse_values = []
+        for i in range(0, len(true_corr), n_months):
+            end_idx = min(i + n_months, len(true_corr))
+            chunk_true = true_corr.iloc[i:end_idx]
+            chunk_pred = pred_corr.iloc[i:end_idx]
+            
+            rmse = np.sqrt(mean_squared_error(chunk_true, chunk_pred))
+            rmse_values.append(rmse)
+            
+        return rmse_values
+    
+    def compare_models(self, models, versions, periods, n_months_values):
+        """Run statistical tests to compare models"""
+        results = {}
+        
+        # Test for look-ahead bias
+        for model in [m for m in models if 'gpt' in m]:
+            for version in versions:
+                for n_months in n_months_values:
+                    train_rmse = self.calculate_rmse(model, version, 'train', n_months)
+                    test_rmse = self.calculate_rmse(model, version, 'test', n_months)
+                    
+                    t_stat, p_value = stats.ttest_ind(train_rmse, test_rmse, alternative='less')
+                    
+                    key = f"look_ahead_{model}_{version}_{n_months}"
+                    results[key] = {
+                        'train_rmse_mean': np.mean(train_rmse),
+                        'test_rmse_mean': np.mean(test_rmse),
+                        'p_value': p_value
+                    }
+        
+        # Compare GPT vs BERT
+        for version in versions:
+            for period in periods:
+                for n_months in n_months_values:
+                    gpt_rmse = self.calculate_rmse('gpt_original', version, period, n_months)
+                    bert_rmse = self.calculate_rmse('bert_original', version, period, n_months)
+                    
+                    if period == 'train':
+                        # In training, we expect GPT to be better
+                        t_stat, p_value = stats.ttest_ind(gpt_rmse, bert_rmse, alternative='less')
+                    else:
+                        # In testing, we expect BERT to be better
+                        t_stat, p_value = stats.ttest_ind(bert_rmse, gpt_rmse, alternative='less')
+                    
+                    key = f"gpt_vs_bert_{period}_{version}_{n_months}"
+                    results[key] = {
+                        'gpt_rmse_mean': np.mean(gpt_rmse),
+                        'bert_rmse_mean': np.mean(bert_rmse),
+                        'p_value': p_value
+                    }
+        
+        return results
+
+
+def run_simulations():
+    # Create simulated data
+    print("Generating simulated financial data...")
+    data = SimulatedData(start_date='2015-01-01', end_date='2024-06-30')
+    
+    # Initialize evaluator and optimizer
+    evaluator = ModelEvaluator(data)
+    optimizer = PortfolioOptimizer(data)
+    
+    # Test for look-ahead bias
+    print("\nTesting for look-ahead bias...")
+    models = ['gpt_original', 'gpt_binned']
+    versions = ['v1', 'v2', 'v3']
+    periods = ['train', 'test']
+    n_months_values = [1, 3, 6, 12]
+    
+    results = evaluator.compare_models(models, versions, periods, n_months_values)
+    
+    # Print key look-ahead bias results
+    for model in ['gpt_original', 'gpt_binned']:
+        print(f"\n{model.upper()} Look-ahead Bias Test Results:")
+        for version in versions:
+            for n_months in [1, 3]:
+                key = f"look_ahead_{model}_{version}_{n_months}"
+                if key in results:
+                    p_value = results[key]['p_value']
+                    print(f"  {version}, n_months={n_months}: p-value = {p_value:.4f} " + 
+                          f"({'Evidence of bias' if p_value < 0.05 else 'No significant bias'})")
+    
+    # Print GPT vs BERT comparison
+    print("\nGPT vs BERT Comparison:")
+    for period in periods:
+        print(f"\n  {period.upper()} period:")
+        for version in versions:
+            for n_months in [1, 3]:
+                key = f"gpt_vs_bert_{period}_{version}_{n_months}"
+                if key in results:
+                    p_value = results[key]['p_value']
+                    gpt_rmse = results[key]['gpt_rmse_mean']
+                    bert_rmse = results[key]['bert_rmse_mean']
+                    better = "GPT" if (period == 'train' and p_value < 0.05) or (period == 'test' and p_value >= 0.05) else "BERT"
+                    print(f"    {version}, n_months={n_months}: GPT RMSE={gpt_rmse:.4f}, BERT RMSE={bert_rmse:.4f}, " +
+                          f"p-value={p_value:.4f} ({better} is better)")
+    
+    # Run portfolio simulations
+    print("\nRunning portfolio simulations...")
+    models_to_test = ['gpt_original', 'bert_original']
+    
+    # Dictionary to store portfolio values
+    portfolios = {}
+    
+    # Run baseline simulation (using rolling correlation)
+    print("  Running baseline simulation...")
+    portfolio_values = pd.Series(index=data.stock_prices.index, dtype=float)
+    portfolio_values.iloc[0] = 1000.0
+    
+    # Simple 60/40 portfolio
+    for i in range(1, len(portfolio_values)):
+        stock_return = data.stock_prices.iloc[i] / data.stock_prices.iloc[i-1] - 1
+        bond_return = data.bond_prices.iloc[i] / data.bond_prices.iloc[i-1] - 1
+        portfolio_return = 0.6 * stock_return + 0.4 * bond_return
+        portfolio_values.iloc[i] = portfolio_values.iloc[i-1] * (1 + portfolio_return)
+    
+    portfolios['baseline'] = portfolio_values
+    
+    # Run model simulations
+    for model in models_to_test:
+        print(f"  Running {model} simulation...")
+        portfolio_values = optimizer.run_portfolio_simulation(model, 'v3')
+        portfolios[model] = portfolio_values
+    
+    # Calculate Sharpe ratios
+    print("\nCalculating Sharpe ratios...")
+    sharpe_ratios = {}
+    
+    for period in ['pre-covid', 'post-covid']:
+        sharpe_ratios[period] = {}
+        print(f"\n  {period.upper()} period:")
+        
+        for model in ['baseline'] + models_to_test:
+            sharpe = optimizer.calculate_sharpe_ratio(portfolios[model], period=period)
+            sharpe_ratios[period][model] = sharpe
+            print(f"    {model}: Sharpe Ratio = {sharpe:.4f}")
+    
+    # Plot portfolio values
+    plt.figure(figsize=(12, 6))
+    
+    # Convert dates to numbers for plotting
+    dates = [pd.to_datetime(date) for date in portfolios['baseline'].index]
+    
+    # Plot pre-covid period
+    pre_covid_end = pd.to_datetime('2020-03-01')
+    pre_covid_mask = [date < pre_covid_end for date in dates]
+    
+    plt.subplot(1, 2, 1)
+    for model in ['baseline'] + models_to_test:
+        plt.plot(
+            [date for i, date in enumerate(dates) if pre_covid_mask[i]], 
+            [value for i, value in enumerate(portfolios[model]) if pre_covid_mask[i]],
+            label=model
+        )
+    plt.title('Pre-Covid Portfolio Performance')
+    plt.xlabel('Date')
+    plt.ylabel('Portfolio Value ($)')
+    plt.legend()
+    plt.grid(True)
+    
+    # Plot post-covid period
+    post_covid_start = pd.to_datetime('2020-03-01')
+    post_covid_mask = [date >= post_covid_start for date in dates]
+    
+    plt.subplot(1, 2, 2)
+    for model in ['baseline'] + models_to_test:
+        plt.plot(
+            [date for i, date in enumerate(dates) if post_covid_mask[i]], 
+            [value for i, value in enumerate(portfolios[model]) if post_covid_mask[i]],
+            label=model
+        )
+    plt.title('Post-Covid Portfolio Performance')
+    plt.xlabel('Date')
+    plt.ylabel('Portfolio Value ($)')
+    plt.legend()
+    plt.grid(True)
+    
+    plt.tight_layout()
+    plt.savefig('portfolio_performance.png')
+    print("\nPortfolio performance chart saved as 'portfolio_performance.png'")
+    
+    return results, portfolios, sharpe_ratios
+
+
+if __name__ == "__main__":
+    try:
+        print("Starting financial prediction model simulation based on paper...")
+        results, portfolios, sharpe_ratios = run_simulations()
+        print("\nSimulation completed successfully.")
+    except Exception as e:
+        print(f"Error during simulation: {str(e)}")
+        import traceback
+        traceback.print_exc()
+```
+
+Would you like me to explain or break down the code?

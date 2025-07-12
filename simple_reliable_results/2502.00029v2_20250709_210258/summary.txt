@@ -1,0 +1,6 @@
+PDF: 2502.00029v2.pdf
+Size: 249,345 bytes
+Processing time: 66.7 seconds
+Response length: 16,936 characters
+Code length: 16,664 characters
+Generated: 2025-07-09 21:04:06

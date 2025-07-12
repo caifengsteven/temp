@@ -1,0 +1,6 @@
+PDF: 2504.18600v1.pdf
+Size: 753,910 bytes
+Processing time: 67.6 seconds
+Response length: 18,741 characters
+Code length: 18,412 characters
+Generated: 2025-07-10 22:05:56

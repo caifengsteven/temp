@@ -1,0 +1,6 @@
+PDF: 2411.13555v3.pdf
+Size: 2,307,860 bytes
+Processing time: 52.6 seconds
+Response length: 14,847 characters
+Code length: 13,132 characters
+Generated: 2025-07-09 20:31:55

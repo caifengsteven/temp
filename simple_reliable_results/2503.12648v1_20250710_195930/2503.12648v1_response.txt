@@ -1,0 +1,754 @@
+Claude-Sonnet-3.7 Response for 2503.12648v1
+Generated: 2025-07-10 20:01:25
+Time: 112.6s
+==================================================
+
+Based on the paper, I'll create a Python test strategy that implements the multi-source transfer learning approach for realized volatility forecasting. The strategy will simulate data for new issues/spin-offs and source assets, then apply the transfer learning method described in the paper.
+
+```python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.metrics import mean_squared_error, mean_absolute_error
+from scipy.spatial.distance import euclidean
+from fastdtw import fastdtw
+import xgboost as xgb
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.optimizers import Adam
+import warnings
+warnings.filterwarnings('ignore')
+
+class RealizedVolatilityForecaster:
+    def __init__(self, subsequence_length=22, selection_percentile=50):
+        """
+        Initialize the forecaster with parameters.
+        
+        Args:
+            subsequence_length (int): Length of subsequences to consider (m in the paper)
+            selection_percentile (int): Percentile threshold for selecting source subsequences (ϵ in the paper)
+        """
+        self.subsequence_length = subsequence_length
+        self.selection_percentile = selection_percentile
+        
+    def generate_synthetic_data(self, n_source_assets=10, source_length=500, target_length=50, n_features=3):
+        """
+        Generate synthetic data for source and target assets.
+        
+        Args:
+            n_source_assets (int): Number of source assets
+            source_length (int): Length of source time series
+            target_length (int): Length of target time series
+            n_features (int): Number of features (lagged volatility components)
+            
+        Returns:
+            tuple: Source and target data
+        """
+        # Parameters for different volatility regimes
+        low_vol_params = {'mean': 0.0001, 'std': 0.0005}
+        med_vol_params = {'mean': 0.0005, 'std': 0.001}
+        high_vol_params = {'mean': 0.001, 'std': 0.002}
+        
+        # Generate source assets data with mixed volatility regimes
+        source_data = []
+        for i in range(n_source_assets):
+            # Randomly determine which volatility regime this source asset follows
+            regime = np.random.choice(['low', 'med', 'high'])
+            params = low_vol_params if regime == 'low' else med_vol_params if regime == 'med' else high_vol_params
+            
+            # Generate base RV series with AR(1) process
+            rv = np.zeros(source_length)
+            rv[0] = np.random.gamma(shape=2, scale=params['std'])
+            for t in range(1, source_length):
+                # AR(1) with random shocks
+                rv[t] = 0.7 * rv[t-1] + np.random.normal(params['mean'], params['std'])
+                rv[t] = max(0.00001, rv[t])  # Ensure positivity
+            
+            # Create features (lagged values and components as described in the paper)
+            features = np.zeros((source_length, n_features))
+            features[:, 0] = rv  # RV_t,d (daily volatility)
+            
+            # Calculate weekly volatility component if we have enough data
+            if n_features > 1:
+                for t in range(5, source_length):
+                    features[t, 1] = np.mean(rv[t-5:t])  # RV_t,w (weekly volatility)
+            
+            # Calculate monthly volatility component if we have enough data
+            if n_features > 2:
+                for t in range(22, source_length):
+                    features[t, 2] = np.mean(rv[t-22:t])  # RV_t,m (monthly volatility)
+            
+            # Create target values (next day's RV)
+            targets = np.roll(rv, -1)[:-1]
+            
+            source_data.append((features[:-1], targets))
+        
+        # Generate target asset data (new issue/spin-off)
+        # Use a similar process but with shorter length
+        regime = np.random.choice(['low', 'med', 'high'])
+        params = low_vol_params if regime == 'low' else med_vol_params if regime == 'med' else high_vol_params
+        
+        rv_target = np.zeros(target_length + 1)  # +1 for the last prediction
+        rv_target[0] = np.random.gamma(shape=2, scale=params['std'])
+        for t in range(1, target_length + 1):
+            rv_target[t] = 0.7 * rv_target[t-1] + np.random.normal(params['mean'], params['std'])
+            rv_target[t] = max(0.00001, rv_target[t])
+        
+        # Create features for target
+        target_features = np.zeros((target_length, n_features))
+        target_features[:, 0] = rv_target[:target_length]  # RV_t,d
+        
+        # Weekly component if we have enough data
+        if n_features > 1:
+            for t in range(5, target_length):
+                target_features[t, 1] = np.mean(rv_target[t-5:t])
+        
+        # Monthly component if we have enough data
+        if n_features > 2:
+            for t in range(22, target_length):
+                target_features[t, 2] = np.mean(rv_target[t-22:t])
+        
+        target_targets = rv_target[1:target_length+1]  # Next day's RV
+        
+        return source_data, (target_features, target_targets)
+    
+    def create_subsequences(self, source_data):
+        """
+        Create non-overlapping subsequences from source data.
+        
+        Args:
+            source_data (list): List of tuples (features, targets) for each source asset
+            
+        Returns:
+            list: List of subsequences
+        """
+        subsequences = []
+        
+        for asset_idx, (features, targets) in enumerate(source_data):
+            # Calculate number of subsequences
+            n_subsequences = len(features) // self.subsequence_length
+            
+            # Skip any excess observations at the beginning
+            excess = len(features) % self.subsequence_length
+            
+            for k in range(n_subsequences):
+                start_idx = excess + k * self.subsequence_length
+                end_idx = excess + (k + 1) * self.subsequence_length
+                
+                subseq_features = features[start_idx:end_idx]
+                subseq_targets = targets[start_idx:end_idx]
+                
+                # Only include if we have a full subsequence
+                if len(subseq_features) == self.subsequence_length:
+                    subsequences.append({
+                        'asset_idx': asset_idx,
+                        'features': subseq_features,
+                        'targets': subseq_targets,
+                        'start_idx': start_idx
+                    })
+        
+        return subsequences
+    
+    def select_similar_subsequences(self, target_features, subsequences):
+        """
+        Select subsequences that are most similar to recent target observations.
+        
+        Args:
+            target_features (ndarray): Feature values of target asset
+            subsequences (list): List of subsequences from source assets
+            
+        Returns:
+            list: Selected subsequences
+        """
+        # Use the most recent observations from target (up to subsequence_length)
+        recent_target = target_features[-min(self.subsequence_length, len(target_features)):]
+        
+        # Calculate DTW distance between recent target and each subsequence
+        distances = []
+        for subseq in subsequences:
+            # Calculate DTW distance based on the lagged volatility predictors
+            # Using FastDTW for computational efficiency
+            distance, _ = fastdtw(recent_target, subseq['features'], dist=euclidean)
+            distances.append(distance)
+        
+        # Find threshold based on percentile
+        threshold = np.percentile(distances, self.selection_percentile)
+        
+        # Select subsequences with distance below threshold
+        selected_subsequences = [subseq for subseq, dist in zip(subsequences, distances) if dist <= threshold]
+        
+        return selected_subsequences
+    
+    def prepare_transfer_learning_data(self, target_data, selected_subsequences):
+        """
+        Combine target data with selected subsequences for transfer learning.
+        
+        Args:
+            target_data (tuple): Tuple of (features, targets) for target asset
+            selected_subsequences (list): List of selected subsequences
+            
+        Returns:
+            tuple: Combined features and targets
+        """
+        target_features, target_targets = target_data
+        
+        # Start with target data
+        all_features = target_features.copy()
+        all_targets = target_targets.copy()
+        
+        # Add selected subsequences
+        for subseq in selected_subsequences:
+            all_features = np.vstack([all_features, subseq['features']])
+            all_targets = np.append(all_targets, subseq['targets'])
+        
+        return all_features, all_targets
+    
+    def train_har_model(self, features, targets):
+        """
+        Train a HAR model.
+        
+        Args:
+            features (ndarray): Input features
+            targets (ndarray): Target values
+            
+        Returns:
+            dict: Trained model parameters
+        """
+        # For HAR model, we just calculate the OLS coefficients
+        X = np.column_stack([np.ones(len(features)), features])
+        beta = np.linalg.pinv(X.T @ X) @ X.T @ targets
+        
+        return {'beta': beta}
+    
+    def train_xgboost_model(self, features, targets):
+        """
+        Train an XGBoost model.
+        
+        Args:
+            features (ndarray): Input features
+            targets (ndarray): Target values
+            
+        Returns:
+            object: Trained XGBoost model
+        """
+        model = xgb.XGBRegressor(
+            n_estimators=40,
+            max_depth=5,
+            learning_rate=0.1,
+            gamma=0.1,
+            reg_lambda=1,
+            subsample=0.75,
+            min_child_weight=1
+        )
+        model.fit(features, targets)
+        
+        return model
+    
+    def train_fnn_model(self, features, targets, batch_size=4):
+        """
+        Train a Feedforward Neural Network model.
+        
+        Args:
+            features (ndarray): Input features
+            targets (ndarray): Target values
+            batch_size (int): Batch size for training
+            
+        Returns:
+            object: Trained FNN model
+        """
+        # Normalize features
+        scaler = StandardScaler()
+        scaled_features = scaler.fit_transform(features)
+        
+        # Build FNN model with 3 hidden layers [8, 4, 2] as in the paper
+        model = Sequential([
+            Dense(8, activation='relu', input_shape=(features.shape[1],)),
+            Dense(4, activation='relu'),
+            Dense(2, activation='relu'),
+            Dense(1)
+        ])
+        
+        model.compile(optimizer=Adam(learning_rate=0.001), loss='mse')
+        
+        # Train with early stopping
+        early_stopping = tf.keras.callbacks.EarlyStopping(
+            monitor='val_loss',
+            patience=100,
+            restore_best_weights=True
+        )
+        
+        # Split data for validation
+        X_train, X_val, y_train, y_val = train_test_split(
+            scaled_features, targets, test_size=0.1, random_state=42)
+        
+        # Train model
+        history = model.fit(
+            X_train, y_train,
+            epochs=500,
+            batch_size=batch_size,
+            validation_data=(X_val, y_val),
+            callbacks=[early_stopping],
+            verbose=0
+        )
+        
+        return {'model': model, 'scaler': scaler}
+    
+    def predict_har(self, model, features):
+        """
+        Make predictions with HAR model.
+        
+        Args:
+            model (dict): Trained HAR model
+            features (ndarray): Input features
+            
+        Returns:
+            ndarray: Predictions
+        """
+        X = np.column_stack([np.ones(len(features)), features])
+        return X @ model['beta']
+    
+    def predict_xgboost(self, model, features):
+        """
+        Make predictions with XGBoost model.
+        
+        Args:
+            model (object): Trained XGBoost model
+            features (ndarray): Input features
+            
+        Returns:
+            ndarray: Predictions
+        """
+        return model.predict(features)
+    
+    def predict_fnn(self, model_dict, features):
+        """
+        Make predictions with FNN model.
+        
+        Args:
+            model_dict (dict): Dict containing trained FNN model and scaler
+            features (ndarray): Input features
+            
+        Returns:
+            ndarray: Predictions
+        """
+        model = model_dict['model']
+        scaler = model_dict['scaler']
+        
+        scaled_features = scaler.transform(features)
+        predictions = model.predict(scaled_features, verbose=0)
+        
+        return predictions.flatten()
+    
+    def enforce_non_negativity(self, predictions, min_value=None):
+        """
+        Enforce non-negativity constraint on predictions.
+        
+        Args:
+            predictions (ndarray): Predicted values
+            min_value (float): Minimum value to use for negative predictions
+            
+        Returns:
+            ndarray: Non-negative predictions
+        """
+        if min_value is None:
+            min_value = 0.00001  # Small positive value
+            
+        return np.maximum(predictions, min_value)
+
+
+def test_transfer_learning_approach():
+    """Test the multi-source transfer learning approach for volatility forecasting."""
+    print("Testing Multi-Source Transfer Learning for Realized Volatility Forecasting")
+    print("-" * 80)
+    
+    # Create forecaster with default parameters
+    forecaster = RealizedVolatilityForecaster(subsequence_length=22, selection_percentile=50)
+    
+    # Generate synthetic data
+    n_source_assets = 10
+    source_length = 500
+    target_length = 50
+    n_features = 3  # RV_d, RV_w, RV_m
+    
+    print(f"Generating synthetic data for {n_source_assets} source assets and 1 target asset")
+    print(f"Source length: {source_length}, Target length: {target_length}")
+    source_data, target_data = forecaster.generate_synthetic_data(
+        n_source_assets=n_source_assets,
+        source_length=source_length,
+        target_length=target_length,
+        n_features=n_features
+    )
+    
+    # Split target data into training and test sets
+    train_size = 30
+    target_features_train = target_data[0][:train_size]
+    target_targets_train = target_data[1][:train_size]
+    
+    target_features_test = target_data[0][train_size:]
+    target_targets_test = target_data[1][train_size:]
+    
+    # Create subsequences from source data
+    print(f"Creating subsequences with length {forecaster.subsequence_length}")
+    subsequences = forecaster.create_subsequences(source_data)
+    print(f"Created {len(subsequences)} subsequences from source assets")
+    
+    # Select similar subsequences
+    print(f"Selecting subsequences below the {forecaster.selection_percentile}th percentile of DTW distances")
+    selected_subsequences = forecaster.select_similar_subsequences(target_features_train, subsequences)
+    print(f"Selected {len(selected_subsequences)} subsequences")
+    
+    # Distribution of selected subsequences across source assets
+    asset_counts = {}
+    for subseq in selected_subsequences:
+        asset_idx = subseq['asset_idx']
+        asset_counts[asset_idx] = asset_counts.get(asset_idx, 0) + 1
+    
+    print("\nDistribution of selected subsequences across source assets:")
+    for asset_idx, count in asset_counts.items():
+        print(f"  Asset {asset_idx}: {count} subsequences")
+    
+    # Prepare data for different approaches
+    # 1. Target Only (TO)
+    to_features = target_features_train
+    to_targets = target_targets_train
+    
+    # 2. Naive Pooling (NP)
+    np_features = target_features_train.copy()
+    np_targets = target_targets_train.copy()
+    
+    for asset_features, asset_targets in source_data:
+        # Use same amount of data as available for the target
+        np_features = np.vstack([np_features, asset_features[:500]])
+        np_targets = np.append(np_targets, asset_targets[:500])
+    
+    # 3. Multi-Source Transfer Learning (MTL)
+    mtl_features, mtl_targets = forecaster.prepare_transfer_learning_data(
+        (target_features_train, target_targets_train), 
+        selected_subsequences
+    )
+    
+    # Train models with different approaches
+    print("\nTraining models with different approaches...")
+    
+    # HAR models
+    print("Training HAR models...")
+    to_har = forecaster.train_har_model(to_features, to_targets)
+    np_har = forecaster.train_har_model(np_features, np_targets)
+    mtl_har = forecaster.train_har_model(mtl_features, mtl_targets)
+    
+    # XGBoost models
+    print("Training XGBoost models...")
+    to_xgb = forecaster.train_xgboost_model(to_features, to_targets)
+    np_xgb = forecaster.train_xgboost_model(np_features, np_targets)
+    mtl_xgb = forecaster.train_xgboost_model(mtl_features, mtl_targets)
+    
+    # FNN models
+    print("Training FNN models...")
+    # Use different batch sizes as mentioned in the paper
+    to_fnn = forecaster.train_fnn_model(to_features, to_targets, batch_size=4)
+    np_fnn = forecaster.train_fnn_model(np_features, np_targets, batch_size=512)
+    mtl_fnn = forecaster.train_fnn_model(mtl_features, mtl_targets, batch_size=256)
+    
+    # Make predictions
+    print("\nMaking predictions on test data...")
+    
+    # Naive Forecast (previous day's RV)
+    nf_preds = target_features_test[:-1, 0]  # Use previous day's RV
+    
+    # HAR predictions
+    to_har_preds = forecaster.predict_har(to_har, target_features_test[:-1])
+    np_har_preds = forecaster.predict_har(np_har, target_features_test[:-1])
+    mtl_har_preds = forecaster.predict_har(mtl_har, target_features_test[:-1])
+    
+    # XGBoost predictions
+    to_xgb_preds = forecaster.predict_xgboost(to_xgb, target_features_test[:-1])
+    np_xgb_preds = forecaster.predict_xgboost(np_xgb, target_features_test[:-1])
+    mtl_xgb_preds = forecaster.predict_xgboost(mtl_xgb, target_features_test[:-1])
+    
+    # FNN predictions
+    to_fnn_preds = forecaster.predict_fnn(to_fnn, target_features_test[:-1])
+    np_fnn_preds = forecaster.predict_fnn(np_fnn, target_features_test[:-1])
+    mtl_fnn_preds = forecaster.predict_fnn(mtl_fnn, target_features_test[:-1])
+    
+    # Enforce non-negativity
+    all_preds = [
+        nf_preds, 
+        to_har_preds, np_har_preds, mtl_har_preds,
+        to_xgb_preds, np_xgb_preds, mtl_xgb_preds,
+        to_fnn_preds, np_fnn_preds, mtl_fnn_preds
+    ]
+    
+    for i in range(len(all_preds)):
+        all_preds[i] = forecaster.enforce_non_negativity(all_preds[i])
+    
+    # Get actual values
+    actual = target_targets_test[:-1]
+    
+    # Calculate metrics
+    metrics = {
+        'Naive Forecast': {
+            'MSE': mean_squared_error(actual, all_preds[0]),
+            'MAE': mean_absolute_error(actual, all_preds[0])
+        },
+        'TO-HAR': {
+            'MSE': mean_squared_error(actual, all_preds[1]),
+            'MAE': mean_absolute_error(actual, all_preds[1])
+        },
+        'NP-HAR': {
+            'MSE': mean_squared_error(actual, all_preds[2]),
+            'MAE': mean_absolute_error(actual, all_preds[2])
+        },
+        'MTL-HAR': {
+            'MSE': mean_squared_error(actual, all_preds[3]),
+            'MAE': mean_absolute_error(actual, all_preds[3])
+        },
+        'TO-XGB': {
+            'MSE': mean_squared_error(actual, all_preds[4]),
+            'MAE': mean_absolute_error(actual, all_preds[4])
+        },
+        'NP-XGB': {
+            'MSE': mean_squared_error(actual, all_preds[5]),
+            'MAE': mean_absolute_error(actual, all_preds[5])
+        },
+        'MTL-XGB': {
+            'MSE': mean_squared_error(actual, all_preds[6]),
+            'MAE': mean_absolute_error(actual, all_preds[6])
+        },
+        'TO-FNN': {
+            'MSE': mean_squared_error(actual, all_preds[7]),
+            'MAE': mean_absolute_error(actual, all_preds[7])
+        },
+        'NP-FNN': {
+            'MSE': mean_squared_error(actual, all_preds[8]),
+            'MAE': mean_absolute_error(actual, all_preds[8])
+        },
+        'MTL-FNN': {
+            'MSE': mean_squared_error(actual, all_preds[9]),
+            'MAE': mean_absolute_error(actual, all_preds[9])
+        }
+    }
+    
+    # Calculate relative metrics compared to Naive Forecast
+    nf_mse = metrics['Naive Forecast']['MSE']
+    nf_mae = metrics['Naive Forecast']['MAE']
+    
+    relative_metrics = {}
+    for model, model_metrics in metrics.items():
+        if model != 'Naive Forecast':
+            relative_metrics[model] = {
+                'MSE': model_metrics['MSE'] / nf_mse,
+                'MAE': model_metrics['MAE'] / nf_mae
+            }
+    
+    # Print results
+    print("\nForecast Evaluation Results:")
+    print("-" * 80)
+    print(f"{'Model':<15} {'MSE':<15} {'MAE':<15}")
+    print("-" * 80)
+    
+    for model, model_metrics in metrics.items():
+        print(f"{model:<15} {model_metrics['MSE']:<15.6f} {model_metrics['MAE']:<15.6f}")
+    
+    print("\nRelative Metrics Compared to Naive Forecast:")
+    print("-" * 80)
+    print(f"{'Model':<15} {'Relative MSE':<15} {'Relative MAE':<15}")
+    print("-" * 80)
+    
+    for model, model_metrics in relative_metrics.items():
+        print(f"{model:<15} {model_metrics['MSE']:<15.6f} {model_metrics['MAE']:<15.6f}")
+    
+    # Plot predictions
+    plt.figure(figsize=(12, 6))
+    plt.plot(actual, label='Actual', color='black', linewidth=2)
+    plt.plot(all_preds[0], label='Naive Forecast', color='gray', linestyle='--')
+    plt.plot(all_preds[3], label='MTL-HAR', color='blue')
+    plt.plot(all_preds[6], label='MTL-XGB', color='red')
+    plt.plot(all_preds[9], label='MTL-FNN', color='green')
+    plt.title('Realized Volatility Forecasts')
+    plt.xlabel('Time')
+    plt.ylabel('Realized Volatility')
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+    
+    return metrics, relative_metrics
+
+
+def test_early_forecast():
+    """Test forecasting immediately after the first trading day."""
+    print("\nTesting Forecasting Immediately After First Trading Day")
+    print("-" * 80)
+    
+    # Create forecaster with adjusted parameters for early forecasting
+    forecaster = RealizedVolatilityForecaster(subsequence_length=1, selection_percentile=50)
+    
+    # Generate synthetic data
+    n_source_assets = 10
+    source_length = 500
+    target_length = 5  # Very limited target data
+    n_features = 1  # Only RV_d since we don't have enough data for weekly/monthly components
+    
+    print(f"Generating synthetic data with only {target_length} target observations")
+    source_data, target_data = forecaster.generate_synthetic_data(
+        n_source_assets=n_source_assets,
+        source_length=source_length,
+        target_length=target_length,
+        n_features=n_features
+    )
+    
+    # Use all available target data for training except last point for testing
+    target_features_train = target_data[0][:-1]
+    target_targets_train = target_data[1][:-1]
+    
+    target_features_test = target_data[0][-1:].reshape(1, -1)
+    target_targets_test = target_data[1][-1:]
+    
+    # Create subsequences from source data
+    print(f"Creating subsequences with length {forecaster.subsequence_length}")
+    subsequences = forecaster.create_subsequences(source_data)
+    print(f"Created {len(subsequences)} subsequences from source assets")
+    
+    # Select similar subsequences
+    print(f"Selecting subsequences below the {forecaster.selection_percentile}th percentile of DTW distances")
+    selected_subsequences = forecaster.select_similar_subsequences(target_features_train, subsequences)
+    print(f"Selected {len(selected_subsequences)} subsequences")
+    
+    # Prepare data for different approaches
+    # 1. Target Only (TO)
+    to_features = target_features_train
+    to_targets = target_targets_train
+    
+    # 2. Naive Pooling (NP)
+    np_features = target_features_train.copy()
+    np_targets = target_targets_train.copy()
+    
+    for asset_features, asset_targets in source_data:
+        np_features = np.vstack([np_features, asset_features[:500]])
+        np_targets = np.append(np_targets, asset_targets[:500])
+    
+    # 3. Multi-Source Transfer Learning (MTL)
+    mtl_features, mtl_targets = forecaster.prepare_transfer_learning_data(
+        (target_features_train, target_targets_train), 
+        selected_subsequences
+    )
+    
+    # Train models with different approaches
+    print("\nTraining models with extremely limited target data...")
+    
+    try:
+        # HAR models
+        print("Training HAR models...")
+        to_har = forecaster.train_har_model(to_features, to_targets)
+        np_har = forecaster.train_har_model(np_features, np_targets)
+        mtl_har = forecaster.train_har_model(mtl_features, mtl_targets)
+        
+        # XGBoost models
+        print("Training XGBoost models...")
+        to_xgb = forecaster.train_xgboost_model(to_features, to_targets)
+        np_xgb = forecaster.train_xgboost_model(np_features, np_targets)
+        mtl_xgb = forecaster.train_xgboost_model(mtl_features, mtl_targets)
+        
+        # FNN models - will likely fail for TO with extremely limited data
+        print("Training FNN models...")
+        try:
+            to_fnn = forecaster.train_fnn_model(to_features, to_targets, batch_size=1)
+        except Exception as e:
+            print(f"Error training TO-FNN: {e}")
+            to_fnn = None
+            
+        np_fnn = forecaster.train_fnn_model(np_features, np_targets, batch_size=512)
+        mtl_fnn = forecaster.train_fnn_model(mtl_features, mtl_targets, batch_size=256)
+        
+        # Make predictions
+        print("\nMaking predictions with extremely limited data...")
+        
+        # Naive Forecast (previous day's RV)
+        nf_pred = target_features_train[-1, 0]  # Use last training point
+        
+        # HAR predictions
+        to_har_pred = forecaster.predict_har(to_har, target_features_test)[0]
+        np_har_pred = forecaster.predict_har(np_har, target_features_test)[0]
+        mtl_har_pred = forecaster.predict_har(mtl_har, target_features_test)[0]
+        
+        # XGBoost predictions
+        to_xgb_pred = forecaster.predict_xgboost(to_xgb, target_features_test)[0]
+        np_xgb_pred = forecaster.predict_xgboost(np_xgb, target_features_test)[0]
+        mtl_xgb_pred = forecaster.predict_xgboost(mtl_xgb, target_features_test)[0]
+        
+        # FNN predictions
+        if to_fnn:
+            to_fnn_pred = forecaster.predict_fnn(to_fnn, target_features_test)[0]
+        else:
+            to_fnn_pred = nf_pred  # Fallback to naive forecast
+            
+        np_fnn_pred = forecaster.predict_fnn(np_fnn, target_features_test)[0]
+        mtl_fnn_pred = forecaster.predict_fnn(mtl_fnn, target_features_test)[0]
+        
+        # Enforce non-negativity
+        all_preds = [
+            nf_pred, 
+            to_har_pred, np_har_pred, mtl_har_pred,
+            to_xgb_pred, np_xgb_pred, mtl_xgb_pred,
+            to_fnn_pred, np_fnn_pred, mtl_fnn_pred
+        ]
+        
+        for i in range(len(all_preds)):
+            all_preds[i] = max(all_preds[i], 0.00001)
+        
+        # Get actual value
+        actual = target_targets_test[0]
+        
+        # Calculate absolute errors
+        errors = {
+            'Naive Forecast': abs(actual - all_preds[0]),
+            'TO-HAR': abs(actual - all_preds[1]),
+            'NP-HAR': abs(actual - all_preds[2]),
+            'MTL-HAR': abs(actual - all_preds[3]),
+            'TO-XGB': abs(actual - all_preds[4]),
+            'NP-XGB': abs(actual - all_preds[5]),
+            'MTL-XGB': abs(actual - all_preds[6]),
+            'TO-FNN': abs(actual - all_preds[7]),
+            'NP-FNN': abs(actual - all_preds[8]),
+            'MTL-FNN': abs(actual - all_preds[9])
+        }
+        
+        # Calculate relative errors compared to Naive Forecast
+        nf_error = errors['Naive Forecast']
+        
+        relative_errors = {}
+        for model, error in errors.items():
+            if model != 'Naive Forecast':
+                relative_errors[model] = error / nf_error
+        
+        # Print results
+        print("\nEarly Forecast Results:")
+        print("-" * 80)
+        print(f"Actual value: {actual:.6f}")
+        print("-" * 80)
+        print(f"{'Model':<15} {'Prediction':<15} {'Abs. Error':<15} {'Rel. Error':<15}")
+        print("-" * 80)
+        
+        print(f"{'Naive Forecast':<15} {all_preds[0]:<15.6f} {errors['Naive Forecast']:<15.6f} {'1.000000':<15}")
+        
+        for i, (model, rel_error) in enumerate(relative_errors.items()):
+            print(f"{model:<15} {all_preds[i+1]:<15.6f} {errors[model]:<15.6f} {rel_error:<15.6f}")
+        
+        return all_preds, errors, relative_errors
+        
+    except Exception as e:
+        print(f"Error in early forecast test: {e}")
+        return None, None, None
+
+
+if __name__ == "__main__":
+    # Test the multi-source transfer learning approach with more data
+    metrics, relative_metrics = test_transfer_learning_approach()
+    
+    # Test early forecasting (immediately after first trading day)
+    preds, errors, relative_errors = test_early_forecast()
+```
+
+Would you like me to explain or break down the code?

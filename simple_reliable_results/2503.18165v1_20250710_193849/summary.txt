@@ -1,0 +1,6 @@
+PDF: 2503.18165v1.pdf
+Size: 1,559,416 bytes
+Processing time: 123.8 seconds
+Response length: 32,740 characters
+Code length: 31,286 characters
+Generated: 2025-07-10 19:40:54

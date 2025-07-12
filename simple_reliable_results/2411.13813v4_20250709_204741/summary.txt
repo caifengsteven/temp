@@ -1,0 +1,6 @@
+PDF: 2411.13813v4.pdf
+Size: 11,069,414 bytes
+Processing time: 80.0 seconds
+Response length: 21,192 characters
+Code length: 19,957 characters
+Generated: 2025-07-09 20:49:29

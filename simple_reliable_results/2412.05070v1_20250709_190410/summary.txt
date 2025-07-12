@@ -1,0 +1,6 @@
+PDF: 2412.05070v1.pdf
+Size: 256,835 bytes
+Processing time: 79.3 seconds
+Response length: 17,364 characters
+Code length: 16,602 characters
+Generated: 2025-07-09 19:05:31

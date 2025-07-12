@@ -1,0 +1,6 @@
+PDF: 2412.01069v1.pdf
+Size: 1,421,801 bytes
+Processing time: 135.1 seconds
+Response length: 34,811 characters
+Code length: 33,440 characters
+Generated: 2025-07-09 19:58:21

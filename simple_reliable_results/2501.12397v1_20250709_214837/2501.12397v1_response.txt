@@ -1,0 +1,503 @@
+Claude-Sonnet-3.7 Response for 2501.12397v1
+Generated: 2025-07-09 21:49:58
+Time: 78.3s
+==================================================
+
+Based on the paper, I'll create a Python test strategy for simulating and analyzing Iron Condor options portfolios, focusing on the key concepts discussed in the research.
+
+```python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from dataclasses import dataclass
+from typing import List, Tuple, Dict
+import math
+from scipy.stats import norm
+
+# Constants
+DAYS_IN_YEAR = 252
+RISK_FREE_RATE = 0.0
+
+@dataclass
+class OptionParams:
+    """Parameters for option pricing and simulation"""
+    S0: float = 100.0                # Initial underlying price
+    V0: float = 0.0392               # Initial volatility
+    kappa: float = 0.1               # Mean reversion rate
+    theta: float = 0.3156            # Long-term mean level
+    sigma: float = 0.0331            # Volatility of volatility
+    rho: float = -0.681              # Correlation coefficient
+    H: float = 0.1                   # Hurst exponent
+    T: int = 63                      # Time horizon in days
+    dt: float = 1/DAYS_IN_YEAR       # Time step
+
+
+@dataclass
+class IronCondor:
+    """Iron Condor portfolio structure"""
+    k1: float  # Long put strike
+    k2: float  # Short put strike
+    k3: float  # Short call strike
+    k4: float  # Long call strike
+    expiry: int  # Expiry in days
+    
+    @property
+    def moneyness(self) -> float:
+        """Calculate x: relative strike position to current price"""
+        return abs(self.k2 - 100.0) / 100.0
+    
+    @property
+    def span(self) -> float:
+        """Calculate xΔ: distance between strikes"""
+        return self.k2 - self.k1
+    
+    @property
+    def asymmetry(self) -> float:
+        """Calculate xα: imbalance between put and call spreads"""
+        return (100.0 - self.k1) - (self.k4 - 100.0)
+    
+    def __str__(self):
+        return (f"Iron Condor: k=[{self.k1}, {self.k2}, {self.k3}, {self.k4}], "
+                f"x={self.moneyness:.2f}, xΔ={self.span:.2f}, xα={self.asymmetry:.2f}")
+
+
+class BlackScholes:
+    """Black-Scholes option pricing model for fast computation"""
+    
+    @staticmethod
+    def d1(S, K, T, r, sigma):
+        return (np.log(S/K) + (r + 0.5 * sigma**2) * T) / (sigma * np.sqrt(T))
+    
+    @staticmethod
+    def d2(S, K, T, r, sigma):
+        return (np.log(S/K) + (r - 0.5 * sigma**2) * T) / (sigma * np.sqrt(T))
+    
+    @staticmethod
+    def call_price(S, K, T, r, sigma):
+        if T <= 0:
+            return max(0, S - K)
+        d1 = BlackScholes.d1(S, K, T, r, sigma)
+        d2 = BlackScholes.d2(S, K, T, r, sigma)
+        return S * norm.cdf(d1) - K * np.exp(-r * T) * norm.cdf(d2)
+    
+    @staticmethod
+    def put_price(S, K, T, r, sigma):
+        if T <= 0:
+            return max(0, K - S)
+        d1 = BlackScholes.d1(S, K, T, r, sigma)
+        d2 = BlackScholes.d2(S, K, T, r, sigma)
+        return K * np.exp(-r * T) * norm.cdf(-d2) - S * norm.cdf(-d1)
+
+
+class SimpleRoughHeston:
+    """Simplified Rough Heston model for simulation"""
+    
+    def __init__(self, params: OptionParams):
+        self.params = params
+        
+    def simulate_paths(self, n_paths: int = 1000) -> np.ndarray:
+        """
+        Simulate price paths using a simplified approximation of the Rough Heston model
+        Returns array of shape (n_paths, T+1)
+        """
+        # Initialize paths
+        S = np.zeros((n_paths, self.params.T + 1))
+        S[:, 0] = self.params.S0
+        
+        # Create constant volatility with term structure to approximate rough vol behavior
+        # This is a significant simplification of the true Rough Heston model
+        time_grid = np.arange(self.params.T + 1) * self.params.dt
+        vol_term_structure = self.params.V0 * np.exp(-0.2 * time_grid) * (1 + 0.1 * np.sqrt(time_grid))
+        
+        # Generate correlated random variables
+        Z1 = np.random.normal(0, 1, (n_paths, self.params.T))
+        Z2 = self.params.rho * Z1 + np.sqrt(1 - self.params.rho**2) * np.random.normal(0, 1, (n_paths, self.params.T))
+        
+        # Simulate price paths
+        for t in range(self.params.T):
+            vol = vol_term_structure[t] * np.exp(0.2 * Z2[:, t])
+            S[:, t+1] = S[:, t] * np.exp((RISK_FREE_RATE - 0.5 * vol**2) * self.params.dt + vol * np.sqrt(self.params.dt) * Z1[:, t])
+            
+        return S
+
+
+class IronCondorAnalyzer:
+    """Analyze Iron Condor portfolio performance"""
+    
+    def __init__(self, params: OptionParams):
+        self.params = params
+        self.model = SimpleRoughHeston(params)
+        
+    def calculate_portfolio_value(self, ic: IronCondor, S: float, t: int) -> float:
+        """Calculate Iron Condor portfolio value at a given time and price"""
+        days_to_expiry = ic.expiry - t
+        T_years = days_to_expiry / DAYS_IN_YEAR
+        
+        # Use current implied volatility (simplified)
+        impl_vol = self.params.V0 * (0.8 + 0.4 * abs(S / 100.0 - 1))
+        
+        # Calculate option prices
+        long_put = BlackScholes.put_price(S, ic.k1, T_years, RISK_FREE_RATE, impl_vol)
+        short_put = -BlackScholes.put_price(S, ic.k2, T_years, RISK_FREE_RATE, impl_vol)
+        short_call = -BlackScholes.call_price(S, ic.k3, T_years, RISK_FREE_RATE, impl_vol)
+        long_call = BlackScholes.call_price(S, ic.k4, T_years, RISK_FREE_RATE, impl_vol)
+        
+        # Sum up the portfolio value
+        return long_put + short_put + short_call + long_call
+    
+    def calculate_initial_premium(self, ic: IronCondor) -> float:
+        """Calculate initial premium received for Iron Condor"""
+        return -self.calculate_portfolio_value(ic, self.params.S0, 0)
+    
+    def simulate_portfolio(self, ic: IronCondor, n_paths: int = 1000) -> pd.DataFrame:
+        """Simulate Iron Condor portfolio performance"""
+        # Simulate price paths
+        price_paths = self.model.simulate_paths(n_paths)
+        
+        # Calculate portfolio values for each path and time
+        portfolio_values = np.zeros_like(price_paths)
+        initial_premium = self.calculate_initial_premium(ic)
+        
+        for path in range(n_paths):
+            for t in range(self.params.T + 1):
+                portfolio_value = self.calculate_portfolio_value(ic, price_paths[path, t], t)
+                portfolio_values[path, t] = initial_premium + portfolio_value
+        
+        # Calculate normalized P&L
+        normalized_pnl = portfolio_values / initial_premium
+        
+        # Classify paths based on final price movement
+        final_returns = price_paths[:, -1] / price_paths[:, 0]
+        bullish = final_returns > 1.1
+        bearish = final_returns < 0.9
+        sideways = ~(bullish | bearish)
+        
+        results = {
+            'price_paths': price_paths,
+            'portfolio_values': portfolio_values,
+            'normalized_pnl': normalized_pnl,
+            'initial_premium': initial_premium,
+            'bullish_indices': np.where(bullish)[0],
+            'bearish_indices': np.where(bearish)[0],
+            'sideways_indices': np.where(sideways)[0]
+        }
+        
+        return results
+    
+    def analyze_portfolio(self, ic: IronCondor, results: Dict, find_optimal_stop: bool = True) -> Dict:
+        """Analyze portfolio performance metrics"""
+        # Extract data
+        normalized_pnl = results['normalized_pnl']
+        bullish_indices = results['bullish_indices']
+        bearish_indices = results['bearish_indices']
+        sideways_indices = results['sideways_indices']
+        
+        # Calculate metrics at expiration
+        final_pnl = normalized_pnl[:, -1]
+        success_rate_T = (final_pnl > 0).mean()
+        
+        # Calculate metrics for different market conditions
+        if len(sideways_indices) > 0:
+            pnl_sideways_T = final_pnl[sideways_indices].mean()
+        else:
+            pnl_sideways_T = np.nan
+            
+        if len(bullish_indices) > 0:
+            risk_bullish_T = final_pnl[bullish_indices].mean()
+        else:
+            risk_bullish_T = np.nan
+            
+        if len(bearish_indices) > 0:
+            risk_bearish_T = final_pnl[bearish_indices].mean()
+        else:
+            risk_bearish_T = np.nan
+        
+        # Find optimal stopping time if requested
+        if find_optimal_stop:
+            # Calculate expected P&L at each time step
+            expected_pnl_over_time = normalized_pnl.mean(axis=0)
+            optimal_stop_idx = np.argmax(expected_pnl_over_time)
+            optimal_stop_day = optimal_stop_idx
+            
+            # Calculate metrics at optimal stopping time
+            pnl_at_optimal_stop = normalized_pnl[:, optimal_stop_idx]
+            success_rate_tau = (pnl_at_optimal_stop > 0).mean()
+            
+            if len(sideways_indices) > 0:
+                pnl_sideways_tau = pnl_at_optimal_stop[sideways_indices].mean()
+            else:
+                pnl_sideways_tau = np.nan
+                
+            if len(bullish_indices) > 0:
+                risk_bullish_tau = pnl_at_optimal_stop[bullish_indices].mean()
+            else:
+                risk_bullish_tau = np.nan
+                
+            if len(bearish_indices) > 0:
+                risk_bearish_tau = pnl_at_optimal_stop[bearish_indices].mean()
+            else:
+                risk_bearish_tau = np.nan
+        else:
+            optimal_stop_day = self.params.T
+            success_rate_tau = success_rate_T
+            pnl_sideways_tau = pnl_sideways_T
+            risk_bullish_tau = risk_bullish_T
+            risk_bearish_tau = risk_bearish_T
+            
+        return {
+            'pnl_T': final_pnl.mean(),
+            'pnl_tau': normalized_pnl[:, optimal_stop_day].mean(),
+            'success_rate_T': success_rate_T,
+            'success_rate_tau': success_rate_tau,
+            'pnl_sideways_T': pnl_sideways_T,
+            'pnl_sideways_tau': pnl_sideways_tau,
+            'risk_bullish_T': risk_bullish_T,
+            'risk_bullish_tau': risk_bullish_tau,
+            'risk_bearish_T': risk_bearish_T,
+            'risk_bearish_tau': risk_bearish_tau,
+            'optimal_stop_day': optimal_stop_day
+        }
+
+
+def test_moneyness_impact():
+    """Test the impact of moneyness on Iron Condor performance"""
+    params = OptionParams()
+    analyzer = IronCondorAnalyzer(params)
+    
+    # Test different moneyness values
+    moneyness_values = [0.00, 0.06, 0.12, 0.18]
+    results = []
+    
+    for x in moneyness_values:
+        if x == 0:
+            # Iron Butterfly
+            k2 = k3 = 100.0
+            k1 = 96.0
+            k4 = 104.0
+        else:
+            k2 = 100.0 - x * 100.0
+            k3 = 100.0 + x * 100.0
+            k1 = k2 - 4.0
+            k4 = k3 + 4.0
+        
+        ic = IronCondor(k1, k2, k3, k4, params.T)
+        print(f"\nTesting {ic}")
+        
+        try:
+            sim_results = analyzer.simulate_portfolio(ic, n_paths=1000)
+            analysis = analyzer.analyze_portfolio(ic, sim_results)
+            
+            results.append({
+                'moneyness': x,
+                **analysis
+            })
+            
+            print(f"PnL at T: {analysis['pnl_T']:.4f}")
+            print(f"PnL at optimal stop ({analysis['optimal_stop_day']} days): {analysis['pnl_tau']:.4f}")
+            print(f"Success rate at T: {analysis['success_rate_T']:.2f}")
+            print(f"Success rate at optimal stop: {analysis['success_rate_tau']:.2f}")
+            print(f"Sideways market PnL at T: {analysis['pnl_sideways_T']:.4f}")
+            print(f"Bullish market risk at T: {analysis['risk_bullish_T']:.4f}")
+            print(f"Bearish market risk at T: {analysis['risk_bearish_T']:.4f}")
+            
+        except Exception as e:
+            print(f"Error analyzing portfolio: {e}")
+    
+    return results
+
+
+def test_span_impact():
+    """Test the impact of strike span on Iron Condor performance"""
+    params = OptionParams()
+    analyzer = IronCondorAnalyzer(params)
+    
+    # Test different span values
+    span_values = [0.02, 0.06, 0.10, 0.14]
+    results = []
+    
+    for span in span_values:
+        # Fixed moneyness at 0.05
+        k2 = 95.0
+        k3 = 105.0
+        k1 = k2 - span * 100.0
+        k4 = k3 + span * 100.0
+        
+        ic = IronCondor(k1, k2, k3, k4, params.T)
+        print(f"\nTesting {ic}")
+        
+        try:
+            sim_results = analyzer.simulate_portfolio(ic, n_paths=1000)
+            analysis = analyzer.analyze_portfolio(ic, sim_results)
+            
+            results.append({
+                'span': span,
+                **analysis
+            })
+            
+            print(f"PnL at T: {analysis['pnl_T']:.4f}")
+            print(f"PnL at optimal stop ({analysis['optimal_stop_day']} days): {analysis['pnl_tau']:.4f}")
+            print(f"Success rate at T: {analysis['success_rate_T']:.2f}")
+            print(f"Success rate at optimal stop: {analysis['success_rate_tau']:.2f}")
+            print(f"Sideways market PnL at T: {analysis['pnl_sideways_T']:.4f}")
+            print(f"Bullish market risk at T: {analysis['risk_bullish_T']:.4f}")
+            print(f"Bearish market risk at T: {analysis['risk_bearish_T']:.4f}")
+            
+        except Exception as e:
+            print(f"Error analyzing portfolio: {e}")
+    
+    return results
+
+
+def test_asymmetry_impact():
+    """Test the impact of asymmetry on Iron Condor performance"""
+    params = OptionParams()
+    analyzer = IronCondorAnalyzer(params)
+    
+    # Test different asymmetry values
+    asymmetry_values = [-0.10, -0.05, 0.00, 0.05, 0.10]
+    results = []
+    
+    for asym in asymmetry_values:
+        # Base structure
+        k2 = 95.0
+        k3 = 105.0
+        
+        # Adjust for asymmetry
+        if asym == 0:
+            # Symmetric
+            k1 = k2 - 4.0
+            k4 = k3 + 4.0
+        elif asym > 0:
+            # Left-biased (put spread deeper OTM)
+            adjustment = asym * 100.0
+            k1 = k2 - 4.0 - adjustment/2
+            k4 = k3 + 4.0 - adjustment/2
+        else:
+            # Right-biased (call spread deeper OTM)
+            adjustment = abs(asym) * 100.0
+            k1 = k2 - 4.0 + adjustment/2
+            k4 = k3 + 4.0 + adjustment/2
+        
+        ic = IronCondor(k1, k2, k3, k4, params.T)
+        print(f"\nTesting {ic}")
+        
+        try:
+            sim_results = analyzer.simulate_portfolio(ic, n_paths=1000)
+            analysis = analyzer.analyze_portfolio(ic, sim_results)
+            
+            results.append({
+                'asymmetry': asym,
+                **analysis
+            })
+            
+            print(f"PnL at T: {analysis['pnl_T']:.4f}")
+            print(f"PnL at optimal stop ({analysis['optimal_stop_day']} days): {analysis['pnl_tau']:.4f}")
+            print(f"Success rate at T: {analysis['success_rate_T']:.2f}")
+            print(f"Success rate at optimal stop: {analysis['success_rate_tau']:.2f}")
+            print(f"Sideways market PnL at T: {analysis['pnl_sideways_T']:.4f}")
+            print(f"Bullish market risk at T: {analysis['risk_bullish_T']:.4f}")
+            print(f"Bearish market risk at T: {analysis['risk_bearish_T']:.4f}")
+            
+        except Exception as e:
+            print(f"Error analyzing portfolio: {e}")
+    
+    return results
+
+
+def visualize_price_paths_and_portfolio(ic: IronCondor, n_paths: int = 100):
+    """Visualize price paths and corresponding portfolio values"""
+    params = OptionParams()
+    analyzer = IronCondorAnalyzer(params)
+    
+    try:
+        # Simulate fewer paths for better visualization
+        sim_results = analyzer.simulate_portfolio(ic, n_paths=n_paths)
+        
+        # Get a subset of paths for clarity
+        sample_indices = np.random.choice(n_paths, size=10, replace=False)
+        price_paths = sim_results['price_paths'][sample_indices]
+        portfolio_values = sim_results['normalized_pnl'][sample_indices]
+        
+        # Calculate expected values over time
+        avg_price = sim_results['price_paths'].mean(axis=0)
+        avg_portfolio = sim_results['normalized_pnl'].mean(axis=0)
+        
+        # Find optimal stopping time
+        optimal_stop_idx = np.argmax(avg_portfolio)
+        
+        # Create a figure with two subplots
+        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 12))
+        
+        # Plot price paths
+        for i, path in enumerate(price_paths):
+            ax1.plot(path, alpha=0.3, linewidth=1)
+        ax1.plot(avg_price, 'r-', linewidth=2, label='Average Price')
+        ax1.axhline(ic.k1, color='g', linestyle='--', alpha=0.5, label=f'k1={ic.k1}')
+        ax1.axhline(ic.k2, color='g', linestyle='-', alpha=0.5, label=f'k2={ic.k2}')
+        ax1.axhline(ic.k3, color='r', linestyle='-', alpha=0.5, label=f'k3={ic.k3}')
+        ax1.axhline(ic.k4, color='r', linestyle='--', alpha=0.5, label=f'k4={ic.k4}')
+        ax1.set_title('Underlying Price Paths')
+        ax1.set_xlabel('Trading Days')
+        ax1.set_ylabel('Price')
+        ax1.legend()
+        
+        # Plot portfolio values
+        for i, path in enumerate(portfolio_values):
+            ax2.plot(path, alpha=0.3, linewidth=1)
+        ax2.plot(avg_portfolio, 'b-', linewidth=2, label='Average P&L')
+        ax2.axvline(optimal_stop_idx, color='g', linestyle='--', linewidth=2, 
+                   label=f'Optimal Stop: Day {optimal_stop_idx}')
+        ax2.axhline(0, color='k', linestyle='-', alpha=0.5)
+        ax2.set_title('Normalized P&L')
+        ax2.set_xlabel('Trading Days')
+        ax2.set_ylabel('P&L (normalized)')
+        ax2.legend()
+        
+        plt.tight_layout()
+        plt.savefig(f"iron_condor_simulation_{ic.moneyness:.2f}_{ic.span:.2f}_{ic.asymmetry:.2f}.png")
+        plt.show()
+        
+    except Exception as e:
+        print(f"Error visualizing portfolio: {e}")
+
+
+def main():
+    print("=== Iron Condor Portfolio Analysis ===")
+    
+    # Test and analyze the impact of different parameters
+    print("\n== Testing Moneyness Impact ==")
+    moneyness_results = test_moneyness_impact()
+    
+    print("\n== Testing Strike Span Impact ==")
+    span_results = test_span_impact()
+    
+    print("\n== Testing Asymmetry Impact ==")
+    asymmetry_results = test_asymmetry_impact()
+    
+    # Visualize a specific portfolio
+    print("\n== Visualizing Selected Portfolios ==")
+    
+    # Symmetric ATM
+    ic_atm = IronCondor(96.0, 100.0, 100.0, 104.0, 63)
+    visualize_price_paths_and_portfolio(ic_atm)
+    
+    # Deep OTM
+    ic_otm = IronCondor(84.0, 88.0, 112.0, 116.0, 63)
+    visualize_price_paths_and_portfolio(ic_otm)
+    
+    # Left-biased (put spread deeper OTM)
+    ic_left = IronCondor(82.0, 86.0, 104.0, 108.0, 63)
+    visualize_price_paths_and_portfolio(ic_left)
+    
+    # Right-biased (call spread deeper OTM)
+    ic_right = IronCondor(92.0, 96.0, 114.0, 118.0, 63)
+    visualize_price_paths_and_portfolio(ic_right)
+    
+    print("\n== Analysis Complete ==")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+Would you like me to explain how this code implements the key concepts from the paper?
