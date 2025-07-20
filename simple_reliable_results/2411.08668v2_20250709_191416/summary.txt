@@ -1,6 +1,0 @@
-PDF: 2411.08668v2.pdf
-Size: 481,974 bytes
-Processing time: 52.5 seconds
-Response length: 13,480 characters
-Code length: 12,433 characters
-Generated: 2025-07-09 19:15:10

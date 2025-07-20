@@ -1,6 +1,0 @@
-PDF: 2410.22706v2.pdf
-Size: 1,354,469 bytes
-Processing time: 84.7 seconds
-Response length: 20,952 characters
-Code length: 19,652 characters
-Generated: 2025-07-09 07:36:30

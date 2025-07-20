@@ -1,6 +1,0 @@
-PDF: 2412.00468v2.pdf
-Size: 18,043,491 bytes
-Processing time: 83.7 seconds
-Response length: 22,672 characters
-Code length: 22,370 characters
-Generated: 2025-07-09 20:54:51

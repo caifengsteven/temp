@@ -1,6 +1,0 @@
-PDF: 2411.00420v1.pdf
-Size: 612,179 bytes
-Processing time: 54.5 seconds
-Response length: 13,742 characters
-Code length: 13,498 characters
-Generated: 2025-07-09 07:28:52

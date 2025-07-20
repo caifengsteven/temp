@@ -1,6 +1,0 @@
-PDF: 2502.09495v1.pdf
-Size: 26,602,802 bytes
-Processing time: 63.3 seconds
-Response length: 15,122 characters
-Code length: 14,752 characters
-Generated: 2025-07-10 20:26:10

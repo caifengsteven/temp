@@ -1,6 +1,0 @@
-PDF: 2411.10956v2.pdf
-Size: 501,069 bytes
-Processing time: 72.5 seconds
-Response length: 18,733 characters
-Code length: 18,463 characters
-Generated: 2025-07-09 19:16:30

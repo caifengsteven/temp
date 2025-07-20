@@ -1,6 +1,0 @@
-PDF: 2502.18471v1.pdf
-Size: 727,313 bytes
-Processing time: 90.8 seconds
-Response length: 25,082 characters
-Code length: 24,728 characters
-Generated: 2025-07-10 18:57:48

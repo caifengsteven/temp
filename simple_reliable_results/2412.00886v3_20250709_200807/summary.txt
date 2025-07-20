@@ -1,6 +1,0 @@
-PDF: 2412.00886v3.pdf
-Size: 1,642,723 bytes
-Processing time: 74.1 seconds
-Response length: 18,027 characters
-Code length: 16,639 characters
-Generated: 2025-07-09 20:09:23

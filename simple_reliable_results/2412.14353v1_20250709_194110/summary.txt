@@ -1,6 +1,0 @@
-PDF: 2412.14353v1.pdf
-Size: 1,009,118 bytes
-Processing time: 81.6 seconds
-Response length: 17,437 characters
-Code length: 16,178 characters
-Generated: 2025-07-09 19:42:33

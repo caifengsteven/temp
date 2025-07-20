@@ -1,6 +1,0 @@
-PDF: 2502.15757v3.pdf
-Size: 6,833,692 bytes
-Processing time: 111.0 seconds
-Response length: 28,565 characters
-Code length: 27,130 characters
-Generated: 2025-07-10 20:14:04

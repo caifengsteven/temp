@@ -1,6 +1,0 @@
-PDF: 2503.13193v2.pdf
-Size: 1,075,388 bytes
-Processing time: 87.9 seconds
-Response length: 21,544 characters
-Code length: 19,937 characters
-Generated: 2025-07-10 19:14:07

@@ -1,6 +1,0 @@
-PDF: 2412.12576v1.pdf
-Size: 1,822,706 bytes
-Processing time: 97.1 seconds
-Response length: 28,797 characters
-Code length: 28,500 characters
-Generated: 2025-07-09 20:15:08

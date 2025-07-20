@@ -1,6 +1,0 @@
-PDF: 2411.08864v3.pdf
-Size: 2,175,307 bytes
-Processing time: 78.9 seconds
-Response length: 20,410 characters
-Code length: 20,067 characters
-Generated: 2025-07-09 20:29:35

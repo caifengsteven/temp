@@ -1,6 +1,0 @@
-PDF: 2412.20138v7.pdf
-Size: 1,903,362 bytes
-Processing time: 120.8 seconds
-Response length: 37,643 characters
-Code length: 36,209 characters
-Generated: 2025-07-09 20:19:59

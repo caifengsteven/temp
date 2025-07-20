@@ -1,6 +1,0 @@
-PDF: 2411.16617v1.pdf
-Size: 10,506,688 bytes
-Processing time: 124.0 seconds
-Response length: 29,776 characters
-Code length: 28,809 characters
-Generated: 2025-07-09 20:47:36

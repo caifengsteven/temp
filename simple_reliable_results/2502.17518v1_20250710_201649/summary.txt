@@ -1,6 +1,0 @@
-PDF: 2502.17518v1.pdf
-Size: 10,291,521 bytes
-Processing time: 96.8 seconds
-Response length: 26,322 characters
-Code length: 26,023 characters
-Generated: 2025-07-10 20:18:28

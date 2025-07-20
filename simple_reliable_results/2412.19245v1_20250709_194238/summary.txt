@@ -1,6 +1,0 @@
-PDF: 2412.19245v1.pdf
-Size: 1,009,617 bytes
-Processing time: 75.6 seconds
-Response length: 21,558 characters
-Code length: 20,695 characters
-Generated: 2025-07-09 19:43:56

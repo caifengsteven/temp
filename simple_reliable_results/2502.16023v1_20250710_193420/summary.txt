@@ -1,6 +1,0 @@
-PDF: 2502.16023v1.pdf
-Size: 1,431,461 bytes
-Processing time: 131.3 seconds
-Response length: 36,529 characters
-Code length: 36,185 characters
-Generated: 2025-07-10 19:36:33

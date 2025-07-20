@@ -1,6 +1,0 @@
-PDF: 2502.11433v3.pdf
-Size: 1,130,052 bytes
-Processing time: 72.4 seconds
-Response length: 19,195 characters
-Code length: 17,956 characters
-Generated: 2025-07-10 19:18:41

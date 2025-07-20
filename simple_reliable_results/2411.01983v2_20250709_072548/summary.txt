@@ -1,6 +1,0 @@
-PDF: 2411.01983v2.pdf
-Size: 581,386 bytes
-Processing time: 56.3 seconds
-Response length: 14,688 characters
-Code length: 14,420 characters
-Generated: 2025-07-09 07:26:45

@@ -1,6 +1,0 @@
-PDF: 2501.03171v1.pdf
-Size: 875,554 bytes
-Processing time: 69.2 seconds
-Response length: 16,689 characters
-Code length: 16,259 characters
-Generated: 2025-07-09 19:37:28

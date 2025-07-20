@@ -1,6 +1,0 @@
-PDF: 2503.01080v1.pdf
-Size: 18,865,569 bytes
-Processing time: 91.1 seconds
-Response length: 20,449 characters
-Code length: 19,195 characters
-Generated: 2025-07-10 20:24:54

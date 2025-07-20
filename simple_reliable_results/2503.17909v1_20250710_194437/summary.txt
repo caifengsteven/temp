@@ -1,6 +1,0 @@
-PDF: 2503.17909v1.pdf
-Size: 1,952,324 bytes
-Processing time: 89.2 seconds
-Response length: 24,905 characters
-Code length: 23,498 characters
-Generated: 2025-07-10 19:46:08

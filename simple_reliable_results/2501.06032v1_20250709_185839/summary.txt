@@ -1,6 +1,0 @@
-PDF: 2501.06032v1.pdf
-Size: 82,893 bytes
-Processing time: 59.5 seconds
-Response length: 17,093 characters
-Code length: 16,761 characters
-Generated: 2025-07-09 18:59:41

@@ -1,6 +1,0 @@
-PDF: 2502.09172v1.pdf
-Size: 13,859,373 bytes
-Processing time: 136.1 seconds
-Response length: 38,306 characters
-Code length: 37,997 characters
-Generated: 2025-07-10 20:23:30

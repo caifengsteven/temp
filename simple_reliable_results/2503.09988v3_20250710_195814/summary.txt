@@ -1,6 +1,0 @@
-PDF: 2503.09988v3.pdf
-Size: 3,196,240 bytes
-Processing time: 69.3 seconds
-Response length: 18,405 characters
-Code length: 18,059 characters
-Generated: 2025-07-10 19:59:25
