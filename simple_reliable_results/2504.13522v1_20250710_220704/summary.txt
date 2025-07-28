@@ -1,6 +1,0 @@
-PDF: 2504.13522v1.pdf
-Size: 1,046,174 bytes
-Processing time: 62.5 seconds
-Response length: 15,576 characters
-Code length: 15,281 characters
-Generated: 2025-07-10 22:08:08

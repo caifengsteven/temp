@@ -1,6 +1,0 @@
-PDF: 2504.20250v1.pdf
-Size: 5,494,644 bytes
-Processing time: 93.1 seconds
-Response length: 24,886 characters
-Code length: 23,771 characters
-Generated: 2025-07-10 22:19:39

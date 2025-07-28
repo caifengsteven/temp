@@ -1,6 +1,0 @@
-PDF: 2503.18199v2.pdf
-Size: 1,564,458 bytes
-Processing time: 72.3 seconds
-Response length: 18,534 characters
-Code length: 18,226 characters
-Generated: 2025-07-10 19:42:20

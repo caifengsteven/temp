@@ -1,6 +1,0 @@
-PDF: 2504.05755v2.pdf
-Size: 675,640 bytes
-Processing time: 68.2 seconds
-Response length: 18,997 characters
-Code length: 18,662 characters
-Generated: 2025-07-10 18:55:42

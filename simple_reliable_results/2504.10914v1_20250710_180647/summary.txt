@@ -1,6 +1,0 @@
-PDF: 2504.10914v1.pdf
-Size: 508,547 bytes
-Processing time: 60.5 seconds
-Response length: 14,586 characters
-Code length: 13,445 characters
-Generated: 2025-07-10 18:07:49

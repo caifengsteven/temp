@@ -1,6 +1,0 @@
-PDF: 2505.03760v1.pdf
-Size: 1,061,182 bytes
-Processing time: 71.1 seconds
-Response length: 20,386 characters
-Code length: 20,051 characters
-Generated: 2025-07-10 22:09:25

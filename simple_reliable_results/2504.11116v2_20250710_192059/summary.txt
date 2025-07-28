@@ -1,6 +1,0 @@
-PDF: 2504.11116v2.pdf
-Size: 1,233,974 bytes
-Processing time: 101.3 seconds
-Response length: 26,340 characters
-Code length: 25,071 characters
-Generated: 2025-07-10 19:22:42
