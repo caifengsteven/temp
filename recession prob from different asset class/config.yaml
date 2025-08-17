@@ -1,0 +1,50 @@
+# Configuration for data symbols and options
+
+# Preferred data source order: local_csv -> Bloomberg -> FRED
+source_preference: [local_csv, bloomberg, fred]
+
+bloomberg:
+  # Map logical series names to Bloomberg tickers
+  tickers:
+    treasury_3m: USGG3M Index
+    treasury_2y: USGG2YR Index
+    treasury_10y: USGG10YR Index
+    spx_price: SPX Index
+    vix: VIX Index
+    dxy: DXY Curncy
+    wti: CL1 Comdty
+    gold: XAU Curncy
+    copper: LMCADY Comdty
+    ig_oas: C0A0 Index        # ICE BofA US Corporate Index Option-Adjusted Spread
+    hy_oas: H0A0 Index        # ICE BofA US High Yield Index OAS
+    move: MOVE Index          # MOVE
+  # Optional field overrides per key; default 'PX_LAST' is used if not specified
+  fields: {}
+
+# FRED series codes (used if Bloomberg not available for a series; NBER label stays here)
+fred:
+  nber_recession: USREC  # NBER recession indicator (monthly 0/1)
+  treasury_3m: DGS3MO
+  treasury_2y: DGS2
+  treasury_10y: DGS10
+  spx_price: SP500
+  vix: VIXCLS
+  dxy: DTWEXBGS
+  wti: DCOILWTICO
+  gold: GOLDAMGBD228NLBM
+  copper: PCOPPUSDM
+
+# Local CSV overrides (optional). If provided, loader will use these paths first.
+# Each CSV should have a Date column (or index) and a single value column named 'value'.
+local_csv:
+  ig_oas: data/external/IG_OAS.csv       # ICE BofA US IG OAS
+  hy_oas: data/external/HY_OAS.csv       # ICE BofA US HY OAS
+  move:   data/external/MOVE.csv         # MOVE index
+  audusd: data/external/AUDUSD.csv
+  usdjpy: data/external/USDJPY.csv
+
+# Modeling options
+horizons: [3, 6, 12]
+label_mode: any # 'any' (any month within horizon) or 'atH' (state at t+H)
+start_year: 1990
+
