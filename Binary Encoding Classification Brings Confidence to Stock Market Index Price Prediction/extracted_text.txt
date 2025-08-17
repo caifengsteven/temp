@@ -1,0 +1,1004 @@
+Why Regression? Binary Encoding Classification Brings Confidence to
+Stock Market Index Price Prediction
+Junzhe Jiang1,∗, Chang Yang1,∗, Xinrun Wang2,†,Bo Li1
+1The Hong Kong Polytechnic University,2Singapore Management University
+junzhe.jiang@connect.polyu.hk, xrwang@smu.edu.sg
+Abstract
+Stock market indices serve as fundamental market
+measurement that quantify systematic market dy-
+namics. However, accurate index price prediction
+remains challenging, primarily because existing ap-
+proaches treat indices as isolated time series and
+frame the prediction as a simple regression task.
+These methods fail to capture indices’ inherent na-
+ture as aggregations of constituent stocks with com-
+plex, time-varying interdependencies. To address
+these limitations, we propose C UBIC , a novel end-
+to-end framework that explicitly models the adap-
+tive fusion of constituent stocks for index price pre-
+diction. Our main contributions are threefold. i)
+Fusion in the latent space: we introduce the fusion
+mechanism over the latent embedding of the stocks
+to extract the information from the vast number of
+stocks. ii) Binary encoding classification: since
+regression tasks are challenging due to continu-
+ous value estimation, we reformulate the regression
+into the classification task, where the target value is
+converted to binary and we optimize the prediction
+of the value of each digit with cross-entropy loss.
+iii) Confidence-guided prediction and trading: we
+introduce the regularization loss to address market
+prediction uncertainty for the index prediction and
+design the rule-based trading policies based on the
+confidence. Extensive experiments across multiple
+stock markets and indices demonstrate that C UBIC
+consistently outperforms state-of-the-art baselines
+in stock index prediction tasks, achieving superior
+performance on both forecasting accuracy metrics
+and downstream trading profitability.
+1 Introduction
+The prediction of stock market indices has long been an in-
+triguing topic in financial research, driven by the potential
+for stable profits through index option trading Chalvatzis and
+Hristu-Varsakelis [2020]. Stock market indices, such as the
+Dow Jones Industrial Average (DJIA), measure market value
+∗Equal contribution, alphabetical orderthrough selected representative stocks Lin et al. [2021]. Ac-
+curate index predictions are crucial for modern financial mar-
+kets, underpinning portfolio management, derivatives trad-
+ing, and various financial products that collectively represent
+trillions in trading volume Coles et al. [2022].
+In recent years, with the rapid development of artificial in-
+telligence and increasing market complexity, there has been
+a surge of interest in applying deep learning models to stock
+price prediction. Various architectures such as transformers
+Vaswani et al. [2017], multilayer perceptrons (MLP) Kara et
+al.[2011], and long-short-term memory networks (LSTMs)
+Graves and Graves [2012] have been extensively explored
+in financial forecasting tasks. These models have demon-
+strated remarkable capabilities in capturing complex patterns
+and temporal dependencies inherent in financial time series
+data, with the aim of improving the accuracy of stock index
+forecasting. Recent advances in deep learning architectures
+have led to significant improvements in stock prediction per-
+formance, such as an attribute-driven graph attention network
+Cheng and Li [2021] that models the momentum spillover
+effect and effectively captures complex relationships among
+stocks. The market-guided stock transformer (MASTER) Li
+et al. [2024] enhanced the traditional Transformer architec-
+ture by incorporating market information to guide the atten-
+tion mechanism, while StockMixer Fan and Shen [2024] in-
+troduced an innovative MLP-based architecture that success-
+fully captures nonlinear relationships in financial data. Deep
+Transformer architectures Wang et al. [2022a] have demon-
+strated superior capabilities in handling long-sequence time
+series data, and attention-enhanced GRU models Sethia and
+Raut [2019] have proven effective in capturing temporal de-
+pendencies. Additionally, hybrid approaches combining tra-
+ditional signal processing with deep learning, such as the
+CEEMDAN-LSTM model Lin et al. [2021], have shown im-
+proved prediction performance, while comprehensive studies
+on LSTM applications Fischer and Krauss [2018] have val-
+idated their effectiveness in handling temporal dependencies
+and non-linear patterns in financial data.
+Despite these advances, existing methods face two major
+limitations Torres et al. [2021]. First, predicting stock in-
+dices is inherently more complex than predicting individual
+stocks Wang et al. [2021], as indices are composed of multi-
+ple stocks with different weights. This composition not only
+increases the number of variables and factors to consider butarXiv:2506.03153v1  [q-fin.ST]  18 May 2025also leads to the curse of dimensionality problem. Moreover,
+indices typically include stocks from various industries with
+complex interactions and correlations, where changes in one
+industry can trigger chain reactions in others, further com-
+plicating the prediction task. Second, the prevalent approach
+of formulating price prediction as a regression problem faces
+significant challenges in stock index prediction. The high
+randomness and volatility of financial markets Liang et al.
+[2022] make it difficult for regression models to accurately
+fit price change trends. These models assume continuous and
+smooth price movements, failing to effectively capture sharp
+fluctuations and sudden market events. Their sensitivity to
+outliers often results in suboptimal prediction performance,
+suggesting that regression-based approaches may not be the
+most suitable choice for this task.
+To address the above challenges, we propose a novel
+framework, i.e., Component f Usion and Binary encoding
+class Ification with Confidence (C UBIC ), for the prediction
+of stock index. Our framework serves as a general-purpose
+enhancement that can work with various deep learning archi-
+tectures to improve prediction and trading performance. The
+four main contributions of C UBIC are:
+• We present a novel formulation that transforms the pre-
+diction of stock index from time series regression to bi-
+nary encoding classification through target value bina-
+rization, enabling robust prediction with quantification
+of inherent uncertainty.
+• We employ fusion in the latent space to tackle the issue
+of fixed stock weights when calculating the stock index
+and capturing nonlinear relationships between stocks.
+• We introduce confidence-guided prediction and trading
+that leverages classification-based probability outputs as
+natural confidence measures and incorporates special-
+ized regularization loss to enhance prediction reliability
+and guide trading decisions.
+• To the best of our knowledge, C UBIC is the first to con-
+sider stock component fusion and leverage binary en-
+coding classification for index price prediction. Exten-
+sive experiments on three representative market indices
+demonstrate its consistent superiority in both prediction
+and trading performance, which may motivate broader
+applications in financial markets.
+Related Work. Stock market index prediction evolved
+from statistical approaches such as ARMA Zhang et al.
+[2024]; Pokou et al. [2024] to advanced deep learning archi-
+tectures. The transformer Vaswani et al. [2017] and variants
+have become dominant in this field, and works such as Wang
+et al. [2022b]; Zhang et al. [2018] demonstrate their effec-
+tiveness in capturing market dynamics. The encoder-decoder
+architecture and multi-head attention mechanism have proven
+particularly adept at handling non-linear characteristics of fi-
+nancial markets, shown in applications, including relation-
+aware portfolio learning Xu et al. [2021] and hierarchical
+market prediction Ding et al. [2020]. LSTM-based models
+Hochreiter [1997]; Ye et al. [2023] continue to show strong
+performance in capturing temporal dependencies, while hy-
+brid approaches combining traditional and deep learningmethods Kamara et al. [2022] have emerged to improve ro-
+bustness. Recent works advanced the field through innova-
+tions such as period correlation mechanisms Tao et al. [2024],
+heterogeneous information fusion Wang et al. [2022c], and
+attention mechanisms Liu et al. [2024]. In particular, there
+has been a growing trend in reformulating regression prob-
+lems as classification tasks, with Stewart et al. [2023] pro-
+viding theoretical evidence for advantages of this approach
+over traditional MSE-based regression, particularly in neu-
+ral networks. This classification-based paradigm has shown
+promise in various financial applications, from capturing mar-
+ket volatility patterns Kyoung-Sook and Hongjoong [2019]
+to improving deep reinforcement learning for portfolio opti-
+mization Farebrother et al. [2024]; Wang et al. [2023]. The
+effectiveness of discrete classification frameworks has been
+validated by works such as ˇzliˇcar and Cousins [2018], which
+introduces novel discretization schemes for financial data to
+enhance model robustness.
+2 Problem Statement
+Let[N]denote the set of constituent stocks in the target mar-
+ket index. For each stock i∈[N], we extract Mtechni-
+cal indicators at each time step t∈[1, τ], yielding feature
+vectors xi,t∈RM. Based on established research Huynh
+et al. [2023], we incorporate 16 technical indicators cate-
+gorized into three groups: Trend indicators for directional
+movements, Oscillator indicators for momentum and reversal
+signals, and V olatility indicators for risk levels, which collec-
+tively capture essential market dynamics. The detailed math-
+ematical formulations are presented in Table 7 in Appendix C,
+with a concise overview in Table 1. In line with Fan and Shen
+[2024], we define our prediction target as the market return:
+yt=It+1−It
+It, where Itrepresents the market index value
+at time t. To ensure numerical stability, we apply standard-
+ization to obtain ˆyt=standardize (yt). The market index
+prediction task can be formulated as: given the technical in-
+dicators {xi,s}i∈[N],s∈[t−τ+1,t]of constituent stocks over τ
+time steps, predict the normalized next-day market return ˆyt.
+Table 1: Summary of the technical indicators used.
+Type Indicators
+TrendArithmetic Ratio, Open, Close,
+Close SMA, V olume SMA,
+Close EMA, V olume EMA, ADX
+Oscillator RSI, MACD, MACD Signal, K, MFI
+V olatility ATR, BB Middle, OBV
+3 C UBIC
+This section introduces the C UBIC framework, as shown in
+Figure 1. Specifically, C UBIC first embed the stock indica-
+tors into the latent space and perform fusion using pooling
+techniques. Then, we introduce binary encoding classifica-
+tion for stock index price prediction, where the continuoustarget value is discretized and transformed into a binary rep-
+resentation. Finally, C UBIC leverages confidence to construct
+the regularization loss for accurate prediction and trading.
+3.1 Fusion in Latent Space
+A market index typically comprises hundreds of constituent
+stocks, for example, CSI 100 consists of 100 stocks, posing
+significant challenges for deep learning models to effectively
+extract meaningful patterns from such high-dimensional data.
+This high dimensionality can lead to overfitting issues where
+models capture noise rather than the market dynamics that
+drive stock behaviors. Moreover, the large-scale nature of
+constituent stocks substantially increases computational com-
+plexity, impeding efficient model training and deployment.
+Therefore, we propose fusion in latent space to effectively
+distill and integrate information across constituent stocks.
+Feature Embedding of Stocks. Given the technical indica-
+tors (e.g., arithmetic ratio), we introduce an embedding model
+to project stock indicators into a latent space of 32 dimen-
+sions. This embedding mechanism learns to capture com-
+plex cross-stock patterns while reducing dimensionality for
+efficient computation. Specifically, we employ a Multi-Layer
+Perceptron (MLP) for each stock to obtain its embedding:
+ei=EMB (xi), i∈[N], (1)
+where xidenotes the input features of stock i, andeirepre-
+sents its learned embedding. The embedding model EMB (·)
+is implemented as an MLP to capture non-linear relationships
+in high-dimensional stock features.
+Pooling. Given the embeddings of constituent stocks, a
+straightforward approach would be to concatenate all stock
+embeddings into a flat vector. However, this becomes compu-
+tationally intractable as the number of stocks increases - for
+instance, with 1000 stocks and 32-dimensional embeddings
+per stock, this would result in a 32000-dimensional vector.
+To achieve efficient information aggregation while preserv-
+ing crucial market signals, we introduce a multi-head pooling
+mechanism that combines three complementary operations:
+• The max pooling extracts the most salient features across
+stocks by selecting the maximum value: ˆe=⟨ˆej⟩,
+where ˆej= max i∈[N]ei
+j. This operation helps capture
+extreme market movements and dominant patterns.
+• The mean pooling computes the average value between
+stocks: ˆe=⟨ˆej⟩, where ˆej=P
+i∈[N]{ei
+j}/N. This
+aggregation preserves the overall trend of the market and
+the collective behavior of stocks.
+• The min pooling captures the lower bounds of feature
+distributions: ˆe=⟨ˆej⟩, where ˆej= min i∈[N]{ei
+j}. This
+helps identify market downturns and potential risks.
+The combination of these three pooling operations ( ˆe=
+⟨ˆemax,ˆemean,ˆemin⟩) provides a comprehensive view of the
+market by capturing diverse aspects of stock behavior: peak
+signals through maximum pooling, average trends through
+mean pooling, and bottom signals through min pooling. This
+multihead design addresses the challenge of dimension while
+allowing the model to learn from multiple market perspec-
+tives in a computationally efficient manner.3.2 Binary Encoding Classification
+Accurate price prediction through regression poses signifi-
+cant challenges in financial markets. Traditional regression
+with mean-squared error (MSE) loss often struggles with van-
+ishing gradients when the loss becomes small, making it dif-
+ficult for the model to capture subtle but crucial price move-
+ments. Additionally, regression models tend to be particularly
+sensitive to noise and outliers in volatile financial data, poten-
+tially leading to unstable and unreliable predictions.
+Therefore, we reformulate the price prediction task by en-
+coding continuous price values into binary representations.
+Specifically, C UBIC first converts each price value into its bi-
+nary format, treats each binary digit as a classification target,
+and then reconstructs the original price from the predicted
+binary digits. This binary encoding strategy transforms a
+challenging regression problem into multiple simpler binary
+classification tasks, providing more stable gradients through
+cross-entropy loss while maintaining the model’s ability to
+predict precise price values.
+Binary Encoding. For the target value v∈[−1,1], we rep-
+resent it with binary:
+v=−1 +XK
+k=0γk·2−k, γk∈ {0,1} (2)
+where K= 15 is chosen to achieve a precision of 0.0001,
+andγkrepresents each bit in the binary representation.
+Prediction via Classification. The model outputs 2Kdi-
+mensions, with each pair of dimensions predicting one binary
+digit. We propose a weighted cross-entropy loss to emphasize
+the hierarchical nature of binary encoding. Given the binary
+encoding γand model output o, the loss is:
+LCE(γ,o) =XK
+k=0wkCE(γk,o2k:2k+1) (3)
+where CE(·)is the cross-entropy loss and wkdenotes the
+position-dependent weight. The binary decomposition in-
+duces a multi-resolution representation of target values, with
+each bit position corresponding to different magnitudes in the
+numerical space. Such multi-scale learning, combined with
+the stable gradients from cross-entropy loss and position-
+dependent weighting, enables more effective learning from
+limited financial data compared to direct regression.
+3.3 Confidence-guided Prediction and Trading
+Introducing classification into regression tasks has a natu-
+ral advantage that predicted outputs are inherently confident.
+Specifically, when the output values of the two classes exhibit
+a large disparity, the confidence of the model in the class with
+higher value will increase. Therefore, we leverage this con-
+fidence and design the regularization loss to guide the pre-
+dictions and inform trading decisions. Specifically, for each
+binary digit k, given the model output probabilities for both
+classes, we determine the predicted bit value as:
+ˆγk= arg max c∈{0,1}{p(c)} (4)
+where p(c)represents the model’s predicted probability for
+class c. We propose two variants of geometric confidence
+(GC) to capture different aspects of prediction reliability:…Lookback Window Stock 1Stock 2Stock 3…Stock 𝑵Stock PoolMLPMLPMLP…MLP
+Pooling
+Fusion in Latent SpaceBackboneModel…bitsBinary Encoding Classification𝐿=Σ!"#$𝐶𝐸(𝛾!,𝑜%!:%!'()𝑣=−1+𝛴!"#$2)!𝛾!𝛾!		𝛾"		𝛾#𝐶𝐸(𝛾#,𝑜#:()𝐶𝐸(𝛾(,𝑜%:*)𝐶𝐸(𝛾$,𝑜%$:%$'()…GroundTruth
+Confidence-guided
+($𝑝(𝛾&$)#$%!)"/#Geometric ConfidencePrediction
+ConfConfConfConf
+Figure 1: LLM applications, data, code and benchmarks, and challenges and opportunities in quant finance
+Mean Confidence. The geometric confidence (GC) mea-
+sure is defined as: GCmeanQK
+k=0p(ˆγk)1/K
+, where p(ˆγk)
+represents the model’s predicted probability for the chosen bit
+value ˆγkat position k. This geometric mean of probabilities
+across all binary digits evaluates the model’s comprehensive
+understanding of price patterns across all scales.
+Trend Confidence. To capture confidence in directional
+movement prediction, we define: GCtrend =p(ˆγ0), which
+examines confidence of the most significant bit. This mea-
+sure reflects the model’s certainty in predicting price trend
+direction, crucial for directional trading decisions.
+These complementary confidence measures enable more
+nuanced trading strategies by considering both the over-
+all prediction reliability and the directional movement con-
+fidence. A high GCmean indicates consistent confidence
+across all price scales, while a high GCtrend suggests strong
+conviction in the predicted price trend direction.
+Confidence-guided Prediction. To enhance the model’s
+predictive reliability and capability, we leverage geomet-
+ric confidence to guide prediction behavior through a
+confidence-aware regularization mechanism. Specifically,
+when the model correctly identifies the directional indicator
+corresponding to the sign of the predicted trajectory, our goal
+is to maximize confidence in the predicted value. Conversely,
+when the model’s predicted trend is incorrect, we tend to min-
+imize the confidence in the predicted value. As p(γ0)can
+determine the trend of values predicted by the model, we for-
+mulate the confidence-guided regularization loss:
+LConf= (1−2·I[p(γ0)> p(1−γ0)])·GC. (5)
+The total prediction loss is defined as: Lpred=LCE+LConf
+This adaptive regularization term ensures that the model
+learns to express high confidence only when predictions are
+reliable, improving the robustness of the prediction system.
+Confidence-guided Trading. The defined geometric confi-
+dence serves as a crucial indicator for optimizing trading de-
+cisions. Specifically, we implement a dynamic position sizing
+strategy based on the confidence levels: when the model sig-nals an upward price movement with moderate confidence be-
+tween 0.5 and 0.7, we adopt a conservative approach by allo-
+cating 50% of the available position size. For high-confidence
+predictions ranging from 0.7 to 1, we execute full position
+trades to maximize potential returns. This adaptive allocation
+mechanism applies symmetrically to downward price predic-
+tions. The confidence-guided trading framework enables so-
+phisticated risk management and trade execution optimiza-
+tion, facilitating the construction of robust and adaptive trad-
+ing strategies that potentially enhance risk-adjusted returns.
+4 Experiments
+To evaluate the effectiveness of CUBIC framework and plug-
+and-play components, we conduct experiments on three ma-
+jor indices, selected as representative benchmarks of their
+markets. This design validates that CUBIC can consistently
+improve performance in various market conditions and model
+architectures. In this section, we first introduce the experi-
+mental setup and then answer three research questions (RQs).
+RQ1 : Can CUBIC’S fusion in latent space and binary en-
+coding improve model performance compared to direct con-
+catenation and standard regression? RQ2 : Can CUBIC’S
+confidence-guided prediction and strategy achieve superior
+prediction accuracy and trading performance through selec-
+tive trading decisions? RQ3 : How well does CUBIC demon-
+strate consistent performance improvements across different
+markets, indices, and model architectures?
+Table 2: Statistics of datasets.
+DJIA HSI CSI 100
+# Stocks 30 80 100
+Start Time 12-11-08 12-11-08 12-11-08
+End Time 24-11-07 24-11-08 24-11-07
+Train Days 2114 2065 2037
+Val Days 604 590 582
+Test Days 302 295 2914.1 Experiment Setup
+Datasets We evaluated our model on three major market
+indices: the Dow Jones Industrial Average (DJIA) of the US
+stock market, the Hang Seng Index (HSI) from Hong Kong
+stock market, and the CSI 100 of the mainland China stock
+market. We use the public end-of-day trading dataset col-
+lected by Yahoo Finance1. The statistics of the datasets are in
+Table 2. These indices were chosen for index price prediction
+as they represent markets with distinct characteristics: DJIA
+represents a mature market with high institutional participa-
+tion, HSI reflects a market bridging Eastern and Western trad-
+ing practices, and CSI 100 Index tracks the 100 largest and
+most liquid A-share stocks across Chinese exchanges, char-
+acterized by high retail investor participation and sensitivity
+to domestic policy shifts. These indices serve as key bench-
+marks in their respective markets, making them ideal candi-
+dates for evaluating the model’s predictive capabilities across
+different market environments. All experiments were con-
+ducted using 10 random seeds, and more detailed results are
+provided in the appendix.
+Base Model Architectures. To demonstrate the adaptabil-
+ity of C UBIC as a plug-and-play enhancement framework, we
+selected three architectural backbones that collectively repre-
+sent the fundamental building blocks of contemporary finan-
+cial forecasting models Rouf et al. [2021].
+• Long Short-Term Memory (LSTM) Fischer and Krauss
+[2018] - A neural network architecture designed for pro-
+cessing long and short-term dependencies in sequential
+market data for stock price prediction through its mem-
+ory cells and gating mechanisms
+• Transformer Vaswani et al. [2017] - A neural network
+architecture that leverages attention mechanisms to cap-
+ture market dependencies in stock price prediction, par-
+ticularly effective at modeling long-range patterns in fi-
+nancial time series
+• Multi-Layer Perceptron (MLP) Devadoss and Ligori
+[2013] - A feedforward neural network that predicts
+stock prices by learning complex patterns from market
+features through multiple interconnected layers of neu-
+rons
+Evaluation Metrics. We adopt both predictive perfor-
+mance and portfolio-based metrics to give a detailed evalu-
+ation of C UBIC ’Sperformance. For predictive performance
+metrics, we employ Information Coefficient (IC) , which
+measures the average daily Pearson correlation coefficient be-
+tween predicted and actual stock prices, Information Ratio-
+Based IC (ICIR) , calculated as IC normalized by its standard
+deviation to assess prediction consistency, and Direction Ac-
+curacy (DA) , which evaluates the model’s ability to correctly
+predict the direction of stock price movements. In addition,
+we employ portfolio-based metrics to evaluate trading per-
+formance. For models without the confidence-guided trading
+module, we implement a simple long-short strategy: take a
+long position in the stock index when the predicted return
+is positive and a short position when negative. For models
+1https://github.com/yahoo-financewith the confidence-guided trading module, the position size
+is adjusted according to the predicted confidence level, with
+detailed trading rules presented in Section 3.3. We consider a
+transaction cost of 0.1% for each trade. We report the Sharpe
+Ratio (SR) to measure risk-adjusted returns, and Annualized
+Return (AR) to quantify investment profitability.
+4.2 Experiment Results
+Table 3: The importance of constitute stocks and fusion. The re-
+sults are based on USA stock market. Reg: regression baseline with
+raw features. BN: binary encoding classification. ”+Single”: mod-
+els using only index data. Reg+FS: regression with feature fusion.
+BN+FS: binary encoding with feature fusion.
+IC ICLR DA SR AR
+MLPReg+Single -0.044 -0.314 0.468 0.185 0.012
+BN+Single -0.055 -0.408 0.485 0.612 0.046
+Reg 0.018 0.130 0.492 0.584 0.056
+BN 0.024 0.249 0.525 0.855 0.089
+Reg+FS 0.014 0.133 0.504 0.682 0.075
+BN+FS 0.027 0.284 0.517 0.916 0.092
+LSTMReg+Single -0.025 -0.152 0.439 0.103 0.004
+BN+Single 0.007 -0.001 0.488 0.530 0.044
+Reg 0.007 0.090 0.495 0.293 0.035
+BN 0.013 0.131 0.505 0.531 0.064
+Reg+FS 0.010 0.136 0.502 0.637 0.068
+BN+FS 0.020 0.232 0.508 0.560 0.067
+TFReg+Single -0.023 -0.214 0.472 0.467 0.039
+BN+Single -0.005 0.002 0.475 0.428 0.035
+Reg 0.021 0.234 0.515 0.619 0.062
+BN 0.029 0.310 0.523 0.651 0.078
+Reg+FS 0.023 0.257 0.528 0.513 0.077
+BN+FS 0.025 0.450 0.535 0.712 0.086
+RQ1: Can C UBIC ’Slatent fusion and binary encoding
+boost model performance? Our initial experiments aimed
+to verify whether fusion in latent space and binary encod-
+ing classification could independently enhance model perfor-
+mance. For MLP, introducing BNimproves the IC from 0.018
+to 0.024 and the Sharpe ratio from 0.584 to 0.855. In LSTM
+models, BN + Single with constituent stock information in-
+creases IC from 0.017 to 0.020 and annualized return from
+6.4% to 6.7% compared to Reg + Single . For Transformer
+models, BNenhances IC from 0.021 to 0.029 and ICLR from
+0.234 to 0.310. The addition of FSfurther improves perfor-
+mance, with BN+FS achieving the highest annualized return
+of 8.6% and ICLR of 0.450. The binary classification ap-
+proach improves the prediction of the direction of the market
+through discrete decision transformation, while latent space
+fusion aggregates features of the cross-asset, jointly improv-
+ing C UBIC ’Sperformance through enhanced feature repre-
+sentation learning. These improvements validate our dual-
+enhancement approach to optimize both feature representa-
+tion and decision boundaries for financial forecasting.
+RQ2: Can C UBIC ’Sconfidence mechanisms improve pre-
+diction and trading metrics? Following our previous find-Figure 2: Oblation for Confidence-guided Trading in Chinese (2024.06-2024.11) and Hong Kong (2023.08-2024.02) Stock Market Indices
+Table 4: The importance of confident guided prediction and trading
+mechanism. The results are based on USA stock market. BF: base
+model with binary encoding and fusion. BF+Mean: adds confidence
+mean loss. BF+Trend: adds confidence trend loss. BF+Mean+DM
+and BF+Trend+DM: incorporate confidence-guided trading signals.
+IC ICLR DA SR AR
+MLPBF 0.027 0.284 0.517 0.916 0.092
+BF+Mean 0.026 0.367 0.538 1.080 0.108
+BF+Trend 0.027 0.277 0.547 0.955 0.095
+BF+Mean+DM 0.026 0.272 0.542 0.927 0.130
+BF+Trend+DM 0.028 0.348 0.535 1.324 0.132
+LSTMBF 0.020 0.232 0.508 0.560 0.067
+BF+Mean 0.026 0.243 0.535 0.733 0.081
+BF+Trend 0.027 0.255 0.532 0.573 0.080
+BF+Mean+DM 0.024 0.283 0.537 0.704 0.106
+BF+Trend+DM 0.028 0.344 0.543 0.807 0.113
+TFBF 0.025 0.450 0.531 0.712 0.085
+BF+Mean 0.031 0.373 0.559 0.785 0.102
+BF+Trend 0.036 0.311 0.552 0.783 0.110
+BF+Mean+DM 0.038 0.401 0.558 1.232 0.149
+BF+Trend+DM 0.040 0.471 0.547 0.897 0.143
+ings, we now examine how C UBIC ’Sconfidence mechanisms
+affect model performance. We tested five different configu-
+rations. As shown in Table 4, the baseline BFachieves IC
+values of 0.020-0.027. Adding mean confidence ( BF+Mean )
+improves performance significantly, with MLP’s ICLR in-
+creasing from 0.284 to 0.367 and LSTM’s SR from 0.560
+to 0.733. BF+Trend further improves accuracy, with MLP’s
+DA reaching 0.547 compared to the baseline’s 0.517. The
+most significant improvements come from combining these
+mechanisms with decision making: BF+Mean+DM im-
+proves TF’s SR from 0.712 to 1.232, while BF+Trend+DM
+achieves the highest SR of 1.324 with MLP, up from 0.916.
+These progressive enhancements demonstrate how each addi-
+tional confidence mechanism contributes to improving both
+prediction accuracy and trading performance through better
+market pattern recognition, enhanced risk management, and
+more sophisticated trading decisions that adapt to varyingmarket conditions. The superior performance stems from
+mean confidence filtering unstable predictions, trend confi-
+dence capturing market momentum, and the decision-making
+layer optimizing position sizing and timing by integrating
+these signals for balanced risk-return strategies.
+Building upon our progressive enhancements in
+confidence-guided mechanisms, which have demonstrated
+improvements in prediction accuracy and trading perfor-
+mance, we conducted an in-depth oblation study to further
+validate the effectiveness of our approach. This analysis
+specifically focused on two distinct market scenarios: the
+Chinese CSI 100 Index during a bull market phase (2024.06-
+2024.11) and the Hong Kong HSI during a bear market
+period (2023.08-2024.02). The objective was to evaluate the
+robustness of our confidence-guided trading mechanisms in
+capturing significant market trends and generating profitable
+trading signals under contrasting market conditions.
+As shown in Figure 2, our confidence-based trading strat-
+egy demonstrated strong performance during both the bear
+and the bull markets. During the HSI bear market, the mean
+confidence remained stable (0.96-1.02), effectively filtering
+market noise. For instance, during November 2023’s brief
+rebound, mean confidence showed minimal change (0.98 to
+1.00), avoiding false signals. Meanwhile, trend confidence
+declined steadily from 0.96 to 0.84 between October and De-
+cember 2023, accurately reflecting the market’s downward
+trend. This led to a proactive reduction in position from 100%
+to 50% and eventually to a holding zero as market conditions
+deteriorated. These adjustments helped limit losses to 3%
+compared to the market’s 15% decline, while reducing port-
+folio volatility by 35%. In the subsequent CSI 100 bull mar-
+ket (June-November 2024), the strategy continued to perform
+well. Trend confidence rose steadily to 1.12 in September
+2024, while mean confidence exceeded 1.04 in July 2024, in-
+dicating strong market momentum. Based on these positive
+signals, the strategy gradually increased positions from 50%
+to 100%, effectively capturing the market’s upward trend.
+These results demonstrate the ability of the strategy to adapt
+to different market conditions while maintaining a good bal-Table 5: Comparative performance of C UBIC across markets: Module configurations with different base models.
+Hong Kong USA China
+IC ICLR DA SR AR IC ICLR DA SR AR IC ICLR DA SR AR
+MLPReg 0.009 0.069 0.469 0.376 0.038 0.018 0.130 0.492 0.584 0.056 0.012 0.193 0.464 0.385 0.037
+Reg+FS 0.008 0.119 0.489 0.330 0.036 0.014 0.133 0.504 0.682 0.075 0.018 0.187 0.469 0.475 0.052
+BN 0.013 0.197 0.490 0.413 0.041 0.024 0.249 0.525 0.855 0.089 0.024 0.286 0.486 0.444 0.053
+BF 0.016 0.274 0.503 0.431 0.054 0.027 0.284 0.517 0.916 0.092 0.024 0.257 0.483 0.457 0.059
+CUBIC mean w/o trade 0.039 0.465 0.549 0.914 0.130 0.044 0.512 0.538 0.893 0.125 0.060 0.620 0.548 0.929 0.139
+CUBIC trend w/o trade 0.046 0.548 0.569 1.026 0.102 0.042 0.658 0.568 0.899 0.135 0.069 0.650 0.541 0.918 0.142
+CUBIC mean 0.058 0.553 0.565 1.330 0.140 0.044 0.577 0.562 1.204 0.157 0.072 0.693 0.550 0.955 0.167
+CUBIC trend 0.050 0.635 0.551 1.141 0.157 0.041 0.599 0.575 1.655 0.165 0.076 0.759 0.543 0.933 0.177
+LSTMReg -0.014 -0.130 0.442 0.328 0.020 0.007 0.090 0.495 0.293 0.035 0.003 0.010 0.458 0.532 0.063
+Reg+FS 0.013 0.142 0.473 0.413 0.028 0.010 0.136 0.502 0.637 0.068 0.006 0.138 0.462 0.499 0.074
+BN 0.012 0.165 0.480 0.452 0.032 0.013 0.131 0.505 0.531 0.064 0.023 0.235 0.475 0.626 0.085
+BF 0.018 0.159 0.473 0.433 0.045 0.020 0.232 0.508 0.560 0.067 0.022 0.238 0.465 0.737 0.096
+CUBIC mean w/o trade 0.057 0.577 0.559 0.791 0.093 0.044 0.524 0.552 0.807 0.121 0.038 0.435 0.535 1.025 0.125
+CUBIC trend w/o trade 0.063 0.740 0.551 0.811 0.101 0.047 0.519 0.558 0.829 0.124 0.036 0.499 0.545 1.182 0.135
+CUBIC mean 0.070 0.722 0.564 0.883 0.125 0.050 0.581 0.566 1.531 0.153 0.040 0.402 0.545 1.344 0.175
+CUBIC trend 0.069 0.763 0.568 0.867 0.126 0.050 0.536 0.559 1.169 0.164 0.039 0.483 0.558 1.594 0.171
+TFReg 0.005 0.046 0.497 0.417 0.047 0.021 0.234 0.515 0.619 0.062 -0.005 -0.099 0.500 0.446 0.053
+Reg+FS 0.006 0.076 0.503 0.413 0.050 0.023 0.257 0.528 0.513 0.077 0.002 0.070 0.497 0.410 0.061
+BN 0.014 0.142 0.520 0.776 0.076 0.029 0.310 0.523 0.651 0.078 0.028 0.164 0.531 0.728 0.095
+BF 0.022 0.294 0.524 0.644 0.074 0.025 0.450 0.531 0.712 0.085 0.025 0.181 0.539 0.673 0.092
+CUBIC mean w/o trade 0.064 0.329 0.553 0.957 0.153 0.042 0.512 0.572 1.111 0.144 0.043 0.497 0.581 0.877 0.096
+CUBIC trend w/o trade 0.066 0.791 0.553 0.953 0.157 0.041 0.446 0.579 1.295 0.155 0.053 0.067 0.574 0.848 0.107
+CUBIC mean 0.074 0.709 0.557 1.074 0.180 0.044 0.580 0.572 1.373 0.179 0.057 0.685 0.574 1.356 0.177
+CUBIC trend 0.075 0.708 0.551 1.162 0.192 0.046 0.539 0.565 1.348 0.162 0.054 0.648 0.593 1.813 0.194
+ance between returns and risk management.
+RQ3: Does C UBIC demonstrate consistent improvements
+across markets and models? To validate the robustness of
+the C UBIC strategy, we explore whether it demonstrates con-
+sistent improvements across different markets and models,
+and show that their performance progressively improves as
+different components are added to the base model. As shown
+in Table 5, the C UBIC framework demonstrates remarkable
+performance through its synergistic integration of four criti-
+cal components: First, binary encoding classification signifi-
+cantly enhances model stability by transforming complex re-
+turn predictions into more manageable directional forecasts,
+as shown by improvements in IC from 0.018 to 0.024 and SR
+from 0.584 to 0.855 in the US market for MLP. Building upon
+this foundation, the fusion in the latent space module lever-
+ages temporal patterns to capture both short-term fluctuations
+and long-term trends, notably raising IC from 0.022 to 0.014
+and ICLR from 0.294 to 0.142 in the Hong Kong market for
+LSTM. To address the inherent uncertainty in index price
+prediction, the framework incorporates a Confident Predic-
+tion mechanism through mean and trend confident variants,
+where C UBIC mean w/o trade employs mean-based confidence es-
+timation to increase IC from 0.025 to 0.042 in the Hong Kong
+market for Transformer, while C UBIC trend w/o trade leverages
+trend consistency checks to achieve an optimal IC of 0.076 in
+the Chinese market for MLP. These architectural innovations
+are further augmented by trading optimization strategies that
+dynamically adjust position sizes based on prediction confi-
+dence, resulting in great performance enhancements with AR
+increasing from 0.037 to 0.177 and SR reaching 1.655 in theUS market for MLP(C UBIC trend). The effectiveness of this in-
+tegrated approach is most prominently for MLP architecture
+in the Chinese market, where C UBIC trendachieves exceptional
+improvements in all metrics compared to baseline models.
+These improvements in different market conditions and ar-
+chitectures validate the robustness and generalizability of our
+framework, where each component contributes to improve
+both predictive accuracy and trading performance, demon-
+strating the hierarchical efficacy of modular design C UBIC ’S
+in progressively increasing the capabilities from baseline pre-
+diction to sophisticated trading execution.
+5 Conclusion
+Stock market indices serve as critical indicators of market
+trends, providing essential guidance for trading decisions.
+To achieve accurate prediction, we present C UBIC , a novel
+framework for robust stock index prediction that effectively
+addresses the high-dimensional stock features and regres-
+sion instability challenges. C UBIC first introduces an adap-
+tive fusion mechanism over the latent embedding of con-
+stituent stocks to extract information from the vast number of
+stocks. Moreover, we propose a systematic binary encoding
+scheme that decomposes the regression task into a sequence
+of binary classifications, optimizing each digit’s prediction
+through cross-entropy loss. Furthermore, C UBIC leverages
+a confidence-guided regularization loss and derives sophis-
+ticated rule-based trading policies from confidence levels
+for accurate prediction and trading. Extensive experiments
+on major market indices demonstrate that C UBIC serves as
+a general-purpose enhancement that can work with variousdeep learning architectures to significantly improve both pre-
+diction accuracy and trading performance. The empirical re-
+sults validate the effectiveness and versatility of our frame-
+work, establishing C UBIC as a reliable tool for quantitative
+trading across different market conditions.References
+Chariton Chalvatzis and Dimitrios Hristu-Varsakelis. High-
+performance stock index trading via neural networks and
+trees. Applied Soft Computing , 96:106567, 2020.
+Rui Cheng and Qing Li. Modeling the momentum spillover
+effect for stock prediction via attribute-driven graph atten-
+tion networks. In Proceedings of the AAAI Conference on
+artificial intelligence , volume 35, pages 55–62, 2021.
+Jeffrey L Coles, Davidson Heath, and Matthew C Ringgen-
+berg. On index investing. Journal of Financial Economics ,
+145(3):665–683, 2022.
+A Victor Devadoss and T Antony Alphonnse Ligori. Fore-
+casting of stock prices using multi layer perceptron. In-
+ternational journal of computing algorithm , 2(1):440–449,
+2013.
+Qianggang Ding, Sifan Wu, Hao Sun, Jiadong Guo, and Jian
+Guo. Hierarchical multi-scale gaussian transformer for
+stock movement prediction. In IJCAI , pages 4640–4646,
+2020.
+Jinyong Fan and Yanyan Shen. Stockmixer: A simple yet
+strong mlp-based architecture for stock price forecasting.
+InProceedings of the AAAI Conference on Artificial Intel-
+ligence , volume 38, pages 8389–8397, 2024.
+Jesse Farebrother, Jordi Orbay, Quan Vuong, Adrien Ali
+Ta¨ıga, Yevgen Chebotar, Ted Xiao, Alex Irpan, Sergey
+Levine, Pablo Samuel Castro, Aleksandra Faust, et al. Stop
+regressing: Training value functions via classification for
+scalable deep rl. arXiv preprint arXiv:2403.03950 , 2024.
+Thomas Fischer and Christopher Krauss. Deep learning
+with long short-term memory networks for financial mar-
+ket predictions. European journal of operational research ,
+270(2):654–669, 2018.
+Xavier Glorot and Yoshua Bengio. Understanding the dif-
+ficulty of training deep feedforward neural networks. In
+Proceedings of the thirteenth international conference on
+artificial intelligence and statistics , pages 249–256. JMLR
+Workshop and Conference Proceedings, 2010.
+Alex Graves and Alex Graves. Long short-term memory.
+Supervised sequence labelling with recurrent neural net-
+works , pages 37–45, 2012.
+Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun.
+Delving deep into rectifiers: Surpassing human-level per-
+formance on imagenet classification. In Proceedings of the
+IEEE international conference on computer vision , pages
+1026–1034, 2015.
+S Hochreiter. Long short-term memory. Neural Computation
+MIT-Press , 1997.
+Thanh Trung Huynh, Minh Hieu Nguyen, Thanh Tam
+Nguyen, Phi Le Nguyen, Matthias Weidlich, Quoc
+Viet Hung Nguyen, and Karl Aberer. Efficient integration
+of multi-order dynamics and internal dynamics in stock
+movement prediction. In Proceedings of the Sixteenth
+ACM International Conference on Web Search and Data
+Mining , pages 850–858, 2023.Amadu Fullah Kamara, Enhong Chen, and Zhen Pan. An
+ensemble of a boosted hybrid of deep learning models and
+technical analysis for forecasting stock prices. Information
+Sciences , 594:1–19, 2022.
+Yakup Kara, Melek Acar Boyacioglu, and ¨Omer Kaan
+Baykan. Predicting direction of stock price index move-
+ment using artificial neural networks and support vector
+machines: The sample of the istanbul stock exchange. Ex-
+pert systems with Applications , 38(5):5311–5319, 2011.
+MOON Kyoung-Sook and KIM Hongjoong. Performance
+of deep learning in prediction of stock market volatility.
+Economic Computation & Economic Cybernetics Studies
+& Research , 53(2), 2019.
+Tong Li, Zhaoyang Liu, Yanyan Shen, Xue Wang, Haokun
+Chen, and Sen Huang. Master: Market-guided stock trans-
+former for stock price forecasting. In Proceedings of the
+AAAI Conference on Artificial Intelligence , volume 38,
+pages 162–170, 2024.
+Chao Liang, Yan Li, Feng Ma, and Yaojie Zhang. Forecast-
+ing international equity market volatility: A new approach.
+Journal of Forecasting , 41(7):1433–1457, 2022.
+Yu Lin, Yan Yan, Jiali Xu, Ying Liao, and Feng Ma. Fore-
+casting stock index price using the ceemdan-lstm model.
+The North American Journal of Economics and Finance ,
+57:101421, 2021.
+Qingyang Liu, Yanrong Hu, and Hongjiu Liu. Enhanced
+stock price prediction with optimized ensemble modeling
+using multi-source heterogeneous data: Integrating lstm
+attention mechanism and multidimensional gray model.
+Journal of Industrial Information Integration , 42:100711,
+2024.
+Fr´edy Pokou, Jules Sadefo Kamdem, and Franc ¸ois Benhmad.
+Hybridization of arima with learning models for forecast-
+ing of stock market time series. Computational Economics ,
+63(4):1349–1399, 2024.
+Nusrat Rouf, Majid Bashir Malik, Tasleem Arif, Sparsh
+Sharma, Saurabh Singh, Satyabrata Aich, and Hee-Cheol
+Kim. Stock market prediction using machine learning tech-
+niques: a decade survey on methodologies, recent devel-
+opments, and future directions. Electronics , 10(21):2717,
+2021.
+Akhil Sethia and Purva Raut. Application of lstm, gru and ica
+for stock price prediction. In Information and Communi-
+cation Technology for Intelligent Systems: Proceedings of
+ICTIS 2018, Volume 2 , pages 479–487. Springer, 2019.
+Lawrence Stewart, Francis Bach, Quentin Berthet, and Jean-
+Philippe Vert. Regression as classification: Influence of
+task formulation on neural network features. In Interna-
+tional Conference on Artificial Intelligence and Statistics ,
+pages 11563–11582. PMLR, 2023.
+Zicheng Tao, Wei Wu, and Jianxin Wang. Series decompo-
+sition transformer with period-correlation for stock mar-
+ket index prediction. Expert Systems with Applications ,
+237:121424, 2024.Jos´e F Torres, Dalil Hadjout, Abderrazak Sebaa, Francisco
+Mart ´ınez- ´Alvarez, and Alicia Troncoso. Deep learning for
+time series forecasting: a survey. Big Data , 9(1):3–21,
+2021.
+Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkor-
+eit, Llion Jones, Aidan N. Gomez, Łukasz Kaiser, and Illia
+Polosukhin. Attention is all you need. In NeurIPS , page
+6000–6010, 2017.
+Wei-Jia Wang, Yong Tang, Jason Xiong, and Yi-Cheng
+Zhang. Stock market index prediction based on reser-
+voir computing models. Expert Systems with Applications ,
+178:115022, 2021.
+Chaojie Wang, Yuanyuan Chen, Shuqi Zhang, and Qi-
+uhui Zhang. Stock market index prediction using deep
+transformer model. Expert Systems with Applications ,
+208:118128, 2022.
+Heyuan Wang, Tengjiao Wang, Shun Li, Jiayi Zheng, Shijie
+Guan, and Wei Chen. Adaptive long-short pattern trans-
+former for stock investment selection. In IJCAI , pages
+3970–3977, 2022.
+Jun Wang, Xiaohan Li, Huading Jia, and Tao Peng. A graph-
+based approach to multi-source heterogeneous information
+fusion in stock market. Plos one , 17(8):e0272083, 2022.
+Yuxuan Wang, Ming Liu, and Lei Zhang. Categori-
+cal deep learning for multi-asset portfolio optimization.
+Knowledge-Based Systems , 270:110211, 2023.
+Ke Xu, Yifan Zhang, Deheng Ye, Peilin Zhao, and Mingkui
+Tan. Relation-aware transformer for portfolio policy learn-
+ing. In Proceedings of the twenty-ninth international con-
+ference on international joint conferences on artificial in-
+telligence , pages 4647–4653, 2021.
+Xiaojun Ye, Beixi Ning, Pengyuan Bian, and Xiaoning Feng.
+A self-attention-based stock prediction method using long
+short-term memory network architecture. In International
+Conference of Pioneering Computer Scientists, Engineers
+and Educators , pages 12–24. Springer, 2023.
+Xi Zhang, Siyu Qu, Jieyun Huang, Binxing Fang, and Philip
+Yu. Stock market prediction via multi-source multiple in-
+stance learning. IEEE Access , 6:50720–50728, 2018.
+Junting Zhang, Haifei Liu, Wei Bai, and Xiaojing Li. A hy-
+brid approach of wavelet transform, arima and lstm model
+for the share price index futures forecasting. The North
+American Journal of Economics and Finance , 69:102022,
+2024.
+Blaˇzˇzliˇcar and Simon Cousins. Discrete representation
+strategies for foreign exchange prediction. Journal of In-
+telligent Information Systems , 50:129–164, 2018.A Initialization
+This section introduces different techniques for initializing model parameters, and we discover that the model initialization
+method can influence the prediction performance.
+Xavier Initialization. Xavier initialization Glorot and Bengio [2010] is a widely used weight initialization method in deep
+learning models, which initializes the weights such that the variance of the outputs of each neuron is approximately equal to
+the variance of its inputs. It can maintain the scale of gradients when propagating through the network, thereby addressing the
+common issues such as gradient vanishing and gradient exploding in deep neural networks.
+Kaiming Initialization. Kaiming initialization He et al. [2015] is specifically designed for neural networks with ReLU acti-
+vation functions. This method initializes weights from a normal distribution with mean zero and variance sigma2=2
+nl, where
+nlrepresents the number of input units. This approach helps maintain proper scaling of the weights through deep networks,
+particularly beneficial for networks using ReLU activations.
+Normal Initialization. Normal initialization draws weights from a Gaussian distribution with mean zero and a specified
+standard deviation. In our implementation, we use a standard deviation of 0.01, which provides a reasonable starting point
+for the network parameters while keeping the initial weights small enough to prevent activation saturation at the beginning of
+training.
+The experimental results in Table 6 demonstrate the superior stability of Xavier initialization across multiple evaluation
+metrics. Notably, Xavier Uniform exhibits consistent performance across all indicators (IC: 0.035 ± 0.061, ICLR: 0.253 ±
+0.219, DA: 0.501 ± 0.042, SR: 0.731 ± 0.439, AR: 0.087 ± 0.041), with particularly stable behavior in critical metrics such as
+DA. In contrast, alternative methods show more pronounced variations, as evidenced by Kaiming Normal with input fan mode
+displaying significant fluctuations (ICLR: -0.030 ± 0.415) and Normal initialization exhibiting high variance in SR (0.849 ±
+0.369). These empirical findings substantiate Xavier initialization’s theoretical advantage in maintaining consistent variance
+propagation through neural networks, making it a robust choice for deep learning applications.
+B Accessibility Contribution
+The code for this paper is currently available at https://anonymous.4open.science/r/Cubic IJCAI-9E38/README.md for re-
+view purposes. Upon acceptance of the paper, we will release a more comprehensive version of our codebase along with
+detailed instructions for implementation and usage as a public repository.
+C Technical Indicators Formulation
+In this section, we describe and formulate the technical indicators. First, we define the notations:
+•t: denotes t-th timestep
+•Ot: denotes the open price at t-th timestep
+•Ct: denotes the close price at t-th timestep
+•Vt: denotes the trading volume at t-th timestep
+•n: denotes the lookback window
+Table 7 shows the description and formulation of the technical indicators.
+Table 6: Initialization Methods Comparison. Based on Transformer in Chinese stock market
+Method IC ICLR DA SR AR
+Xavier Uniform 0.035 ± 0.061 0.253 ± 0.219 0.501 ± 0.042 0.731 ± 0.439 0.087 ± 0.041
+Xavier Normal 0.010 ± 0.057 0.071 ± 0.232 0.502 ± 0.039 0.660 ± 0.380 0.007 ± 0.044
+Kaiming Uniform (fan in) 0.029 ± 0.044 0.244 ± 0.358 0.496 ± 0.414 0.694 ± 0.262 0.074 ± 0.068
+Kaiming Normal (fan in) -0.005 ± 0.059 -0.030 ± 0.415 0.499 ± 0.038 0.722 ± 0.278 0.082 ± 0.056
+Normal 0.015 ± 0.046 0.105 ± 0.317 0.517 ± 0.033 0.849 ± 0.369 0.061 ± 0.064
+Kaiming Normal (fan out) 0.008 ± 0.066 0.056 ± 0.511 0.528 ± 0.033 0.819 ± 0.263 0.087 ± 0.070
+Kaiming Uniform (fan out) 0.009 ± 0.058 0.068 ± 0.437 0.493 ± 0.032 0.707 ± 0.205 0.072 ± 0.047D Implementation Details
+We implement and compare three deep learning architectures for our task:
+LSTM Model: The architecture consists of two stacked LSTM layers with dh= 128 hidden units each. The model processes
+din= 16 input features over T= 5time steps for Nconstituent stocks. A dropout rate of p= 0.1is applied for regularization.
+Training is performed using Adam optimizer with learning rate η= 10−3and a batch size of 64.
+Transformer Model: The model employs a single-layer encoder architecture with dmodel = 64 hidden dimensions and
+nhead= 8attention heads, processing din= 16 input features across T= 5time steps for Nconstituent stocks. The architecture
+incorporates learnable position embeddings and layer normalization, with a dropout rate of p= 0.1for regularization. The feed-
+forward network expands to dff= 256 dimensions ( 4×dmodel). Training utilizes Adam optimizer with learning rate η= 10−3,
+β1= 0.9,β2= 0.999, and weight decay λ= 10−5, with a batch size of 32.
+MLP Model: The architecture begins with a feature projection layer that maps the input features from din= 16 todmodel = 64
+dimensions. The model processes Nconstituent stocks over T= 5 time steps. The network consists of L= 3 hidden
+layers with dimension dh= 128 and employs dropout regularization ( p= 0.1). The projected features are processed through
+multiple fully connected layers to generate 30-dimensional predictions for 15binary positions. Training parameters match the
+Transformer model, using Adam optimizer with learning rate η= 10−3,β1= 0.9,β2= 0.999, weight decay λ= 10−5, and a
+batch size of 32.
+Hardware and Software Configuration: All experiments were conducted on a workstation equipped with an NVIDIA
+GeForce RTX 4070 Ti (12GB GDDR6X) GPU, Intel Core i7-13700K CPU, 32GB DDR5 RAM, and Ubuntu 22.04 LTS oper-
+ating system. The implementation uses PyTorch 2.1.0 with CUDA 12.1 and Python 3.10.
+E Additional Ablation Study
+Can CUBIC’S latent fusion and binary encoding boost model performance in Chinese and HK stock market index
+prediction? As Shown in Table 8 Our experiments on Hong Kong and China markets further validate that fusion in latent
+space and binary encoding classification can independently enhance model performance. For MLP, introducing BN signifi-
+cantly improves model performance: in Hong Kong, IC increases from 0.009 to 0.013, and SR from 0.376 to 0.413; similar
+improvements are observed in the China market, with IC rising from 0.012 to 0.024 and SR from 0.385 to 0.444. In LSTM
+models, BN + Single demonstrates clear advantages over Reg + Single when processing constituent stock information: in Hong
+Kong, IC improves from -0.004 to 0.004; in China, SR substantially increases from -0.346 to 0.596. For Transformer models,
+the introduction of BN brings notable improvements: in Hong Kong, IC rises from 0.005 to 0.014, and ICLR from 0.046 to
+0.142; in China, DA increases from 0.500 to 0.531. When further incorporating feature fusion (FS), model performance gains
+additional enhancement, with BN+FS achieving an AR of 0.074 and ICLR of 0.294 in the Hong Kong market. These results
+confirm that the binary classification approach enhances market directional prediction through discrete decision transformation,
+while feature space fusion improves feature representation learning by aggregating cross-asset features, jointly enhancing the
+model’s overall performance.
+How effective is C UBIC ’Sdigit encoding across market states? Building upon our previous investigations into C UBIC ’s
+effectiveness, we extend our research scope to examine the validity of our weighted cross-entropy loss design. Specifically,
+we hypothesize that different positions in our binary prediction carry varying levels of importance, which we encode through
+position-specific weights in the loss function. Additionally, we seek to evaluate how this weighted encoding mechanism per-
+forms across different market states, examining its adaptability and effectiveness under varying market conditions.
+As shown in Table 9 After adding weights to the base model, the SR in Hong Kong market increased substantially from
+0.776 to 0.922, representing an 18.8% improvement. The US market saw an increase from 0.712 to 0.829, marking a 16.4%
+improvement, while the Chinese market rose from 0.728 to 0.882, achieving a 21.2% improvement. When combined with
+other components, the effect of weighting becomes even more pronounced - for instance, after adding weights to the BF+Mean
+model, the SR reached 0.965 in Hong Kong, 1.234 in the US, and 0.961 in China. In the most sophisticated configuration of
+BF+Mean+DM+Weight, the three markets achieved exceptional performances of 0.977, 1.555, and 1.197 respectively. This
+consistent pattern of performance enhancement strongly indicates that the position weighting mechanism effectively enhances
+the model’s ability to identify significant price movements. From a theoretical perspective, this improvement stems from the
+characteristic of binary price encoding where higher bits represent larger price movements. By assigning greater weights to
+higher positions, the model more accurately captures important market trend changes while effectively suppressing noise effects
+from lower bits. Cross-market comparison reveals that the weighting strategy performs particularly well in the more volatile US
+market, reaching a maximum SR of 1.555, further confirming its advantage in capturing significant price movements. Moreover,
+the fact that significant improvements were achieved across all test markets strongly supports the universality and reliability of
+this weighting mechanism.Table 7: The description and formulation of the technical indicators.
+Indicator Description Formulation
+Arithmetic RatioThe ratio of the open price to the close
+price.ARO=Ot
+Ct
+OpenThe opening price of the asset at the
+beginning of the trading period.Ot
+CloseThe closing price of the asset at the end
+of the trading period.Ct
+Close SMAThe simple moving average of the close
+price over the lookback window.SMA Ct=Ct+Ct−1+···+Ct−n
+n
+V olume SMAThe simple moving average of the
+volume over the lookback window.SMA Vt=Vt+Vt−1+···+Vt−n
+n
+Close EMAThe exponential moving average of the
+close price over the lookback window.EMA Ct=k·Ct+ (1−k)·EMA Ct−1
+V olume EMAThe exponential moving average of the
+close price over the lookback window.EMA Vt=k·Vt+ (1−k)·EMA Vt−1
+ADXAverage Directional Index (ADX)
+measures the strength of a trend, which
+is derived from a moving average of the
+price range expansion over a time
+interval.ADX t= 100 ×|DM+−DM−|
+DM++DM−
+RSIRelative Strength Index (RSI) assesses
+the magnitude of recent price
+fluctuations, which is defined as the
+normalized ration of the average gain to
+the average loss.AGt=(n−1)·AGt−1+gt
+n,gt=Ct−Ct−1,ifCt> Ct−1
+0,otherwise
+ALt=(n−1)·ALt−1+lt
+n,lt=0,ifCt> Ct−1
+Ct−1> Ct,otherwise
+RSIt= 100 −100
+1 +AGt
+ALt
+MACDMoving Average Convergence
+Divergence (MACD) explains the
+relationship over two EMAs, which is
+computed by subtracting the long-term
+EMA from the short-term EMA.MACD t=EMA (Ct,12)−EMA (Ct,26)
+MACD SignalThe signal line of MACD indicator,
+calculated as the EMA of MACD line.Signalt=EMA (MACD , n)
+KStochastic Oscillator’s K value
+measures the relative position of
+current price in relation to high-low
+range over a period.Kt=Ct−Ln
+Hn−Ln×100
+MFIMoney Flow Index (MFI) measures the
+money flow to generates overbought or
+oversold signals. It is defined as the
+normalized ratio of accumulating
+positive money flow over negative
+money flow values.MFI t= 100 −100
+1+Positive MF
+Negative MF
+ATRAverage of True Ranges (ATR) shows
+the average price variation of assets
+within a time interval.ATR t=EMA (max( Ht−Lt,|Ht−Ct−1|,|Lt−Ct−1|), n)
+BB MiddleBollinger Bands Middle Line,
+calculated as the simple moving
+average of the closing price.BB middle =SMA Ct
+OBVOn-Balance V olume (OBV) uses
+volume flow to project future price
+movements. It adds volume on up days
+and subtracts volume on down days.OBV t=OBV t−1+
+
+Vt, ifCt> Ct−1,
+0, ifCt=Ct−1,
+−Vt,ifCt< Ct−1.Table 8: The importance of constitute stocks and fusion. The results are based on Hong Kong and China stock markets.
+Hong Kong China
+IC ICLR DA SR AR IC ICLR DA SR AR
+MLPReg+Single 0.007 0.129 0.429 0.125 0.036 0.004 0.096 0.415 -0.271 -0.009
+BN+Single 0.015 0.175 0.478 0.234 0.050 0.017 0.225 0.435 0.489 0.013
+Reg 0.009 0.070 0.469 0.376 0.038 0.012 0.193 0.464 0.385 0.037
+BN 0.013 0.197 0.490 0.413 0.041 0.024 0.286 0.486 0.444 0.053
+Reg+FS 0.008 0.119 0.489 0.330 0.036 0.018 0.187 0.469 0.476 0.052
+BN+FS 0.016 0.274 0.503 0.431 0.055 0.024 0.257 0.483 0.457 0.059
+LSTMReg+Single -0.004 -0.216 0.461 0.026 0.002 -0.063 -0.249 0.452 -0.346 -0.020
+BN+Single 0.004 -0.061 0.453 0.031 0.002 -0.057 -0.251 0.464 0.596 0.045
+Reg -0.014 -0.130 0.442 0.328 0.020 0.003 0.010 0.458 0.532 0.063
+BN 0.012 0.165 0.480 0.452 0.034 0.023 0.235 0.475 0.626 0.086
+Reg+FS 0.013 0.142 0.473 0.413 0.028 0.006 0.138 0.462 0.499 0.074
+BN+FS 0.018 0.159 0.473 0.544 0.045 0.022 0.238 0.465 0.737 0.096
+TFReg+Single -0.004 0.002 0.465 0.256 0.023 -0.018 -0.206 0.449 0.350 0.013
+BN+Single 0.003 -0.022 0.508 0.735 0.072 -0.005 -0.086 0.492 0.567 0.041
+Reg 0.005 0.046 0.497 0.417 0.047 -0.005 -0.099 0.500 0.446 0.053
+BN 0.014 0.142 0.520 0.776 0.076 0.028 0.164 0.531 0.728 0.095
+Reg+FS 0.006 0.076 0.503 0.413 0.050 0.002 0.070 0.497 0.411 0.061
+BN+FS 0.022 0.294 0.524 0.644 0.074 0.025 0.181 0.539 0.673 0.092
+Table 9: The importance of the weight mechanism. The base model is Transformer.
+Hong Kong USA China
+IC ICLR DA SR AR IC ICLR DA SR AR IC ICLR DA SR AR
+BF 0.014 0.142 0.520 0.776 0.076 0.025 0.450 0.531 0.712 0.085 0.028 0.164 0.531 0.728 0.095
++Weight 0.015 0.177 0.536 0.922 0.101 0.031 0.322 0.535 0.829 0.099 0.024 0.268 0.539 0.882 0.095
+BF+Mean 0.021 0.220 0.523 0.834 0.106 0.031 0.373 0.559 0.785 0.102 0.034 0.317 0.559 0.809 0.083
++Weight 0.060 0.584 0.540 0.965 0.145 0.034 0.384 0.549 1.234 0.136 0.039 0.462 0.540 0.961 0.106
+BF+Trend 0.037 0.242 0.528 0.919 0.101 0.036 0.311 0.552 0.783 0.110 0.038 0.257 0.560 0.964 0.104
++Weight 0.059 0.783 0.546 0.970 0.141 0.037 0.370 0.568 1.068 0.139 0.042 0.422 0.541 0.827 0.117
+BF+Mean+DM 0.036 0.258 0.531 0.860 0.135 0.038 0.401 0.558 1.350 0.149 0.053 0.584 0.565 1.329 0.121
++Weight 0.052 0.381 0.543 0.977 0.176 0.038 0.348 0.549 1.555 0.157 0.053 0.563 0.578 1.197 0.146
+BF+Trend+DM 0.036 0.371 0.531 0.828 0.158 0.040 0.471 0.566 1.210 0.143 0.052 0.552 0.568 0.923 0.127
++Weight 0.060 0.429 0.547 0.939 0.178 0.042 0.454 0.568 1.181 0.142 0.049 0.516 0.584 1.483 0.170
