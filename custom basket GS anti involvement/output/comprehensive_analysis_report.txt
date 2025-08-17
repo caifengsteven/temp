@@ -1,0 +1,682 @@
+====================================================================================================
+CHINA ANTI-INVOLUTION CUSTOM BASKET INDEX - COMPREHENSIVE ANALYSIS
+====================================================================================================
+
+EXECUTIVE SUMMARY
+--------------------------------------------------
+• Total Stocks Selected: 40
+• Construction Date: 2025-08-17 17:56:55.503635
+• Methodology: Anti-Involution Policy-Based Selection
+• Ownership Distribution:
+  - Private Owned Enterprise: 25 stocks (62.5%)
+  - State Owned Enterprise: 15 stocks (37.5%)
+
+KEY DIFFERENCES FROM SSSR 1.0 APPROACH
+--------------------------------------------------
+• Total shift to high-tech sectors: +22.5%
+• Focus evolution:
+  - SSSR 1.0: Traditional heavy industries (coal, steel)
+  - Anti-Involution: High-tech manufacturing and services
+• Ownership approach:
+  - SSSR 1.0: SOE-dominated capacity reduction
+  - Anti-Involution: Mixed POE/SOE market-driven consolidation
+
+INVESTMENT THESIS
+--------------------------------------------------
+1. POLICY ALIGNMENT
+   • Direct beneficiaries of anti-involution measures
+   • Government support for industry consolidation
+   • Pricing discipline enforcement
+
+2. MARKET LEADERSHIP
+   • Market leaders with pricing power
+   • Consolidation advantages
+   • Innovation capabilities
+
+3. STRUCTURAL TRANSFORMATION
+   • Shift from price competition to value creation
+   • Technology advancement focus
+   • Sustainable profitability
+
+RISK FACTORS
+--------------------------------------------------
+• Voluntary compliance risk in private sector
+• Policy implementation uncertainty
+• Global trade and technology tensions
+• Market volatility in high-tech sectors
+• Execution risk in industry consolidation
+
+DETAILED ANALYSIS REPORTS
+--------------------------------------------------
+
+======================================================================
+CHINA ANTI-INVOLUTION BASKET - SECTOR ALLOCATION ANALYSIS
+======================================================================
+
+CURRENT ALLOCATION (Anti-Involution Policy-Based):
+--------------------------------------------------
+Solar Energy                 12.2% (Critical)
+Electric Vehicles            12.1% (Critical)
+Lithium/Batteries            11.9% (Critical)
+Semiconductors               11.4% (Critical)
+Food Delivery                10.1% (High)
+Wind Energy                   9.8% (High)
+Steel                         9.0% (Moderate)
+Chemicals                     8.5% (Moderate)
+Coal Mining                   8.1% (Moderate)
+Logistics                     7.0% (Emerging)
+
+COMPARISON WITH SSSR 1.0 APPROACH:
+--------------------------------------------------
+Sector                    Current    SSSR 1.0   Change    
+--------------------------------------------------
+Electric Vehicles            12.1%    10.0%    +2.1%
+Semiconductors               11.4%     5.0%    +6.4%
+Solar Energy                 12.2%     8.0%    +4.2%
+Lithium/Batteries            11.9%     2.0%    +9.9%
+Steel                         9.0%    30.0%   -21.0%
+Coal Mining                   8.1%    25.0%   -16.9%
+Chemicals                     8.5%    15.0%    -6.5%
+Wind Energy                   9.8%     3.0%    +6.8%
+Logistics                     7.0%     1.0%    +6.0%
+Food Delivery                10.1%     1.0%    +9.1%
+
+Total shift to high-tech sectors: +22.5%
+
+SECTOR CHARACTERISTICS:
+--------------------------------------------------
+Electric Vehicles:
+  Priority: Critical
+  Overcapacity Severity: 85/100
+  Innovation Intensity: 95/100
+  Composite Score: 91.8/100
+  SSSR 1.0 Involvement: No
+
+Semiconductors:
+  Priority: Critical
+  Overcapacity Severity: 70/100
+  Innovation Intensity: 100/100
+  Composite Score: 87.0/100
+  SSSR 1.0 Involvement: No
+
+Solar Energy:
+  Priority: Critical
+  Overcapacity Severity: 95/100
+  Innovation Intensity: 80/100
+  Composite Score: 92.5/100
+  SSSR 1.0 Involvement: No
+
+Lithium/Batteries:
+  Priority: Critical
+  Overcapacity Severity: 90/100
+  Innovation Intensity: 85/100
+  Composite Score: 90.2/100
+  SSSR 1.0 Involvement: No
+
+Steel:
+  Priority: Moderate
+  Overcapacity Severity: 75/100
+  Innovation Intensity: 50/100
+  Composite Score: 68.5/100
+  SSSR 1.0 Involvement: Yes
+
+Coal Mining:
+  Priority: Moderate
+  Overcapacity Severity: 70/100
+  Innovation Intensity: 30/100
+  Composite Score: 61.8/100
+  SSSR 1.0 Involvement: Yes
+
+Chemicals:
+  Priority: Moderate
+  Overcapacity Severity: 65/100
+  Innovation Intensity: 60/100
+  Composite Score: 64.8/100
+  SSSR 1.0 Involvement: No
+
+Wind Energy:
+  Priority: High
+  Overcapacity Severity: 60/100
+  Innovation Intensity: 75/100
+  Composite Score: 74.2/100
+  SSSR 1.0 Involvement: No
+
+Logistics:
+  Priority: Emerging
+  Overcapacity Severity: 40/100
+  Innovation Intensity: 70/100
+  Composite Score: 53.5/100
+  SSSR 1.0 Involvement: No
+
+Food Delivery:
+  Priority: High
+  Overcapacity Severity: 80/100
+  Innovation Intensity: 75/100
+  Composite Score: 76.5/100
+  SSSR 1.0 Involvement: No
+
+
+================================================================================
+CHINA ANTI-INVOLUTION BASKET - STOCK SELECTION REPORT
+================================================================================
+
+Total Selected Stocks: 50
+
+ELECTRIC VEHICLES:
+--------------------------------------------------
+1. 002594.SZ - 比亚迪股份
+   Exchange: SZSE
+   Market Cap: $95.0B
+   Ownership: POE
+   Anti-Involution Score: 100.0/100
+   Market Share: 28.0%
+   Innovation Score: 88/100
+
+2. 2015.HK - 理想汽车
+   Exchange: HKEX
+   Market Cap: $22.0B
+   Ownership: POE
+   Anti-Involution Score: 100.0/100
+   Market Share: 15.0%
+   Innovation Score: 85/100
+
+3. 9866.HK - 蔚来
+   Exchange: HKEX
+   Market Cap: $18.0B
+   Ownership: POE
+   Anti-Involution Score: 96.7/100
+   Market Share: 12.0%
+   Innovation Score: 90/100
+
+4. 9868.HK - 小鹏汽车
+   Exchange: HKEX
+   Market Cap: $12.0B
+   Ownership: POE
+   Anti-Involution Score: 90.3/100
+   Market Share: 8.0%
+   Innovation Score: 92/100
+
+5. 2015.HK - 理想汽车
+   Exchange: HKEX
+   Market Cap: $22.0B
+   Ownership: POE
+   Anti-Involution Score: 100.0/100
+   Market Share: 15.0%
+   Innovation Score: 85/100
+
+SEMICONDUCTORS:
+--------------------------------------------------
+1. 981.HK - 中芯国际
+   Exchange: HKEX
+   Market Cap: $45.0B
+   Ownership: SOE
+   Anti-Involution Score: 100.0/100
+   Market Share: 65.0%
+   Innovation Score: 85/100
+
+2. 688981.SS - 中芯国际
+   Exchange: SSE
+   Market Cap: $45.0B
+   Ownership: SOE
+   Anti-Involution Score: 100.0/100
+   Market Share: 65.0%
+   Innovation Score: 85/100
+
+3. 688012.SS - 中微公司
+   Exchange: SSE
+   Market Cap: $12.0B
+   Ownership: POE
+   Anti-Involution Score: 94.6/100
+   Market Share: 25.0%
+   Innovation Score: 88/100
+
+4. 688008.SS - 澜起科技
+   Exchange: SSE
+   Market Cap: $8.5B
+   Ownership: POE
+   Anti-Involution Score: 87.6/100
+   Market Share: 15.0%
+   Innovation Score: 80/100
+
+5. 688981.SS - 中芯国际
+   Exchange: SSE
+   Market Cap: $45.0B
+   Ownership: SOE
+   Anti-Involution Score: 100.0/100
+   Market Share: 65.0%
+   Innovation Score: 85/100
+
+SOLAR ENERGY:
+--------------------------------------------------
+1. 601012.SS - 隆基绿能
+   Exchange: SSE
+   Market Cap: $35.0B
+   Ownership: POE
+   Anti-Involution Score: 97.1/100
+   Market Share: 35.0%
+   Innovation Score: 75/100
+
+2. 002459.SZ - 晶澳科技
+   Exchange: SZSE
+   Market Cap: $22.0B
+   Ownership: POE
+   Anti-Involution Score: 95.9/100
+   Market Share: 18.0%
+   Innovation Score: 72/100
+
+3. 688599.SS - 天合光能
+   Exchange: SSE
+   Market Cap: $18.0B
+   Ownership: POE
+   Anti-Involution Score: 92.7/100
+   Market Share: 22.0%
+   Innovation Score: 70/100
+
+4. 002459.SZ - 晶澳科技
+   Exchange: SZSE
+   Market Cap: $22.0B
+   Ownership: POE
+   Anti-Involution Score: 95.9/100
+   Market Share: 18.0%
+   Innovation Score: 72/100
+
+5. 688599.SS - 天合光能
+   Exchange: SSE
+   Market Cap: $18.0B
+   Ownership: POE
+   Anti-Involution Score: 92.7/100
+   Market Share: 22.0%
+   Innovation Score: 70/100
+
+LITHIUM/BATTERIES:
+--------------------------------------------------
+1. 300750.SZ - 宁德时代
+   Exchange: SZSE
+   Market Cap: $180.0B
+   Ownership: POE
+   Anti-Involution Score: 100.0/100
+   Market Share: 52.0%
+   Innovation Score: 92/100
+
+2. 002466.SZ - 天齐锂业
+   Exchange: SZSE
+   Market Cap: $25.0B
+   Ownership: POE
+   Anti-Involution Score: 99.8/100
+   Market Share: 25.0%
+   Innovation Score: 70/100
+
+3. 002074.SZ - 国轩高科
+   Exchange: SZSE
+   Market Cap: $8.5B
+   Ownership: POE
+   Anti-Involution Score: 87.0/100
+   Market Share: 8.0%
+   Innovation Score: 80/100
+
+4. 002466.SZ - 天齐锂业
+   Exchange: SZSE
+   Market Cap: $25.0B
+   Ownership: POE
+   Anti-Involution Score: 99.8/100
+   Market Share: 25.0%
+   Innovation Score: 70/100
+
+5. 002074.SZ - 国轩高科
+   Exchange: SZSE
+   Market Cap: $8.5B
+   Ownership: POE
+   Anti-Involution Score: 87.0/100
+   Market Share: 8.0%
+   Innovation Score: 80/100
+
+STEEL:
+--------------------------------------------------
+1. 600019.SS - 宝武钢铁
+   Exchange: SSE
+   Market Cap: $65.0B
+   Ownership: SOE
+   Anti-Involution Score: 90.7/100
+   Market Share: 45.0%
+   Innovation Score: 45/100
+
+2. 000709.SZ - 河钢股份
+   Exchange: SZSE
+   Market Cap: $12.0B
+   Ownership: SOE
+   Anti-Involution Score: 85.8/100
+   Market Share: 15.0%
+   Innovation Score: 40/100
+
+3. 000825.SZ - 太钢不锈
+   Exchange: SZSE
+   Market Cap: $8.5B
+   Ownership: SOE
+   Anti-Involution Score: 78.1/100
+   Market Share: 12.0%
+   Innovation Score: 35/100
+
+4. 000709.SZ - 河钢股份
+   Exchange: SZSE
+   Market Cap: $12.0B
+   Ownership: SOE
+   Anti-Involution Score: 85.8/100
+   Market Share: 15.0%
+   Innovation Score: 40/100
+
+5. 000825.SZ - 太钢不锈
+   Exchange: SZSE
+   Market Cap: $8.5B
+   Ownership: SOE
+   Anti-Involution Score: 78.1/100
+   Market Share: 12.0%
+   Innovation Score: 35/100
+
+COAL MINING:
+--------------------------------------------------
+1. 601088.SS - 中国神华
+   Exchange: SSE
+   Market Cap: $85.0B
+   Ownership: SOE
+   Anti-Involution Score: 94.0/100
+   Market Share: 35.0%
+   Innovation Score: 25/100
+
+2. 601898.SS - 中煤能源
+   Exchange: SSE
+   Market Cap: $25.0B
+   Ownership: SOE
+   Anti-Involution Score: 87.7/100
+   Market Share: 18.0%
+   Innovation Score: 20/100
+
+3. 600188.SS - 兖矿能源
+   Exchange: SSE
+   Market Cap: $18.0B
+   Ownership: SOE
+   Anti-Involution Score: 85.9/100
+   Market Share: 15.0%
+   Innovation Score: 22/100
+
+4. 601898.SS - 中煤能源
+   Exchange: SSE
+   Market Cap: $25.0B
+   Ownership: SOE
+   Anti-Involution Score: 87.7/100
+   Market Share: 18.0%
+   Innovation Score: 20/100
+
+5. 600188.SS - 兖矿能源
+   Exchange: SSE
+   Market Cap: $18.0B
+   Ownership: SOE
+   Anti-Involution Score: 85.9/100
+   Market Share: 15.0%
+   Innovation Score: 22/100
+
+CHEMICALS:
+--------------------------------------------------
+1. 600309.SS - 万华化学
+   Exchange: SSE
+   Market Cap: $45.0B
+   Ownership: POE
+   Anti-Involution Score: 95.7/100
+   Market Share: 25.0%
+   Innovation Score: 65/100
+
+2. 002648.SZ - 卫星石化
+   Exchange: SZSE
+   Market Cap: $12.0B
+   Ownership: POE
+   Anti-Involution Score: 92.7/100
+   Market Share: 12.0%
+   Innovation Score: 60/100
+
+3. 000792.SZ - 盐湖股份
+   Exchange: SZSE
+   Market Cap: $15.0B
+   Ownership: SOE
+   Anti-Involution Score: 88.6/100
+   Market Share: 15.0%
+   Innovation Score: 50/100
+
+4. 002648.SZ - 卫星石化
+   Exchange: SZSE
+   Market Cap: $12.0B
+   Ownership: POE
+   Anti-Involution Score: 92.7/100
+   Market Share: 12.0%
+   Innovation Score: 60/100
+
+5. 000792.SZ - 盐湖股份
+   Exchange: SZSE
+   Market Cap: $15.0B
+   Ownership: SOE
+   Anti-Involution Score: 88.6/100
+   Market Share: 15.0%
+   Innovation Score: 50/100
+
+WIND ENERGY:
+--------------------------------------------------
+1. 002202.SZ - 金风科技
+   Exchange: SZSE
+   Market Cap: $28.0B
+   Ownership: POE
+   Anti-Involution Score: 94.7/100
+   Market Share: 32.0%
+   Innovation Score: 75/100
+
+2. 601615.SS - 明阳智能
+   Exchange: SSE
+   Market Cap: $18.0B
+   Ownership: POE
+   Anti-Involution Score: 93.2/100
+   Market Share: 18.0%
+   Innovation Score: 78/100
+
+3. 000531.SZ - 穗恒运A
+   Exchange: SZSE
+   Market Cap: $8.5B
+   Ownership: SOE
+   Anti-Involution Score: 72.2/100
+   Market Share: 8.0%
+   Innovation Score: 55/100
+
+4. 601615.SS - 明阳智能
+   Exchange: SSE
+   Market Cap: $18.0B
+   Ownership: POE
+   Anti-Involution Score: 93.2/100
+   Market Share: 18.0%
+   Innovation Score: 78/100
+
+5. 000531.SZ - 穗恒运A
+   Exchange: SZSE
+   Market Cap: $8.5B
+   Ownership: SOE
+   Anti-Involution Score: 72.2/100
+   Market Share: 8.0%
+   Innovation Score: 55/100
+
+LOGISTICS:
+--------------------------------------------------
+1. 002352.SZ - 顺丰控股
+   Exchange: SZSE
+   Market Cap: $35.0B
+   Ownership: POE
+   Anti-Involution Score: 90.4/100
+   Market Share: 28.0%
+   Innovation Score: 70/100
+
+2. 000063.SZ - 中兴通讯
+   Exchange: SZSE
+   Market Cap: $22.0B
+   Ownership: SOE
+   Anti-Involution Score: 85.8/100
+   Market Share: 15.0%
+   Innovation Score: 75/100
+
+3. 600233.SS - 圆通速递
+   Exchange: SSE
+   Market Cap: $12.0B
+   Ownership: POE
+   Anti-Involution Score: 85.2/100
+   Market Share: 18.0%
+   Innovation Score: 65/100
+
+4. 000063.SZ - 中兴通讯
+   Exchange: SZSE
+   Market Cap: $22.0B
+   Ownership: SOE
+   Anti-Involution Score: 85.8/100
+   Market Share: 15.0%
+   Innovation Score: 75/100
+
+5. 600233.SS - 圆通速递
+   Exchange: SSE
+   Market Cap: $12.0B
+   Ownership: POE
+   Anti-Involution Score: 85.2/100
+   Market Share: 18.0%
+   Innovation Score: 65/100
+
+FOOD DELIVERY:
+--------------------------------------------------
+1. 3690.HK - 美团
+   Exchange: HKEX
+   Market Cap: $85.0B
+   Ownership: POE
+   Anti-Involution Score: 100.0/100
+   Market Share: 65.0%
+   Innovation Score: 85/100
+
+2. BABA - 阿里巴巴
+   Exchange: US
+   Market Cap: $180.0B
+   Ownership: POE
+   Anti-Involution Score: 100.0/100
+   Market Share: 45.0%
+   Innovation Score: 82/100
+
+3. 9618.HK - 京东集团
+   Exchange: HKEX
+   Market Cap: $65.0B
+   Ownership: POE
+   Anti-Involution Score: 98.3/100
+   Market Share: 25.0%
+   Innovation Score: 80/100
+
+4. BABA - 阿里巴巴
+   Exchange: US
+   Market Cap: $180.0B
+   Ownership: POE
+   Anti-Involution Score: 100.0/100
+   Market Share: 45.0%
+   Innovation Score: 82/100
+
+5. 9618.HK - 京东集团
+   Exchange: HKEX
+   Market Cap: $65.0B
+   Ownership: POE
+   Anti-Involution Score: 98.3/100
+   Market Share: 25.0%
+   Innovation Score: 80/100
+
+SUMMARY STATISTICS:
+------------------------------
+Ownership Distribution:
+  POE: 31 stocks (62.0%)
+  SOE: 19 stocks (38.0%)
+
+Exchange Distribution:
+  SZSE: 22 stocks (44.0%)
+  HKEX: 8 stocks (16.0%)
+  SSE: 18 stocks (36.0%)
+  US: 2 stocks (4.0%)
+
+Market Cap Distribution:
+  Large Cap: 43 stocks (86.0%)
+  Mid Cap: 7 stocks (14.0%)
+
+============================================================
+CHINA ANTI-INVOLUTION CUSTOM BASKET INDEX
+============================================================
+Construction Date: 2025-08-17 17:56:55.503635
+Total Stocks: 40
+Methodology: Anti-Involution Policy-Based Selection
+
+SECTOR ALLOCATION:
+------------------------------
+Electric Vehicles            18.0%
+Semiconductors               15.0%
+Solar Energy                 12.0%
+Lithium/Batteries            15.0%
+Steel                        10.0%
+Coal Mining                   8.0%
+Chemicals                     7.0%
+Wind Energy                   6.0%
+Logistics                     5.1%
+Food Delivery                 4.4%
+
+STOCK COMPOSITION:
+------------------------------
+
+Electric Vehicles:
+  002594.SZ  BYD Company Limited                7.9% (Private Owned Enterprise)
+  2015.HK    Li Auto Inc                        3.8% (Private Owned Enterprise)
+  9866.HK    NIO Inc                            3.4% (Private Owned Enterprise)
+  9868.HK    XPeng Inc                          2.8% (Private Owned Enterprise)
+
+Semiconductors:
+  981.HK     SMIC                               5.1% (State Owned Enterprise)
+  688981.SS  SMIC                               5.1% (State Owned Enterprise)
+  688012.SS  Advanced Micro-Fabrication Equipment     2.6% (Private Owned Enterprise)
+  688008.SS  Montage Technology                 2.2% (Private Owned Enterprise)
+
+Solar Energy:
+  601012.SS  LONGi Green Energy Technology      3.6% (Private Owned Enterprise)
+  002459.SZ  JA Solar Technology                2.9% (Private Owned Enterprise)
+  002459.SZ  JA Solar Technology                2.9% (Private Owned Enterprise)
+  688599.SS  Trina Solar                        2.6% (Private Owned Enterprise)
+
+Lithium/Batteries:
+  300750.SZ  CATL                               7.6% (Private Owned Enterprise)
+  002466.SZ  Tianqi Lithium                     2.8% (Private Owned Enterprise)
+  002074.SZ  Gotion High-tech                   1.7% (Private Owned Enterprise)
+  002466.SZ  Tianqi Lithium                     2.8% (Private Owned Enterprise)
+
+Steel:
+  600019.SS  China Baowu Steel Group            4.6% (State Owned Enterprise)
+  000709.SZ  Hebei Iron & Steel                 1.9% (State Owned Enterprise)
+  000709.SZ  Hebei Iron & Steel                 1.9% (State Owned Enterprise)
+  000825.SZ  Taiyuan Iron & Steel               1.6% (State Owned Enterprise)
+
+Coal Mining:
+  601088.SS  China Shenhua Energy               3.2% (State Owned Enterprise)
+  601898.SS  China Coal Energy                  1.7% (State Owned Enterprise)
+  601898.SS  China Coal Energy                  1.7% (State Owned Enterprise)
+  600188.SS  Yancoal Australia                  1.4% (State Owned Enterprise)
+
+Chemicals:
+  600309.SS  Wanhua Chemical Group              2.6% (Private Owned Enterprise)
+  000792.SZ  Qinghai Salt Lake Industry         1.5% (State Owned Enterprise)
+  000792.SZ  Qinghai Salt Lake Industry         1.5% (State Owned Enterprise)
+  002648.SZ  Satellite Chemical                 1.3% (Private Owned Enterprise)
+
+Wind Energy:
+  002202.SZ  Xinjiang Goldwind Science & Technology     1.9% (Private Owned Enterprise)
+  601615.SS  Ming Yang Smart Energy Group       1.5% (Private Owned Enterprise)
+  601615.SS  Ming Yang Smart Energy Group       1.5% (Private Owned Enterprise)
+  000531.SZ  Guangzhou Development Group        1.0% (State Owned Enterprise)
+
+Logistics:
+  000063.SZ  ZTE Corporation                    1.3% (State Owned Enterprise)
+  000063.SZ  ZTE Corporation                    1.3% (State Owned Enterprise)
+  002352.SZ  SF Holding                         1.6% (Private Owned Enterprise)
+  600233.SS  YTO Express                        1.0% (Private Owned Enterprise)
+
+Food Delivery:
+  3690.HK    Meituan                            1.0% (Private Owned Enterprise)
+  BABA       Alibaba Group Holding              1.2% (Private Owned Enterprise)
+  9618.HK    JD.com                             1.0% (Private Owned Enterprise)
+  BABA       Alibaba Group Holding              1.2% (Private Owned Enterprise)
