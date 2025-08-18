@@ -1,0 +1,74 @@
+# HSTECH Estimation System Configuration
+
+# API Keys (replace with your actual keys)
+api_keys:
+  # Bloomberg API Configuration (Primary)
+  bloomberg_api_key: "YOUR_BLOOMBERG_API_KEY"  # For Bloomberg Cloud API
+  bloomberg_cloud_url: "https://api.bloomberg.com"  # Bloomberg Cloud API URL
+
+  # Fallback API Keys
+  alpha_vantage: "YOUR_ALPHA_VANTAGE_API_KEY"  # Fallback for currency data
+  yahoo_finance: null  # yfinance doesn't require API key (fallback)
+
+# Data Sources Configuration
+data_sources:
+  primary_data_source: "bloomberg"  # Primary: Bloomberg Terminal/Cloud API
+  fallback_data_source: "yahoo_finance"  # Fallback: Yahoo Finance
+  
+  # Update frequencies (in seconds)
+  price_update_frequency: 60
+  currency_update_frequency: 300
+  
+# Market Hours (UTC)
+market_hours:
+  hong_kong:
+    open: "01:30"  # 9:30 AM HKT
+    close: "08:00"  # 4:00 PM HKT
+  us:
+    open: "14:30"  # 9:30 AM EST
+    close: "21:00"  # 4:00 PM EST
+
+# Estimation Parameters
+estimation:
+  # Covariance calculation
+  lookback_days: 252  # 1 year of trading days
+  min_correlation_threshold: 0.3
+  
+  # Weighting for different estimation methods
+  weights:
+    adr_based: 0.6
+    covariance_based: 0.25
+    market_indicators: 0.15
+  
+  # Market indicators
+  indicators:
+    - "PDD"    # PDD Inc.
+    - "KWEB"   # KraneShares CSI China Internet ETF
+    
+# Currency Settings
+currency:
+  base: "HKD"
+  quote: "USD"
+  conversion_cache_minutes: 5
+
+# Logging Configuration
+logging:
+  level: "INFO"
+  file: "logs/hstech_estimation.log"
+  max_file_size: "10MB"
+  backup_count: 5
+
+# Database Configuration (optional)
+database:
+  type: "sqlite"
+  path: "data/hstech_estimation.db"
+  
+# Backtesting Configuration
+backtesting:
+  start_date: "2023-01-01"
+  end_date: "2024-08-18"
+  metrics:
+    - "mse"
+    - "mae"
+    - "correlation"
+    - "directional_accuracy"
