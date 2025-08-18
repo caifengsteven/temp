@@ -1,0 +1,32 @@
+2025-08-18 20:47:22,112 - __main__ - INFO - Starting Delphyne training
+2025-08-18 20:47:22,112 - __main__ - INFO - Using device: cuda
+2025-08-18 20:47:22,113 - __main__ - INFO - Model config: DelphyneConfig(num_layers=4, hidden_size=256, num_attention_heads=8, intermediate_size=1024, dropout_prob=0.1, patch_size=16, max_sequence_length=512, context_length=32, use_any_variate_attention=True, rotary_embedding=True, num_mixture_components=2, masking_ratio_alpha=5.0, masking_ratio_beta=10.0, average_masking_ratio=0.3, vocab_size=None, max_position_embeddings=16384, layer_norm_eps=1e-12, hidden_act='silu', use_glu=True, initializer_range=0.02)
+2025-08-18 20:47:22,113 - __main__ - INFO - Training config: TrainingConfig(learning_rate=0.0001, weight_decay=0.1, beta1=0.9, beta2=0.98, eps=1e-08, num_train_steps=100, warmup_steps=100, batch_size=4, gradient_accumulation_steps=1, use_mixed_precision=False, mixed_precision_dtype='bf16', save_steps=200, eval_steps=100, logging_steps=50, max_length=16384, dataloader_num_workers=4, device='cuda', log_level='INFO', use_wandb=False, project_name='delphyne', eval_batch_size=4, eval_accumulation_steps=1)
+2025-08-18 20:47:22,181 - __main__ - INFO - Model created with 8,463,880 parameters
+2025-08-18 20:47:22,237 - __main__ - INFO - Training batches: 250
+2025-08-18 20:47:22,238 - __main__ - INFO - Validation batches: 50
+2025-08-18 20:47:22,377 - __main__ - INFO - Trainer initialized with 8,463,880 parameters
+2025-08-18 20:47:22,378 - __main__ - INFO - Starting training...
+2025-08-18 20:47:34,674 - __main__ - INFO - Step 50: loss=1.0611, lr=5.00e-05
+2025-08-18 20:47:36,230 - __main__ - INFO - Step 100: loss=1.1345, lr=1.00e-04
+2025-08-18 20:47:43,652 - __main__ - INFO - Validation metrics: {'nll': 0.8785473811626434, 'crps': 0.5382480144500732, 'coverage_0.1': 0.0, 'coverage_0.2': 0.0, 'coverage_0.5': 0.0, 'coverage_0.8': 0.0, 'coverage_0.9': 0.0, 'loss': 1.2167749035358428}
+2025-08-18 20:47:43,797 - __main__ - INFO - Checkpoint saved: C:\Users\caifeng\Documents\augment-projects\A Pre-Trained Model for General and Financial Time Series\best_model.pt
+2025-08-18 20:47:45,460 - __main__ - INFO - Step 150: loss=1.3704, lr=1.00e-04
+2025-08-18 20:47:47,003 - __main__ - INFO - Step 200: loss=1.3044, lr=1.00e-04
+2025-08-18 20:47:54,152 - __main__ - INFO - Validation metrics: {'nll': 0.8498310089111328, 'crps': 0.5193482539057732, 'coverage_0.1': 0.0, 'coverage_0.2': 0.0, 'coverage_0.5': 0.0, 'coverage_0.8': 0.0, 'coverage_0.9': 0.0, 'loss': 1.1930282044410705}
+2025-08-18 20:47:54,289 - __main__ - INFO - Checkpoint saved: C:\Users\caifeng\Documents\augment-projects\A Pre-Trained Model for General and Financial Time Series\best_model.pt
+2025-08-18 20:47:54,426 - __main__ - INFO - Checkpoint saved: C:\Users\caifeng\Documents\augment-projects\A Pre-Trained Model for General and Financial Time Series\checkpoint_step_200.pt
+2025-08-18 20:47:56,056 - __main__ - INFO - Step 250: loss=1.2428, lr=1.00e-04
+2025-08-18 20:47:56,238 - __main__ - INFO - Epoch 0 completed. Train loss: 1.2215
+2025-08-18 20:48:03,505 - __main__ - INFO - Validation loss: 1.1902
+2025-08-18 20:48:03,652 - __main__ - INFO - Checkpoint saved: C:\Users\caifeng\Documents\augment-projects\A Pre-Trained Model for General and Financial Time Series\final_model.pt
+2025-08-18 20:48:03,653 - __main__ - INFO - Training completed in 41.27 seconds
+2025-08-18 20:48:03,653 - __main__ - INFO - Training completed successfully!
+2025-08-18 20:48:03,653 - __main__ - INFO - Final step: 250
+2025-08-18 20:48:03,653 - __main__ - INFO - Training time: 41.27 seconds
+2025-08-18 20:48:03,653 - __main__ - INFO - Final train loss: 1.2215
+2025-08-18 20:48:03,654 - __main__ - INFO - Final val loss: 1.1902
+2025-08-18 20:48:03,654 - __main__ - INFO - Testing model inference...
+2025-08-18 20:48:10,263 - __main__ - INFO - Inference successful! Distribution type: <class 'torch.distributions.mixture_same_family.MixtureSameFamily'>
+2025-08-18 20:48:10,280 - __main__ - INFO - Forecast generation successful! Shape: torch.Size([10, 4, 32])
+2025-08-18 20:48:10,280 - __main__ - INFO - All tests passed! Success!

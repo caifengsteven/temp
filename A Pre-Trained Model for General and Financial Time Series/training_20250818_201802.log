@@ -1,0 +1,12 @@
+2025-08-18 20:18:02,311 - __main__ - INFO - Starting Delphyne training
+2025-08-18 20:18:02,311 - __main__ - INFO - Using device: cuda
+2025-08-18 20:18:02,312 - __main__ - INFO - Model config: DelphyneConfig(num_layers=4, hidden_size=256, num_attention_heads=8, intermediate_size=1024, dropout_prob=0.1, patch_size=16, max_sequence_length=512, context_length=32, use_any_variate_attention=True, rotary_embedding=True, num_mixture_components=2, masking_ratio_alpha=5.0, masking_ratio_beta=10.0, average_masking_ratio=0.3, vocab_size=None, max_position_embeddings=16384, layer_norm_eps=1e-12, hidden_act='silu', use_glu=True, initializer_range=0.02)
+2025-08-18 20:18:02,313 - __main__ - INFO - Training config: TrainingConfig(learning_rate=0.0001, weight_decay=0.1, beta1=0.9, beta2=0.98, eps=1e-08, num_train_steps=200, warmup_steps=100, batch_size=8, gradient_accumulation_steps=1, use_mixed_precision=False, mixed_precision_dtype='bf16', save_steps=200, eval_steps=100, logging_steps=50, max_length=16384, dataloader_num_workers=4, device='cuda', log_level='INFO', use_wandb=False, project_name='delphyne', eval_batch_size=8, eval_accumulation_steps=1)
+2025-08-18 20:18:02,348 - __main__ - INFO - Model created with 8,463,880 parameters
+2025-08-18 20:18:02,391 - __main__ - INFO - Training batches: 125
+2025-08-18 20:18:02,391 - __main__ - INFO - Validation batches: 25
+2025-08-18 20:18:02,514 - __main__ - INFO - Trainer initialized with 8,463,880 parameters
+2025-08-18 20:18:02,514 - __main__ - INFO - Starting training...
+2025-08-18 20:18:19,340 - __main__ - INFO - Step 50: loss=1.4510, lr=5.00e-05
+2025-08-18 20:18:22,952 - __main__ - INFO - Step 100: loss=1.1729, lr=1.00e-04
+2025-08-18 20:18:30,103 - __main__ - ERROR - Training failed: Value is not broadcastable with batch_shape+event_shape: torch.Size([8, 128]) vs torch.Size([256]).
