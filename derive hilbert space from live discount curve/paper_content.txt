@@ -1,0 +1,8 @@
+Number of pages: 42
+
+==================================================
+EXTRACTING TEXT FROM PDF:
+==================================================
+
+--- Page 1 ---
+Error reading PDF: 'gbk' codec can't encode character '\u2020' in position 132: illegal multibyte sequence
