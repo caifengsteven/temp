@@ -1,0 +1,8 @@
+Strategy,Trades,Win Rate,Total P&L (HKD),Avg P&L/Trade,Sharpe Ratio,Status
+Inverse 10bps,150,40.67%,4.83,-0.035%,-0.26,✅ PROFIT
+Inverse 15bps,138,40.58%,-70.18,-0.101%,-0.74,❌ LOSS
+Inverse 25bps,97,41.24%,9.27,-0.036%,-0.25,✅ PROFIT
+Inverse 30bps,75,41.33%,-50.33,-0.108%,-0.75,❌ LOSS
+Inverse Only Discount Predictions,120,40.00%,-40.62,-0.099%,-0.70,❌ LOSS
+Inverse High Magnitude (>25bps),97,41.24%,9.27,-0.036%,-0.25,✅ PROFIT
+Inverse Very High Magnitude (>35bps),42,57.14%,188.05,0.454%,3.04,✅ PROFIT
