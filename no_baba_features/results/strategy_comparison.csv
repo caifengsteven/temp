@@ -1,5 +1,0 @@
-Strategy,Trades,Win Rate,Total P&L (HKD),Avg P&L/Trade,Sharpe Ratio,Status
-INVERSE: Fade All Predictions,162,40.74%,-95.07,-0.095%,-0.69,❌ LOSS
-INVERSE with 20bps Threshold,120,40.00%,-40.62,-0.099%,-0.70,❌ LOSS
-Only Trade Discounts,120,45.83%,-418.22,-0.303%,-2.14,❌ LOSS
-Mean Reversion (fade extremes),75,41.33%,-50.33,-0.108%,-0.75,❌ LOSS
