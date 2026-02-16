@@ -1,2 +1,0 @@
-# ORC Trading Platform - Backend
-

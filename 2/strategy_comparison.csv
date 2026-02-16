@@ -1,0 +1,5 @@
+Strategy,Total P&L ($),Avg Roll Cost ($),Max Drawdown ($),Sharpe Ratio,Win Rate (%),Num Rolls,Cost Savings vs Benchmark ($)
+Benchmark (Expiry Roll),-670.05,27.92,-655.66,-3.91,0.0,24,0.0
+Liquidity-Based,-2640.11,27.5,-2626.14,-4.231,0.0,96,1970.0600000000002
+Fair Value,-14772.07,26.62,-14757.44,-4.224,0.0,555,14102.02
+Momentum,-20775.19,26.13,-20760.19,-4.185,0.0,795,20105.14

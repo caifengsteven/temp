@@ -1,0 +1,47 @@
+{
+    "project_name": "Index Futures Roll Strategy Backtester",
+    "version": "1.0.0",
+    "description": "Python-based quantitative analysis tool for testing index futures roll strategies",
+    "author": "Matrix Agent",
+    "data_source": "Bloomberg API (simulated)",
+    "index_futures": [
+        {
+            "name": "S&P 500 E-Mini",
+            "bloomberg_ticker": "ES",
+            "exchange": "CME",
+            "multiplier": 50
+        },
+        {
+            "name": "NASDAQ 100 E-Mini",
+            "bloomberg_ticker": "NQ",
+            "exchange": "CME",
+            "multiplier": 20
+        },
+        {
+            "name": "Dow Jones Industrial Average",
+            "bloomberg_ticker": "YM",
+            "exchange": "CME",
+            "multiplier": 5
+        }
+    ],
+    "strategies": [
+        {
+            "name": "Liquidity-Based Strategy",
+            "description": "Roll when back month open interest exceeds front month"
+        },
+        {
+            "name": "Fair Value Strategy",
+            "description": "Roll based on deviation from theoretical fair value"
+        },
+        {
+            "name": "Momentum Strategy",
+            "description": "Roll based on spread momentum signals"
+        }
+    ],
+    "backtest_parameters": {
+        "start_date": "2020-01-01",
+        "end_date": "2025-12-31",
+        "risk_free_rate": 0.02,
+        "roll_window_days": 5
+    }
+}
