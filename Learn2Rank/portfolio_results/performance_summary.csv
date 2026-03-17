@@ -1,0 +1,10 @@
+,portfolio_return,portfolio_return,portfolio_return,portfolio_return,num_stocks,weight_concentration
+,mean,std,min,max,mean,mean
+method,,,,,,
+Black-Litterman,2.3732,1.4414,0.7329,4.4323,30.0,0.0446
+Factor-Based,1.7192,1.605,-0.2318,4.2095,30.0,0.036
+Maximum Sharpe,1.2161,0.4885,0.7329,2.0375,30.0,0.044
+Mean-Variance,0.7532,0.2555,0.3449,1.117,30.0,0.0425
+Minimum Variance,0.6358,0.3305,0.1326,1.0746,30.0,0.0443
+Rank-Based,2.4983,1.629,0.5222,4.5724,30.0,0.0429
+Risk Parity,0.9071,0.5352,0.2191,1.6696,30.0,0.042
