@@ -1,0 +1,111 @@
+%期货合约
+%使用几何收益率计算
+%增加合约换月处理
+%使用对数收益
+%回测
+clear
+close all
+index_sel = 3;
+
+%股指数据
+index_name_pool = {'沪深300股指期货','上证50股指期货','中证500股指期货'};
+index_code = {'IF','IH','IC'};    
+index_pool = {'CFFEX','CFFEX','CFFEX'};    
+sub_index_name = index_name_pool{index_sel};
+t0 = cell(size(index_name_pool));
+t0{1} = '2014-05-01';
+tt = datenum(2019,3,1);
+
+key_contracts = [index_pool{index_sel},'.',index_code{index_sel}];
+if isempty(t0{index_sel})
+    sql_str = 'select tradingdate,open,close from futuredata.price_if_data where  variety0 = ''%s'' and variety = ''%s'' order by tradingdate';
+    sub_sql_str = sprintf(sql_str,index_pool{index_sel},index_code{index_sel});
+else
+    sql_str = 'select tradingdate,open,close from futuredata.price_if_data where  variety0 = ''%s'' and variety = ''%s'' and tradingdate >= ''%s'' order by tradingdate';
+    sub_sql_str = sprintf(sql_str,index_pool{index_sel},index_code{index_sel},t0{index_sel});
+end
+index_data = fetchmysql(sub_sql_str,2);
+if ~isempty(tt)
+    index_data = index_data(datenum(index_data(:,1))<=tt,:);
+end
+
+sql_str2 = 'select tradingdate,symbol from futuredata.future_contracts_data where variety=''%s'' order by tradingdate';
+sub_sql_str2 = sprintf(sql_str2,key_contracts);
+index_contracts = fetchmysql(sub_sql_str2,2);
+[~,ia,ib] = intersect(index_data(:,1),index_contracts(:,1));
+index_data = index_data(ia,:);
+index_contracts = index_contracts(ib,:);
+index_contracts_num = cellfun(@(x) str2double(x(length(key_contracts)+1:end)),index_contracts(:,end));
+index_contracts_num = [0;diff(index_contracts_num)];
+index_contracts_num = ~eq(index_contracts_num,0);
+
+tref_str = index_data(:,1);
+tref = datenum(tref_str);
+o_c_price = cell2mat(index_data(:,2:3));
+open_price = o_c_price(:,1);
+close_price = o_c_price(:,2);
+%g_cum; g_jump g_inner %累计收益，跳价收益，日内收益
+%几何收益率
+g_cum = [0;log(close_price(2:end)./close_price(1:end-1))];
+g_jump = [0;log(open_price(2:end)./close_price(1:end-1))];
+g_inner = log(close_price./open_price);
+g_inner(1) = 0;
+
+g_cum(index_contracts_num) = 0;
+g_jump(index_contracts_num) = 0;
+g_inner(index_contracts_num) = 0;
+
+
+g_data_geo = [g_cum,g_inner,g_jump];
+%算术收益率
+g_cum_m = [0;close_price(2:end)./close_price(1:end-1)-1];
+g_jump_m = [0;open_price(2:end)./close_price(1:end-1)-1];
+g_inner_m = close_price./open_price-1;
+g_inner_m(1) = 0;
+
+g_cum_m(index_contracts_num) = 0;
+g_jump_m(index_contracts_num) = 0;
+g_inner_m(index_contracts_num) = 0;
+
+g_data_math = [g_cum_m,g_inner_m,g_jump_m];
+
+
+fee = [1.5/10000,3/10000];
+g1 = g_jump;
+g1(~index_contracts_num) = g1(~index_contracts_num)-fee(1)*2;
+g2 = g_jump;
+g2(~index_contracts_num) = g2(~index_contracts_num)-fee(2)*2;
+
+
+%obj = zeros(3,1);
+colors = [0.64,0.78,0.18;0.93,0.69,0.13;ones(1,3)*0.65];
+g_info = {'无手续费','手续费万一点五','手续费万三','基准'};
+obj = plot(tref,1+cumsum([g_jump,g1,g2,g_cum]),'-','linewidth',2);
+obj(1).Color = 'r';
+obj(end).Color = colors(3,:);
+%obj(1)= plot(tref,cumprod(1+g_jump_m),'r-','linewidth',2);
+%hold on
+%obj(2)= plot(tref,cumprod(1+g_cum_m),'k-','linewidth',2,'color',colors(3,:));
+%obj(1)= plot(tref,cumsum([g_cum,g_inner,g_jump]),'linewidth',2);
+%plot(tref([1,end]),[0,0],'k-','LineWidth',2);
+
+set(gca,'XTickLabelRotation',90);
+set(gca,'XTick',tref(floor(linspace(1,length(tref),40))),'xlim',tref([1,end]));
+datetick('x','yyyymmdd','keepticks');
+set(gca,'fontsize',12);
+
+box off
+set(gca,'linewidth',1.5);
+legend(obj,g_info,'Location','northwest',...
+    'NumColumns',length(obj),'location','northwest')
+legend('boxoff')
+
+val = get(gca,'YTick');
+labels = num2str(val'*100,'%5.1f%%');
+% Adjust labels on plot
+set(gca,'yticklabel',labels)
+title(sub_index_name)
+setpixelposition(gcf,[416,397,961,420]);
+
+
+
