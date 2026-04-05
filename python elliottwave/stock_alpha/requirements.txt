@@ -1,7 +1,0 @@
-PyQt5
-tqdm
-numpy
-pandas
-matplotlib
-notebook
-tensorflow
