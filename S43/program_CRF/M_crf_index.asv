@@ -1,0 +1,131 @@
+%{
+CRF
+测试国内指数
+matlab
+载入数据
+按照格式写入data文件
+CRF 分析
+matlab
+调入结果数据
+回测分析
+dlmwrite('test_ad.data',x,' ')
+x = dlmread('train.data')
+%}
+clear
+
+%指数代码
+index_code = '000300';
+
+%模式选择，日度、周度、月度
+f_sel = 1;
+if f_sel == 1
+    freq = 'd';
+elseif f_sel==2
+    freq = 'w';
+else
+    freq = 'm';
+end
+
+%文件路径设置
+pn0 = pwd();
+pn_data = fullfile(pn0,'data/index_a');
+pn_out = fullfile(pn0,'result/index_a');
+if ~exist(pn_data,'dir')
+    mkdir(pn_data)
+end
+if ~exist(pn_out,'dir')
+    mkdir(pn_out)
+end
+fn_train = fullfile(pn_data,sprintf('%s-train.data',index_code)); %建模数据文件名
+fn_test = fullfile(pn_data,sprintf('%s-test.data',index_code)); %待分析数据文件名
+fn_out = fullfile(pn_out,sprintf('%s-pred.data',index_code)); %预测结果文件名
+fn_model = fullfile(pn_out,sprintf('%s-model',index_code)); %模型文件名
+
+%载入不同频率的数据
+if strcmp(freq,'d')
+    sql_str_index = ['select tradeDate,closeIndex from yuqerdata.yq_index ',...
+        'where symbol = "%s" and tradeDate>="2005-04-12" and tradeDate <="2018-01-17" order by tradeDate'] ;
+elseif strcmp(freq,'w')
+    sql_str_index = ['select endDate,closePrice from yuqerdata.yq_MktIdxwGet ',...
+        'where ticker = "%s" and endDate>="2005-04-12" and endDate <="2018-01-17" order by endDate'] ;
+else
+    sql_str_index = ['select endDate,closePrice from yuqerdata.yq_index_month ',...
+        'where symbol = "%s" and endDate>="2005-04-12" and endDate <="2018-01-17" order by endDate'] ;
+end
+x = fetchmysql(sprintf(sql_str_index,index_code),2);
+tref = x(:,1);
+closeprice = cell2mat(x(:,2));
+%计算收益率
+chg = zeros(size(closeprice));
+chg(2:end) = closeprice(2:end)./closeprice(1:end-1)-1;
+%计算指标 根据文献来
+n = 3;
+T_chg = length(chg);
+f1 = zeros(T_chg,1);  %连续涨跌序列
+f2 = f1;   %波动率
+for i = n:T_chg
+    sub_chg = chg(i-n+1:i);
+    f2(i) = std(sub_chg);
+    if all(sub_chg>0)
+        f1(i) = 1;
+    elseif all(sub_chg<0)
+        f1(i) = -1;
+    else
+        f1(i) = 0;
+    end
+end
+%f1,chg,f2分别为连涨连跌指标、收益率、收益率波动率
+xdata = [f1,chg,f2];
+%每日涨跌label
+y = chg>0;
+y(1:end-1) = y(2:end,:); %建模的时候，预测的是第二天的涨跌，所以label迁移，建模使用的时候
+                         %注意当日的数据不可使用（label）没有
+m = floor(size(xdata,1)/2);%一半建模，一半验证
+x_train = [xdata(1:m-1,:),y(1:m-1,:)]; %注意，最后一天的数据没有使用
+                                       %m-1 因为最后一个交易日没有label（label要等到下一个交易完成才可以用）
+tref_c = tref(1:m-1);
+
+x_test = xdata(m+1:end,:);
+tref_t = tref(m+1:end);
+%预测
+%写入数据
+dlmwrite(fn_train,x_train,' ')   %建模数据 X y
+dlmwrite(fn_test,x_test,' ');    %待分析数据 X
+%命令1 建立模型，并输出
+order1 = sprintf('crf_learn.exe template "%s" "%s"',fn_train,fn_model);
+dos(order1)
+%命令2 预测待分析数据，并输出结果
+order2 = sprintf('crf_test.exe -m "%s" "%s" > "%s"',fn_model,fn_test,fn_out);
+dos(order2)
+%载入结果
+y_pred = dlmread(fn_out);
+
+y_pred(y_pred(:,end)==0,end) = -1; %0跌，1涨
+ind = y_pred(:,end);
+ind(2:end) = ind(1:end-1);%信号第二天使用
+ind(1) = 0;
+
+title_str = index_code;
+t_str = cellfun(@(x) [x(1:4),x(6:7),x(9:10)],tref_t,'UniformOutput',false);
+T = length(t_str);
+r = x_test(:,2).*ind;
+
+id = find(diff(ind))+1;
+r(id) =  r(id)-1.5/1000;
+
+y_ls = cumprod(r+1);
+y_ref = x_test(:,2);
+y_ref(1) = 0;
+
+y_ref = cumprod(1+y_ref);
+
+h=figure;
+plot([y_ls,y_ref],'-','LineWidth',2);
+set(gca,'xlim',[0,T]);
+set(gca,'XTick',floor(linspace(1,T,15)));
+set(gca,'XTickLabel',t_str(floor(linspace(1,T,15))));
+set(gca,'XTickLabelRotation',90)    
+setpixelposition(h,[223,365,1345,420]);
+box off
+title(title_str)
+legend({'CRF','ref'},'NumColumns',2,'Location','best')

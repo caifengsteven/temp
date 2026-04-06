@@ -1,0 +1,12 @@
+%{
+策略执行分两步
+1 python框架运行得到曲线
+2 matlab可视化
+
+python部分有
+1A股指数成分股 已经对接到S37，这里不再赘述
+2国内期货 M_S34_W_future.py  M_S43_W_future_paraTest.py是调参程序
+3外汇 M_S43_W_exchange.py  M_S43_W_exchange_paraTest.py是调参程序
+4道指
+
+%}
