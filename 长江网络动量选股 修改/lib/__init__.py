@@ -1,1 +1,0 @@
-# Quantitative utilities library
