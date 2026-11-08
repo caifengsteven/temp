@@ -1,0 +1,366 @@
+arxiv_id,title,published,categories,china_market,basis_focus,label,confidence,url
+2411.15712,Research on Optimal Portfolio Based on Multifractal Features,2024-11-24,"[""q-fin.PM""]",0.99,0.03,neither,0.98,https://arxiv.org/abs/2411.15712
+2109.15060,Stock index futures trading impact on spot price volatility. The CSI 300 studied with a TGARCH model,2021-08-29,"[""q-fin.ST"", ""q-fin.GN""]",0.99,0.12,related,0.72,https://arxiv.org/abs/2109.15060
+2606.09478,Volatility Forecasting and Return Prediction under Market Regimes: Evidence from High-Frequency Chinese Equity Data,2026-06-08,"[""q-fin.TR"", ""q-fin.CP"", ""q-fin.MF""]",0.98,0.03,neither,0.98,https://arxiv.org/abs/2606.09478
+2605.28359,From Knowing to Doing: A Memory-Controlled Benchmark for LLM Trading Agents on Stock Markets,2026-05-27,"[""cs.AI"", ""q-fin.TR""]",0.98,0.04,neither,0.97,https://arxiv.org/abs/2605.28359
+2510.21147,Hierarchical AI Multi-Agent Fundamental Investing: Evidence from China's A-Share Market,2025-10-24,"[""q-fin.PM"", ""cs.AI""]",0.98,0.03,neither,1.0,https://arxiv.org/abs/2510.21147
+2508.18592,Combined machine learning for stock selection strategy based on dynamic weighting methods,2025-08-26,"[""q-fin.ST""]",0.98,0.02,neither,1.0,https://arxiv.org/abs/2508.18592
+2505.17388,Stochastic Price Dynamics in Response to Order Flow Imbalance: Evidence from CSI 300 Index Futures,2025-05-23,"[""q-fin.MF"", ""q-fin.CP"", ""q-fin.TR""]",0.98,0.07,related,0.88,https://arxiv.org/abs/2505.17388
+2501.03171,High-frequency lead-lag relationships in the Chinese stock index futures market: tick-by-tick dynamics of calendar spreads,2025-01-06,"[""q-fin.CP"", ""q-fin.ST"", ""stat.AP""]",0.98,0.32,china_futures_basis,0.98,https://arxiv.org/abs/2501.03171
+2404.12001,"Internet sentiment exacerbates intraday overtrading, evidence from A-Share market",2024-07-12,"[""q-fin.CP"", ""cs.CE""]",0.98,0.03,neither,1.0,https://arxiv.org/abs/2404.12001
+2307.08649,Joint Latent Topic Discovery and Expectation Modeling for Financial Markets,2023-06-01,"[""q-fin.ST"", ""cs.LG""]",0.98,0.05,neither,0.98,https://arxiv.org/abs/2307.08649
+2304.04676,Adjust factor with volatility model using MAXFLAT low-pass filter and construct portfolio in China A share market,2023-04-24,"[""q-fin.RM"", ""q-fin.ST""]",0.98,0.03,neither,1.0,https://arxiv.org/abs/2304.04676
+2204.02891,Stochastic volatility modeling of high-frequency CSI 300 index and dynamic jump prediction driven by machine learning,2023-01-03,"[""q-fin.ST"", ""q-fin.MF""]",0.98,0.04,neither,0.94,https://arxiv.org/abs/2204.02891
+2206.12528,Predicting Stock Price Movement after Disclosure of Corporate Annual Reports: A Case Study of 2021 China CSI 300 Stocks,2022-07-22,"[""q-fin.ST"", ""cs.AI""]",0.98,0.02,neither,1.0,https://arxiv.org/abs/2206.12528
+2204.06692,Stability of China's Stock Market: Measure and Forecast by Ricci Curvature on Network,2022-04-14,"[""q-fin.ST"", ""cs.SI"", ""q-fin.MF""]",0.98,0.03,neither,1.0,https://arxiv.org/abs/2204.06692
+2204.05199,The short-term effect of COVID-19 pandemic on China's crude oil futures market: A study based on multifractal analysis,2022-04-11,"[""q-fin.CP""]",0.98,0.06,related,0.97,https://arxiv.org/abs/2204.05199
+2203.12457,"Neural Network and Order Flow, Technical Analysis: Predicting short-term direction of futures contract",2022-02-23,"[""q-fin.ST"", ""q-fin.TR""]",0.98,0.07,related,0.97,https://arxiv.org/abs/2203.12457
+2106.09250,Effects of Covid-19 Pandemic on Chinese Commodity Futures Markets,2021-06-17,"[""q-fin.GN"", ""econ.GN"", ""q-fin.EC""]",0.98,0.1,related,0.97,https://arxiv.org/abs/2106.09250
+2105.03844,Reinforcement Learning with Expert Trajectory For Quantitative Trading,2021-05-09,"[""cs.LG"", ""cs.AI"", ""q-fin.TR""]",0.98,0.07,related,0.8,https://arxiv.org/abs/2105.03844
+2103.00264,Forecasting high-frequency financial time series: an adaptive learning approach with the order book data,2021-02-27,"[""q-fin.ST"", ""econ.EM"", ""q-fin.TR"", ""stat.AP""]",0.98,0.09,related,0.74,https://arxiv.org/abs/2103.00264
+2011.04939,Pattern recognition in micro-trading behaviors before stock price jumps: A framework based on multivariate time series analysis,2021-02-26,"[""q-fin.ST"", ""q-fin.TR""]",0.98,0.03,neither,1.0,https://arxiv.org/abs/2011.04939
+1912.00712,Financial Market Directional Forecasting With Stacked Denoising Autoencoder,2019-12-02,"[""q-fin.CP"", ""cs.LG""]",0.98,0.03,neither,0.86,https://arxiv.org/abs/1912.00712
+1905.09640,Detection of Chinese Stock Market Bubbles with LPPLS Confidence Indicator,2019-06-13,"[""q-fin.ST"", ""stat.AP""]",0.98,0.03,neither,0.97,https://arxiv.org/abs/1905.09640
+1805.11954,Long Short-Term Memory Networks for CSI300 Volatility Prediction with Baidu Search Volume,2018-05-29,"[""q-fin.ST"", ""cs.LG"", ""stat.ML""]",0.98,0.03,neither,0.89,https://arxiv.org/abs/1805.11954
+1710.07470,Profitability of simple stationary technical trading rules with high-frequency data of Chinese Index Futures,2017-10-20,"[""q-fin.ST""]",0.98,0.05,related,0.89,https://arxiv.org/abs/1710.07470
+1004.4402,Characteristics of Real Futures Trading Networks,2011-02-27,"[""q-fin.ST"", ""cond-mat.stat-mech""]",0.98,0.04,related,0.97,https://arxiv.org/abs/1004.4402
+2412.18563,A Deep Reinforcement Learning Framework for Dynamic Portfolio Optimization: Evidence from China's Stock Market,2025-02-20,"[""q-fin.PM""]",0.97,0.03,neither,1.0,https://arxiv.org/abs/2412.18563
+2411.18997,GRU-PFG: Extract Inter-Stock Correlation from Stock Factors with Graph Neural Network,2024-11-28,"[""q-fin.CP"", ""cs.AI""]",0.97,0.03,neither,0.98,https://arxiv.org/abs/2411.18997
+2402.06656,DiffsFormer: A Diffusion Transformer on Stock Factor Augmentation,2024-02-05,"[""q-fin.ST"", ""cs.AI"", ""cs.LG""]",0.97,0.04,neither,0.97,https://arxiv.org/abs/2402.06656
+2303.16532,Futures Quantitative Investment with Heterogeneous Continual Graph Neural Network,2023-12-19,"[""cs.LG"", ""q-fin.ST"", ""stat.AP""]",0.97,0.09,related,0.96,https://arxiv.org/abs/2303.16532
+2212.02721,A Novel Deep Reinforcement Learning Based Automated Stock Trading System Using Cascaded LSTM Networks,2023-07-26,"[""q-fin.CP"", ""cs.AI"", ""q-fin.PM""]",0.97,0.03,neither,0.98,https://arxiv.org/abs/2212.02721
+2112.02947,The Price Impact of Generalized Order Flow Imbalance,2021-12-06,"[""q-fin.TR""]",0.97,0.03,neither,1.0,https://arxiv.org/abs/2112.02947
+2103.15304,A Comparative Evaluation of Predominant Deep Learning Quantified Stock Trading Strategies,2021-04-06,"[""q-fin.TR"", ""cs.LG""]",0.97,0.03,neither,0.96,https://arxiv.org/abs/2103.15304
+2006.11119,Manifold Feature Index: A novel index based on high-dimensional data simplification,2020-06-19,"[""q-fin.ST""]",0.97,0.03,neither,1.0,https://arxiv.org/abs/2006.11119
+1805.00205,Robust Log-Optimal Strategy with Reinforcement Learning,2018-05-01,"[""q-fin.PM""]",0.97,0.03,neither,0.96,https://arxiv.org/abs/1805.00205
+2409.06289,Automate Strategy Finding with LLM in Quant Investment,2025-11-03,"[""q-fin.PM"", ""cs.LG"", ""q-fin.PR""]",0.96,0.05,neither,0.97,https://arxiv.org/abs/2409.06289
+2508.06914,Prediction of high-frequency futures return directions based on the mean uncertainty classification methods: An application in China's future market,2025-08-09,"[""q-fin.TR""]",0.96,0.07,related,0.98,https://arxiv.org/abs/2508.06914
+2501.16697,An Analysis of the Interdependence Between Peanut and Other Agricultural Commodities in China's Futures Market,2025-02-25,"[""q-fin.CP""]",0.96,0.09,related,0.98,https://arxiv.org/abs/2501.16697
+2407.18519,TCGPN: Temporal-Correlation Graph Pre-trained Network for Stock Forecasting,2024-07-26,"[""cs.LG"", ""cs.AI"", ""q-fin.ST"", ""stat.ML""]",0.96,0.04,neither,0.96,https://arxiv.org/abs/2407.18519
+2207.04887,A note on VIX for postprocessing quantitative strategies,2022-07-08,"[""q-fin.ST"", ""cs.LG""]",0.96,0.05,neither,0.55,https://arxiv.org/abs/2207.04887
+1912.10343,Design of High-Frequency Trading Algorithm Based on Machine Learning,2019-12-21,"[""q-fin.TR""]",0.96,0.08,related,0.88,https://arxiv.org/abs/1912.10343
+2404.01624,Intelligent Optimization of Mine Environmental Damage Assessment and Repair Strategies Based on Deep Learning,2024-04-02,"[""cs.CE"", ""q-fin.CP""]",0.95,0.03,neither,0.97,https://arxiv.org/abs/2404.01624
+2305.01642,Construct sparse portfolio with mutual fund's favourite stocks in China A share market,2023-04-24,"[""q-fin.PM""]",0.95,0.02,neither,1.0,https://arxiv.org/abs/2305.01642
+2408.06661,The Efficient Tail Hypothesis: An Extreme Value Perspective on Market Efficiency,2025-07-01,"[""q-fin.ST""]",0.94,0.1,related,0.98,https://arxiv.org/abs/2408.06661
+1811.08076,Modeling aggressive market order placements with Hawkes factor models,2018-11-20,"[""q-fin.TR""]",0.94,0.03,neither,0.98,https://arxiv.org/abs/1811.08076
+1504.06397,Testing the performance of technical trading rules in the Chinese market,2015-04-24,"[""q-fin.TR"", ""q-fin.ST""]",0.94,0.03,neither,0.98,https://arxiv.org/abs/1504.06397
+2403.01745,Uncovering the Sino-US dynamic risk spillovers effects: Evidence from agricultural futures markets,2024-03-04,"[""econ.GN"", ""q-fin.EC"", ""q-fin.RM""]",0.93,0.06,related,0.98,https://arxiv.org/abs/2403.01745
+2401.13670,"""The Roller Conduction Effect"" from the A-share Data Evidence",2023-10-16,"[""econ.GN"", ""q-fin.EC""]",0.93,0.03,neither,1.0,https://arxiv.org/abs/2401.13670
+2212.01557,Compacter networks as a defensive mechanism: How firms clustered during 2015 Financial Crisis in China,2022-12-03,"[""econ.GN"", ""q-fin.EC""]",0.93,0.02,neither,1.0,https://arxiv.org/abs/2212.01557
+2207.10071,DDPG based on multi-scale strokes for financial time series trading strategy,2022-06-05,"[""q-fin.TR"", ""cs.AI"", ""cs.LG""]",0.93,0.03,neither,0.94,https://arxiv.org/abs/2207.10071
+1809.08390,Constructing Financial Sentimental Factors in Chinese Market Using Natural Language Processing,2018-09-22,"[""q-fin.CP"", ""cs.CL""]",0.93,0.03,neither,1.0,https://arxiv.org/abs/1809.08390
+2509.23609,Large Language Models and Futures Price Factors in China,2025-09-28,"[""q-fin.PR"", ""cs.LG""]",0.92,0.1,related,0.97,https://arxiv.org/abs/2509.23609
+2205.08936,Market Making via Reinforcement Learning in China Commodity Market,2022-07-01,"[""q-fin.TR""]",0.92,0.13,related,0.88,https://arxiv.org/abs/2205.08936
+2203.12456,Reducing overestimating and underestimating volatility via the augmented blending-ARCH model,2022-03-15,"[""q-fin.ST"", ""cs.LG""]",0.92,0.03,neither,0.96,https://arxiv.org/abs/2203.12456
+2004.01917,The illiquidity network of stocks in China's market crash,2021-11-12,"[""q-fin.CP"", ""physics.soc-ph""]",0.92,0.03,neither,1.0,https://arxiv.org/abs/2004.01917
+2107.11255,"Margin trading, short selling and corporate green innovation",2021-08-11,"[""econ.GN"", ""q-fin.EC"", ""q-fin.GN""]",0.92,0.02,neither,0.97,https://arxiv.org/abs/2107.11255
+1902.08938,Working Paper: Improved Stock Price Forecasting Algorithm based on Feature-weighed Support Vector Regression by using Grey Correlation Degree,2019-02-24,"[""q-fin.CP"", ""q-fin.ST""]",0.92,0.03,neither,1.0,https://arxiv.org/abs/1902.08938
+2510.21165,The local Gaussian correlation networks among return tails in the Chinese stock market,2025-10-24,"[""q-fin.GN"", ""cs.SY"", ""eess.SY"", ""nlin.CD"", ""physics.data-an"", ""physics.soc-ph""]",0.91,0.03,neither,1.0,https://arxiv.org/abs/2510.21165
+2012.13773,Deep Reinforcement Learning for Long-Short Portfolio Optimization,2025-03-15,"[""q-fin.CP"", ""cs.LG"", ""q-fin.PM""]",0.91,0.04,neither,1.0,https://arxiv.org/abs/2012.13773
+2402.00515,Developing A Multi-Agent and Self-Adaptive Framework with Deep Reinforcement Learning for Dynamic Portfolio Risk Management,2024-09-10,"[""q-fin.PM"", ""cs.LG""]",0.91,0.04,neither,0.96,https://arxiv.org/abs/2402.00515
+2305.04838,An Empirical Study of Capital Asset Pricing Model based on Chinese A-share Trading Data,2023-04-01,"[""q-fin.ST""]",0.91,0.02,neither,1.0,https://arxiv.org/abs/2305.04838
+2201.02987,Portfolio selection models based on interval-valued conditional value at risk (ICVaR) and empirical analysis,2022-07-23,"[""q-fin.PM""]",0.91,0.03,neither,1.0,https://arxiv.org/abs/2201.02987
+2105.12293,Deep Kernel Gaussian Process Based Financial Market Predictions,2021-05-26,"[""q-fin.CP""]",0.91,0.03,neither,1.0,https://arxiv.org/abs/2105.12293
+2008.01277,Generalized Autoregressive Score asymmetric Laplace Distribution and Extreme Downward Risk Prediction,2020-10-13,"[""q-fin.RM""]",0.91,0.03,neither,0.98,https://arxiv.org/abs/2008.01277
+1702.07374,Time series momentum and contrarian effects in the Chinese stock market,2017-02-07,"[""q-fin.ST"", ""q-fin.TR""]",0.91,0.03,neither,1.0,https://arxiv.org/abs/1702.07374
+1608.03053,Dynamic structure of stock communities: A comparative study between stock returns and turnover rates,2016-08-10,"[""q-fin.ST""]",0.91,0.02,neither,1.0,https://arxiv.org/abs/1608.03053
+1308.1154,Dynamic evolution of cross-correlations in the Chinese stock market,2013-12-17,"[""q-fin.ST""]",0.91,0.02,neither,1.0,https://arxiv.org/abs/1308.1154
+2512.03709,The Effect of High-Speed Rail Connectivity on Capital Market Earnings Forecast Error: Evidence from the Chinese Stock Market,2025-12-03,"[""q-fin.GN""]",0.9,0.02,neither,1.0,https://arxiv.org/abs/2512.03709
+2409.18422,Uncertainty and financial market resilience: Evidence from China,2025-11-12,"[""q-fin.RM""]",0.9,0.04,neither,0.96,https://arxiv.org/abs/2409.18422
+2404.00028,Anti-correlation network among China A-shares,2025-10-24,"[""q-fin.ST"", ""econ.GN"", ""physics.soc-ph"", ""q-fin.EC"", ""q-fin.GN""]",0.9,0.03,neither,1.0,https://arxiv.org/abs/2404.00028
+2503.09988,Label Unbalance in High-frequency Trading,2025-03-21,"[""cs.LG"", ""cs.AI"", ""q-fin.CP""]",0.9,0.08,related,0.96,https://arxiv.org/abs/2503.09988
+2403.01360,"""Digitwashing"": The Gap between Words and Deeds in Digital Transformation and Stock Price Crash Risk",2024-03-03,"[""q-fin.ST"", ""econ.GN"", ""q-fin.EC""]",0.9,0.02,neither,1.0,https://arxiv.org/abs/2403.01360
+2312.02472,An explanation for the distribution characteristics of stock returns,2023-12-05,"[""q-fin.ST""]",0.9,0.03,neither,1.0,https://arxiv.org/abs/2312.02472
+2203.12603,Solar Term Anomaly in China Stock Market: Evidence from Shanghai Index,2023-02-10,"[""q-fin.GN"", ""q-fin.PR""]",0.9,0.03,neither,1.0,https://arxiv.org/abs/2203.12603
+2212.01553,"Short-term shock, long-lasting payment: Evidence from the Lushan Earthquake",2022-12-27,"[""econ.GN"", ""q-fin.EC""]",0.9,0.02,neither,1.0,https://arxiv.org/abs/2212.01553
+2112.03170,"A revised comparison between FF five-factor model and three-factor model,based on China's A-share market",2021-10-16,"[""q-fin.GN"", ""econ.GN"", ""q-fin.EC""]",0.9,0.02,neither,1.0,https://arxiv.org/abs/2112.03170
+2107.00261,Price change prediction of ultra high frequency financial data based on temporal convolutional network,2021-07-01,"[""q-fin.CP""]",0.9,0.03,neither,1.0,https://arxiv.org/abs/2107.00261
+1806.07604,Multifractal characteristics and return predictability in the Chinese stock markets,2018-06-20,"[""q-fin.ST""]",0.9,0.02,neither,1.0,https://arxiv.org/abs/1806.07604
+1608.03058,Dynamic portfolio strategy using clustering approach,2016-08-10,"[""q-fin.ST""]",0.9,0.02,neither,1.0,https://arxiv.org/abs/1608.03058
+1003.2459,Complex stock trading network among investors,2010-05-25,"[""q-fin.ST""]",0.9,0.02,neither,1.0,https://arxiv.org/abs/1003.2459
+2508.17423,"Carbon Disclosure Effect, Corporate Fundamentals, and Net-zero Emission Target: Evidence from China",2025-08-24,"[""econ.GN"", ""q-fin.EC""]",0.89,0.02,neither,1.0,https://arxiv.org/abs/2508.17423
+2404.08935,Developing An Attention-Based Ensemble Learning Framework for Financial Portfolio Optimisation,2024-04-13,"[""q-fin.PM"", ""cs.CE"", ""cs.LG""]",0.89,0.04,neither,0.97,https://arxiv.org/abs/2404.08935
+2009.08030,The impact of COVID-19 on the stock market crash risk in China,2021-08-17,"[""q-fin.GN""]",0.89,0.02,neither,1.0,https://arxiv.org/abs/2009.08030
+2007.07487,How does stock market reflect the change in economic demand? A study on the industry-specific volatility spillover networks of China's stock market during the outbreak of COVID-19,2020-07-15,"[""q-fin.GN""]",0.89,0.03,neither,1.0,https://arxiv.org/abs/2007.07487
+1905.09633,Diagnosis and Prediction of the 2015 Chinese Stock Market Bubble,2019-06-13,"[""q-fin.ST"", ""stat.AP""]",0.89,0.03,neither,1.0,https://arxiv.org/abs/1905.09633
+1405.1247,Stylized facts of price gaps in limit order books: Evidence from Chinese stocks,2014-05-06,"[""q-fin.TR"", ""q-fin.ST""]",0.89,0.02,neither,1.0,https://arxiv.org/abs/1405.1247
+2309.10986,Research on the Impact of Executive Shareholding on New Investment in Enterprises Based on Multivariable Linear Regression Model,2023-09-20,"[""math.NA"", ""cs.NA"", ""econ.GN"", ""q-fin.EC""]",0.88,0.02,neither,1.0,https://arxiv.org/abs/2309.10986
+2110.02492,Value-at-Risk forecasting model based on normal inverse Gaussian distribution driven by dynamic conditional score,2021-10-06,"[""q-fin.RM""]",0.88,0.03,neither,1.0,https://arxiv.org/abs/2110.02492
+2005.04955,Multi-Graph Convolutional Network for Relationship-Driven Stock Movement Prediction,2020-10-26,"[""q-fin.ST"", ""cs.LG""]",0.88,0.04,neither,1.0,https://arxiv.org/abs/2005.04955
+1912.07165,Predicting intraday jumps in stock prices using liquidity measures and technical indicators,2019-12-16,"[""q-fin.TR""]",0.88,0.03,neither,1.0,https://arxiv.org/abs/1912.07165
+1802.01143,The Power of Trading Polarity: Evidence from China Stock Market Crash,2018-02-04,"[""q-fin.CP"", ""q-fin.TR""]",0.88,0.03,neither,1.0,https://arxiv.org/abs/1802.01143
+1704.04354,An empirical behavioural order-driven model with price limit rules,2017-04-14,"[""q-fin.CP"", ""q-fin.TR""]",0.88,0.03,neither,0.98,https://arxiv.org/abs/1704.04354
+1405.3512,Quantum Brownian motion model for the stock market,2015-11-18,"[""q-fin.GN"", ""physics.soc-ph""]",0.88,0.03,neither,1.0,https://arxiv.org/abs/1405.3512
+1503.03548,Statistical Properties and Pre-hit Dynamics of Price Limit Hits in the Chinese Stock Markets,2015-03-12,"[""q-fin.ST""]",0.88,0.03,neither,1.0,https://arxiv.org/abs/1503.03548
+2607.28410,Can Large Language Models Execute Parent Orders?,2026-07-30,"[""cs.CE"", ""cs.CL"", ""q-fin.TR""]",0.87,0.03,neither,1.0,https://arxiv.org/abs/2607.28410
+2512.08000,Analysis of Contagion in China's Stock Market: A Hawkes Process Perspective,2025-12-08,"[""q-fin.ST"", ""q-fin.RM""]",0.87,0.03,neither,1.0,https://arxiv.org/abs/2512.08000
+2506.19255,From Data Acquisition to Lag Modeling: Quantitative Exploration of A-Share Market with Low-Coupling System Design,2025-06-24,"[""q-fin.CP"", ""q-fin.ST""]",0.87,0.04,neither,1.0,https://arxiv.org/abs/2506.19255
+2412.00896,Alpha Mining and Enhancing via Warm Start Genetic Programming for Quantitative Investment,2024-12-01,"[""q-fin.ST"", ""cs.NE"", ""q-fin.CP""]",0.87,0.04,neither,1.0,https://arxiv.org/abs/2412.00896
+2303.04581,Application of supervised learning models in the Chinese futures market,2023-03-08,"[""q-fin.ST"", ""cs.LG"", ""stat.AP""]",0.87,0.08,related,0.98,https://arxiv.org/abs/2303.04581
+2205.06675,Research on the correlation between text emotion mining and stock market based on deep learning,2022-05-09,"[""q-fin.ST"", ""cs.LG""]",0.87,0.04,neither,1.0,https://arxiv.org/abs/2205.06675
+2104.12484,Constructing long-short stock portfolio with a new listwise learn-to-rank algorithm,2021-04-26,"[""q-fin.PM""]",0.87,0.03,neither,1.0,https://arxiv.org/abs/2104.12484
+2004.08759,Information flow networks of Chinese stock market sectors,2020-04-19,"[""q-fin.ST""]",0.87,0.02,neither,1.0,https://arxiv.org/abs/2004.08759
+1707.05550,Power-law tails in the distribution of order imbalance,2017-07-18,"[""q-fin.ST""]",0.87,0.02,neither,1.0,https://arxiv.org/abs/1707.05550
+2607.27063,"Herding, Momentum, and Reversal in China's A-Share Market: An Agent-Based Network Model with Information Diffusion",2026-07-29,"[""q-fin.TR""]",0.86,0.03,neither,1.0,https://arxiv.org/abs/2607.27063
+2510.24002,How Does Environmental Information Disclosure Affect Corporate Environmental Performance? Evidence from Chinese A-Share Listed Companies,2025-10-28,"[""econ.GN"", ""q-fin.EC""]",0.86,0.02,neither,1.0,https://arxiv.org/abs/2510.24002
+2408.13895,ESG Rating Disagreement and Corporate Total Factor Productivity:Inference and Prediction,2025-03-08,"[""econ.GN"", ""q-fin.EC"", ""stat.ML""]",0.86,0.02,neither,1.0,https://arxiv.org/abs/2408.13895
+2410.19291,A Stock Price Prediction Approach Based on Time Series Decomposition and Multi-Scale CNN using OHLCT Images,2024-10-29,"[""cs.LG"", ""cs.AI"", ""q-fin.ST""]",0.86,0.03,neither,1.0,https://arxiv.org/abs/2410.19291
+2409.13957,The Impact of Implicit Government Guarantee on Credit Rating of Municipal Investment Bonds,2024-09-21,"[""q-fin.GN""]",0.86,0.02,neither,1.0,https://arxiv.org/abs/2409.13957
+2306.12119,The Impact of Customer Online Satisfaction on Stock Returns: Evidence from the E-commerce Reviews in China,2023-06-21,"[""econ.GN"", ""q-fin.EC""]",0.86,0.02,neither,1.0,https://arxiv.org/abs/2306.12119
+2212.11779,The Impact of Regulation Regime Changes on ChiNext IPOs: Effects of 2013 and 2020 Reforms on Pricing and Overreaction,2022-11-19,"[""q-fin.GN""]",0.86,0.02,neither,1.0,https://arxiv.org/abs/2212.11779
+1910.13115,Horse race of weekly idiosyncratic momentum strategies with respect to various risk metrics: Evidence from the Chinese stock market,2022-10-08,"[""q-fin.ST""]",0.86,0.02,neither,1.0,https://arxiv.org/abs/1910.13115
+2001.01641,"Housing Investment, Stock Market Participation and Household Portfolio choice: Evidence from China's Urban Areas",2020-01-06,"[""econ.GN"", ""q-fin.EC""]",0.86,0.02,neither,1.0,https://arxiv.org/abs/2001.01641
+1906.08088,Multi-Likelihood Methods for Developing Stock Relationship Networks Using Financial Big Data,2019-06-19,"[""q-fin.ST""]",0.86,0.03,neither,1.0,https://arxiv.org/abs/1906.08088
+1809.00306,Enhancing Stock Market Prediction with Extended Coupled Hidden Markov Model over Multi-Sourced Data,2018-09-02,"[""q-fin.ST"", ""cs.LG"", ""stat.ML""]",0.86,0.03,neither,1.0,https://arxiv.org/abs/1809.00306
+1803.09422,The cooling-off effect of price limits in the Chinese stock markets,2018-03-26,"[""q-fin.ST"", ""q-fin.TR""]",0.86,0.02,neither,1.0,https://arxiv.org/abs/1803.09422
+1610.08767,Equity Market Impact Modeling: an Empirical Analysis for Chinese Market,2016-10-27,"[""q-fin.TR""]",0.86,0.02,neither,1.0,https://arxiv.org/abs/1610.08767
+1308.0925,Unveiling correlations between financial variables and topological metrics of trading networks: Evidence from a stock and its warrant,2013-08-05,"[""q-fin.ST""]",0.86,0.03,neither,0.85,https://arxiv.org/abs/1308.0925
+1110.3133,Price impact asymmetry of institutional trading in Chinese stock market,2011-10-14,"[""q-fin.TR""]",0.86,0.03,neither,1.0,https://arxiv.org/abs/1110.3133
+2511.10702,The Relationship Between Environmental Regulation and Urbanization: a panel data analysis of Chinese prefecture-level cities,2025-11-13,"[""econ.GN"", ""q-fin.EC""]",0.85,0.02,neither,1.0,https://arxiv.org/abs/2511.10702
+2509.23424,What influenced the lack of diversity in CSR after the company's losses: evidence from topic modeling,2025-09-27,"[""econ.GN"", ""q-fin.EC""]",0.85,0.02,neither,1.0,https://arxiv.org/abs/2509.23424
+2505.22678,An Efficient deep learning model to Predict Stock Price Movement Based on Limit Order Book,2025-05-14,"[""q-fin.TR"", ""cs.LG""]",0.85,0.03,neither,1.0,https://arxiv.org/abs/2505.22678
+2501.08668,Empirical Study on the Factors Influencing Stock Market Volatility in China,2025-01-15,"[""econ.GN"", ""q-fin.EC"", ""q-fin.ST""]",0.85,0.04,neither,1.0,https://arxiv.org/abs/2501.08668
+2411.03922,Corporate Fundamentals and Stock Price Co-Movement,2024-11-06,"[""q-fin.ST""]",0.85,0.03,neither,1.0,https://arxiv.org/abs/2411.03922
+2209.08521,Precision measurement of the return distribution property of the Chinese stock market index,2023-11-23,"[""q-fin.ST"", ""physics.soc-ph"", ""q-fin.GN""]",0.85,0.02,neither,1.0,https://arxiv.org/abs/2209.08521
+2308.00702,An Empirical Study on the Holiday Effect of China's Time-Honored Companies,2023-06-29,"[""q-fin.GN""]",0.85,0.02,neither,1.0,https://arxiv.org/abs/2308.00702
+2103.13507,Intraday trading strategy based on time series and machine learning for Chinese stock market,2021-03-24,"[""q-fin.TR""]",0.85,0.03,neither,1.0,https://arxiv.org/abs/2103.13507
+2002.08245,AutoAlpha: an Efficient Hierarchical Evolutionary Algorithm for Mining Alpha Factors in Quantitative Investment,2020-04-04,"[""q-fin.CP""]",0.85,0.03,neither,1.0,https://arxiv.org/abs/2002.08245
+1911.12596,An Integrated Early Warning System for Stock Market Turbulence,2019-11-28,"[""econ.EM"", ""q-fin.MF""]",0.85,0.03,neither,1.0,https://arxiv.org/abs/1911.12596
+1510.08162,"""Speculative Influence Network"" during financial bubbles: application to Chinese Stock Markets",2015-10-28,"[""q-fin.ST""]",0.85,0.03,neither,1.0,https://arxiv.org/abs/1510.08162
+1504.04254,Profitability of simple technical trading rules of Chinese stock exchange indexes,2015-04-15,"[""q-fin.TR"", ""q-fin.ST""]",0.85,0.02,neither,1.0,https://arxiv.org/abs/1504.04254
+2403.00474,Volatility-based strategy on Chinese equity index ETF options,2024-03-29,"[""q-fin.GN"", ""q-fin.TR""]",0.84,0.05,related,0.77,https://arxiv.org/abs/2403.00474
+2401.05430,Multi-relational Graph Diffusion Neural Network with Parallel Retention for Stock Trends Classification,2024-01-05,"[""q-fin.ST"", ""cs.LG"", ""cs.NE""]",0.84,0.03,neither,1.0,https://arxiv.org/abs/2401.05430
+2310.05627,Integrating Stock Features and Global Information via Large Language Models for Enhanced Stock Return Prediction,2023-10-09,"[""cs.CL"", ""cs.LG"", ""q-fin.ST""]",0.84,0.04,neither,1.0,https://arxiv.org/abs/2310.05627
+1511.01824,"Positive skewness, anti-leverage, reverse volatility asymmetry, and short sale constraints: Evidence from the Chinese markets",2015-11-05,"[""q-fin.GN""]",0.84,0.03,neither,1.0,https://arxiv.org/abs/1511.01824
+1405.4490,Quantum spatial-periodic harmonic model for daily price-limited stock markets,2014-05-18,"[""q-fin.GN"", ""physics.soc-ph""]",0.84,0.03,neither,1.0,https://arxiv.org/abs/1405.4490
+2503.04218,Hedging with Sparse Reward Reinforcement Learning,2025-03-06,"[""q-fin.CP""]",0.83,0.12,related,0.76,https://arxiv.org/abs/2503.04218
+2503.00085,The Impact of Employee Education and Health on Firm-Level TFP in China,2025-02-28,"[""econ.GN"", ""q-fin.EC""]",0.83,0.02,neither,1.0,https://arxiv.org/abs/2503.00085
+2310.05322,"Market Crowds' Trading Behaviors, Agreement Prices, and the Implications of Trading Volume",2023-10-09,"[""q-fin.GN""]",0.83,0.03,neither,1.0,https://arxiv.org/abs/2310.05322
+2310.01319,CAD: Clustering And Deep Reinforcement Learning Based Multi-Period Portfolio Management Strategy,2023-10-02,"[""q-fin.PM""]",0.83,0.03,neither,1.0,https://arxiv.org/abs/2310.01319
+2212.14670,Hierarchical Deep Reinforcement Learning for VWAP Strategy Optimization,2022-12-11,"[""q-fin.TR"", ""cs.AI"", ""cs.LG"", ""q-fin.ST""]",0.83,0.03,neither,1.0,https://arxiv.org/abs/2212.14670
+2205.04743,Deep learning based Chinese text sentiment mining and stock market correlation research,2022-05-10,"[""q-fin.CP"", ""cs.LG""]",0.83,0.03,neither,1.0,https://arxiv.org/abs/2205.04743
+2106.16177,"""Stabilizer"" or ""catalyst""? How green technology innovation affects the risk of stock price crashes: an analysis based on the quantity and quality of patents",2021-08-24,"[""econ.GN"", ""q-fin.EC""]",0.83,0.02,neither,1.0,https://arxiv.org/abs/2106.16177
+2002.09097,Sector connectedness in the Chinese stock markets,2020-02-21,"[""q-fin.RM""]",0.83,0.02,neither,1.0,https://arxiv.org/abs/2002.09097
+1610.01149,Taylor's Law of temporal fluctuation scaling in stock illiquidity,2016-10-04,"[""q-fin.ST"", ""q-fin.TR""]",0.83,0.03,neither,1.0,https://arxiv.org/abs/1610.01149
+1511.07945,An Application of Correlation Clustering to Portfolio Diversification,2015-11-25,"[""q-fin.ST"", ""q-fin.CP"", ""q-fin.RM""]",0.83,0.02,neither,1.0,https://arxiv.org/abs/1511.07945
+2503.00851,Forecasting realized volatility in the stock market: a path-dependent perspective,2025-11-03,"[""q-fin.RM""]",0.82,0.03,neither,1.0,https://arxiv.org/abs/2503.00851
+2508.16079,The Role of High-Speed Rail in Reshaping Chinese County-Level Economic Structures,2025-08-22,"[""econ.GN"", ""q-fin.EC""]",0.82,0.02,neither,1.0,https://arxiv.org/abs/2508.16079
+2408.08483,Enhancement of price trend trading strategies via image-induced importance weights,2024-08-16,"[""q-fin.PM"", ""stat.ML""]",0.82,0.03,neither,1.0,https://arxiv.org/abs/2408.08483
+2404.09553,Has Anti-corruption Efforts lowered Enterprises Innovation Efficiency? -An Empirical Analysis from China,2024-04-15,"[""econ.GN"", ""q-fin.EC""]",0.82,0.02,neither,1.0,https://arxiv.org/abs/2404.09553
+2207.07578,Quantitative Stock Investment by Routing Uncertainty-Aware Trading Experts: A Multi-Task Learning Approach,2022-06-07,"[""q-fin.TR"", ""cs.AI"", ""cs.LG""]",0.82,0.04,neither,0.98,https://arxiv.org/abs/2207.07578
+2112.15499,Dynamic Portfolio Optimization with Inverse Covariance Clustering,2022-01-14,"[""q-fin.ST"", ""q-fin.PM""]",0.82,0.03,neither,0.98,https://arxiv.org/abs/2112.15499
+2110.02953,A Method for Predicting VaR by Aggregating Generalized Distributions Driven by the Dynamic Conditional Score,2021-10-06,"[""q-fin.RM""]",0.82,0.03,neither,1.0,https://arxiv.org/abs/2110.02953
+2106.02916,3D Tensor-based Deep Learning Models for Predicting Option Price,2021-09-23,"[""q-fin.CP""]",0.82,0.05,neither,0.38,https://arxiv.org/abs/2106.02916
+1612.02666,Evaluating the Performance of ANN Prediction System at Shanghai Stock Market in the Period 21-Sep-2016 to 11-Oct-2016,2016-12-05,"[""q-fin.ST"", ""cs.LG"", ""stat.ML""]",0.82,0.03,neither,1.0,https://arxiv.org/abs/1612.02666
+2507.20263,Learning from Expert Factors: Trajectory-level Reward Shaping for Formulaic Alpha Mining,2025-07-27,"[""cs.LG"", ""cs.AI"", ""q-fin.PM""]",0.81,0.05,neither,0.98,https://arxiv.org/abs/2507.20263
+2503.21828,Entrepreneurial Motivations and ESG Performance Evidence from Automobile Companies Listed on the Chinese Stock Exchange,2025-03-26,"[""econ.GN"", ""q-fin.EC""]",0.81,0.02,neither,1.0,https://arxiv.org/abs/2503.21828
+2502.01640,Study on the impact of trade policy uncertainty on the performance of enterprise ESG performance,2025-01-17,"[""econ.GN"", ""q-fin.EC""]",0.81,0.02,neither,1.0,https://arxiv.org/abs/2502.01640
+2412.19861,Measurement of coupling development level of new infrastructure investment and digital transformation and its temporal and spatial evolution trend,2024-12-26,"[""econ.GN"", ""q-fin.EC""]",0.81,0.02,neither,1.0,https://arxiv.org/abs/2412.19861
+2409.14914,Impact of the Three-Child Policy and Delayed Retirement on the Transfer of Surplus Rural Labor under Xi Jinping's New Population Vision: A Re-examination of China's Lewis Turning Point,2024-10-17,"[""econ.GN"", ""q-fin.EC""]",0.81,0.02,neither,1.0,https://arxiv.org/abs/2409.14914
+2310.10283,Unveiling Early Warning Signals of Systemic Risks in Banks: A Recurrence Network-Based Approach,2023-10-16,"[""q-fin.RM"", ""q-fin.GN""]",0.81,0.02,neither,1.0,https://arxiv.org/abs/2310.10283
+1806.04347,Asymmetric response to PMI announcements in China's stock returns,2018-06-12,"[""q-fin.ST"", ""econ.EM""]",0.81,0.03,neither,1.0,https://arxiv.org/abs/1806.04347
+2509.09095,Digital Transformation and Corporate Financial Asset Allocation: Evidence from China,2025-09-11,"[""q-fin.GN""]",0.8,0.02,neither,1.0,https://arxiv.org/abs/2509.09095
+2508.08797,Executive Accountability Systems and the Environmental Violations of State-Owned Enterprises in China,2025-08-12,"[""econ.GN"", ""q-fin.EC""]",0.8,0.02,neither,1.0,https://arxiv.org/abs/2508.08797
+2401.05823,Quantum Probability Theoretic Asset Return Modeling: A Novel Schrödinger-Like Trading Equation and Multimodal Distribution,2024-01-11,"[""q-fin.MF""]",0.8,0.04,neither,1.0,https://arxiv.org/abs/2401.05823
+2203.02130,Mapping evolving population geography in China,2022-03-04,"[""econ.GN"", ""cs.SI"", ""physics.soc-ph"", ""q-fin.EC""]",0.8,0.03,neither,1.0,https://arxiv.org/abs/2203.02130
+2201.13235,A hybrid deep learning approach for purchasing strategy of carbon emission rights -- Based on Shanghai pilot market,2022-01-24,"[""econ.GN"", ""cs.CY"", ""cs.LG"", ""q-fin.EC""]",0.8,0.06,neither,0.94,https://arxiv.org/abs/2201.13235
+1911.09359,Multi-Scale RCNN Model for Financial Time-series Classification,2019-11-21,"[""cs.LG"", ""q-fin.CP""]",0.8,0.04,neither,0.98,https://arxiv.org/abs/1911.09359
+1903.01655,Cross-shareholding networks and stock price synchronicity: Evidence from China,2019-03-05,"[""q-fin.ST""]",0.8,0.02,neither,1.0,https://arxiv.org/abs/1903.01655
+1903.03201,Quantitative evaluation of consecutive resilience cycles in stock market performance: A systems-oriented approach,2019-02-16,"[""q-fin.GN""]",0.8,0.02,neither,1.0,https://arxiv.org/abs/1903.03201
+1808.09940,Adversarial Deep Reinforcement Learning in Portfolio Management,2018-11-18,"[""q-fin.PM"", ""cs.LG"", ""stat.ML""]",0.8,0.04,neither,1.0,https://arxiv.org/abs/1808.09940
+1707.05604,Linear and nonlinear correlations in order aggressiveness of Chinese stocks,2017-04-22,"[""q-fin.ST"", ""q-fin.TR""]",0.8,0.03,neither,1.0,https://arxiv.org/abs/1707.05604
+1602.00731,"Limit-order book resiliency after effective market orders: Spread, depth and intensity",2017-02-07,"[""q-fin.TR""]",0.8,0.02,neither,1.0,https://arxiv.org/abs/1602.00731
+1609.05394,Predicting Future Shanghai Stock Market Price using ANN in the Period 21-Sep-2016 to 11-Oct-2016,2016-09-17,"[""cs.LG"", ""q-fin.ST""]",0.8,0.03,neither,1.0,https://arxiv.org/abs/1609.05394
+1602.00125,Market correlation structure changes around the Great Crash,2016-01-30,"[""q-fin.ST"", ""q-fin.RM""]",0.8,0.02,neither,1.0,https://arxiv.org/abs/1602.00125
+2512.01354,The Necessity of Imperfection:Reversing Model Collapse via Simulating Cognitive Boundedness,2025-12-08,"[""cs.AI"", ""cs.CL"", ""cs.CY"", ""cs.LG"", ""q-fin.TR""]",0.79,0.06,neither,0.98,https://arxiv.org/abs/2512.01354
+2409.12831,Implicit Government Guarantee Measurement Based on PMC Index Model,2024-09-19,"[""q-fin.GN""]",0.79,0.02,neither,1.0,https://arxiv.org/abs/2409.12831
+2407.14734,Super-efficiency and Stock Market Valuation: Evidence from Listed Banks in China (2006 to 2023),2024-07-20,"[""q-fin.PR"", ""q-fin.ST""]",0.79,0.02,neither,1.0,https://arxiv.org/abs/2407.14734
+2205.05719,"A time-varying study of Chinese investor sentiment, stock market liquidity and volatility: Based on deep learning BERT model and TVP-VAR model",2022-05-13,"[""q-fin.CP"", ""cs.LG""]",0.79,0.02,neither,1.0,https://arxiv.org/abs/2205.05719
+2011.09607,FinRL: A Deep Reinforcement Learning Library for Automated Stock Trading in Quantitative Finance,2022-03-02,"[""q-fin.TR"", ""cs.LG""]",0.79,0.04,neither,0.98,https://arxiv.org/abs/2011.09607
+1805.11317,Neural networks for stock price prediction,2018-05-29,"[""q-fin.ST"", ""cs.LG"", ""stat.ML""]",0.79,0.03,neither,1.0,https://arxiv.org/abs/1805.11317
+2503.06929,Assessing Uncertainty in Stock Returns: A Gaussian Mixture Distribution-Based Method,2025-03-10,"[""q-fin.RM"", ""cs.LG""]",0.78,0.03,neither,1.0,https://arxiv.org/abs/2503.06929
+2401.06139,Stockformer: A Price-Volume Factor Stock Selection Model Based on Wavelet Transform and Multi-Task Self-Attention Networks,2024-06-17,"[""q-fin.TR"", ""cs.LG""]",0.78,0.03,neither,1.0,https://arxiv.org/abs/2401.06139
+2305.12142,Study on Intelligent Forecasting of Credit Bond Default Risk,2023-06-08,"[""q-fin.RM""]",0.78,0.02,neither,1.0,https://arxiv.org/abs/2305.12142
+2202.11309,Exploring Classic Quantitative Strategies,2022-02-23,"[""q-fin.GN"", ""cs.LG""]",0.78,0.07,neither,0.88,https://arxiv.org/abs/2202.11309
+2105.03625,A parallel-network continuous quantitative trading model with GARCH and PPO,2021-05-21,"[""q-fin.TR"", ""cs.LG""]",0.78,0.04,neither,1.0,https://arxiv.org/abs/2105.03625
+2004.05322,Holding-Based Evaluation upon Actively Managed Stock Mutual Funds in China,2020-07-13,"[""q-fin.PM""]",0.78,0.02,neither,1.0,https://arxiv.org/abs/2004.05322
+2004.06200,Dual State-Space Model of Market Liquidity: The Chinese Experience 2009-2010,2020-05-13,"[""q-fin.TR"", ""q-fin.ST""]",0.78,0.03,neither,1.0,https://arxiv.org/abs/2004.06200
+2401.02134,Female Entrepreneur on Board:Assessing the Effect of Gender on Corporate Financial Constraints,2024-01-04,"[""econ.GN"", ""q-fin.EC""]",0.77,0.02,neither,1.0,https://arxiv.org/abs/2401.02134
+2307.09669,The Impacts of Registration Regime Implementation on IPO Pricing Efficiency,2023-07-18,"[""q-fin.GN"", ""q-fin.PR""]",0.77,0.02,neither,1.0,https://arxiv.org/abs/2307.09669
+2206.11072,AlphaMLDigger: A Novel Machine Learning Solution to Explore Excess Return on Investment,2022-12-19,"[""q-fin.CP"", ""cs.LG""]",0.77,0.03,neither,1.0,https://arxiv.org/abs/2206.11072
+2111.12564,Conditional Estimates of Diffusion Processes for Evaluating the Positive Feedback Trading,2021-11-17,"[""q-fin.MF""]",0.77,0.03,neither,1.0,https://arxiv.org/abs/2111.12564
+2103.12345,The Success of AdaBoost and Its Application in Portfolio Management,2021-03-23,"[""stat.ML"", ""cs.LG"", ""q-fin.PM""]",0.77,0.05,neither,0.98,https://arxiv.org/abs/2103.12345
+1404.1051,Computational experiments successfully predict the emergence of autocorrelations in ultra-high-frequency stock returns,2018-02-24,"[""q-fin.TR"", ""physics.soc-ph"", ""q-fin.ST""]",0.77,0.03,neither,1.0,https://arxiv.org/abs/1404.1051
+1601.01753,Geography and distance effect on financial dynamics in the Chinese stock market,2016-03-28,"[""physics.soc-ph"", ""q-fin.ST""]",0.77,0.03,neither,1.0,https://arxiv.org/abs/1601.01753
+2508.09634,"Artificial Intelligence, Domain AI Readiness, and Firm Productivity",2025-08-13,"[""econ.GN"", ""q-fin.EC""]",0.76,0.02,neither,1.0,https://arxiv.org/abs/2508.09634
+2501.14258,Industrial Upgrading and New Quality Productive Forces: Evidence from China's Provincial Panel Data (2003-2022),2025-01-20,"[""econ.GN"", ""q-fin.EC""]",0.76,0.02,neither,1.0,https://arxiv.org/abs/2501.14258
+2305.10693,Gated Deeper Models are Effective Factor Learners,2023-05-18,"[""q-fin.PR"", ""cs.LG""]",0.76,0.03,neither,1.0,https://arxiv.org/abs/2305.10693
+2201.01160,The financial value of the within-government political network: Evidence from Chinese municipal corporate bonds,2022-01-04,"[""q-fin.GN"", ""econ.GN"", ""q-fin.EC""]",0.76,0.03,neither,1.0,https://arxiv.org/abs/2201.01160
+1912.10709,Centralizing-Unitizing Standardized High-Dimensional Directional Statistics and Its Applications in Finance,2020-08-14,"[""stat.AP"", ""q-fin.PM"", ""q-fin.ST""]",0.76,0.03,neither,1.0,https://arxiv.org/abs/1912.10709
+2002.06878,Trimming the Sail: A Second-order Learning Paradigm for Stock Prediction,2020-02-17,"[""q-fin.ST""]",0.76,0.04,neither,1.0,https://arxiv.org/abs/2002.06878
+1003.5984,Nonuniversal distributions of stock returns in an emerging market,2010-03-31,"[""q-fin.ST""]",0.76,0.03,neither,1.0,https://arxiv.org/abs/1003.5984
+2510.11074,Evaluating Investment Performance: The p-index and Empirical Efficient Frontier,2025-10-13,"[""q-fin.PM""]",0.75,0.02,neither,1.0,https://arxiv.org/abs/2510.11074
+2402.07960,An Analysis of the Recovery Path of the Consumer Sector in the Post-Pandemic Era,2024-02-11,"[""econ.GN"", ""q-fin.EC""]",0.75,0.03,neither,1.0,https://arxiv.org/abs/2402.07960
+2305.08740,Temporal and Heterogeneous Graph Neural Network for Financial Time Series Prediction,2023-05-09,"[""q-fin.ST"", ""cs.LG"", ""q-fin.PM""]",0.75,0.04,neither,1.0,https://arxiv.org/abs/2305.08740
+2301.10179,Research on the Impact of Innovative City and Smart City Construction on Digital Economy: Evidence from China,2023-01-22,"[""econ.GN"", ""q-fin.EC""]",0.75,0.03,neither,1.0,https://arxiv.org/abs/2301.10179
+2206.00189,Measurement of carbon finance level and exploration of its influencing factors,2022-06-01,"[""econ.GN"", ""q-fin.EC""]",0.75,0.04,neither,0.97,https://arxiv.org/abs/2206.00189
+1911.07288,Application of Principal Component Analysis in Chinese Sovereign Bond Market and Principal Component-Based Fixed Income Immunization,2019-11-17,"[""q-fin.ST""]",0.75,0.04,neither,0.98,https://arxiv.org/abs/1911.07288
+1705.08240,Herding boosts too-connected-to-fail risk in stock market of China,2018-04-25,"[""q-fin.GN"", ""physics.soc-ph"", ""q-fin.ST""]",0.75,0.03,neither,1.0,https://arxiv.org/abs/1705.08240
+1508.07505,Early warning of large volatilities based on recurrence interval analysis in Chinese stock markets,2015-08-29,"[""q-fin.ST"", ""q-fin.RM""]",0.75,0.02,neither,0.98,https://arxiv.org/abs/1508.07505
+1505.00328,Profitability of contrarian strategies in the Chinese stock market,2015-05-02,"[""q-fin.TR"", ""q-fin.ST""]",0.75,0.02,neither,1.0,https://arxiv.org/abs/1505.00328
+1503.00823,Influence network in Chinese stock market,2015-03-03,"[""physics.soc-ph"", ""physics.data-an"", ""q-fin.ST""]",0.75,0.03,neither,1.0,https://arxiv.org/abs/1503.00823
+1110.4455,Dynamics of Bid-ask Spread Return and Volatility of the Chinese Stock Market,2011-10-20,"[""q-fin.ST"", ""physics.soc-ph"", ""q-fin.TR""]",0.75,0.02,neither,1.0,https://arxiv.org/abs/1110.4455
+2305.02138,The Relationship between Consumption and Economic Growth of Chinese Urban and Rural Residents since Reform and Opening-up -- An Empirical Analysis Based on Econometrics Models,2022-11-18,"[""econ.GN"", ""q-fin.EC""]",0.74,0.02,neither,1.0,https://arxiv.org/abs/2305.02138
+1910.06746,Fundamental Analysis in China: An Empirical Study of the Relationship between Financial Ratios and Stock Prices,2019-10-12,"[""q-fin.GN""]",0.74,0.02,neither,1.0,https://arxiv.org/abs/1910.06746
+1806.01743,A Machine Learning Framework for Stock Selection,2018-08-08,"[""q-fin.PM"", ""cs.LG"", ""stat.ML""]",0.74,0.03,neither,1.0,https://arxiv.org/abs/1806.01743
+2505.20608,Replication of Reference-Dependent Preferences and the Risk-Return Trade-Off in the Chinese Market,2025-05-27,"[""q-fin.ST"", ""q-fin.RM""]",0.73,0.02,neither,1.0,https://arxiv.org/abs/2505.20608
+2502.13423,The Policy Paradox: Government Debt Servicing and Local Bank Risk Growth,2025-04-09,"[""econ.GN"", ""q-fin.EC""]",0.73,0.02,neither,1.0,https://arxiv.org/abs/2502.13423
+2411.08726,Analyst Reports and Stock Performance: Evidence from the Chinese Market,2025-03-17,"[""cs.CL"", ""q-fin.CP""]",0.73,0.03,neither,1.0,https://arxiv.org/abs/2411.08726
+2310.19008,"Coupling Coordinated Development among Digital Economy, Regional Innovation and Talent Employment A case study of Hangzhou Metropolitan Circle, China",2023-10-29,"[""econ.GN"", ""q-fin.EC""]",0.73,0.02,neither,1.0,https://arxiv.org/abs/2310.19008
+2306.13436,Does Environmental Attention by Governments Promote Carbon Reductions,2023-06-23,"[""econ.GN"", ""q-fin.EC""]",0.73,0.02,neither,1.0,https://arxiv.org/abs/2306.13436
+2209.14532,Feature Selection via the Intervened Interpolative Decomposition and its Application in Diversifying Quantitative Strategies,2022-09-29,"[""cs.LG"", ""q-fin.ST""]",0.73,0.04,neither,1.0,https://arxiv.org/abs/2209.14532
+1601.00263,Time and Frequency Structure of Causal Correlation Network in China Bond Market,2016-01-03,"[""q-fin.ST""]",0.73,0.03,neither,1.0,https://arxiv.org/abs/1601.00263
+1511.03777,"Deleveraging, short sale constraints and market crash",2015-11-12,"[""q-fin.GN""]",0.73,0.05,neither,0.98,https://arxiv.org/abs/1511.03777
+2411.02807,It Takes Three to Ceilidh: Pension System and Multidimensional Poverty Mitigation in China,2025-01-16,"[""econ.GN"", ""q-fin.EC""]",0.72,0.02,neither,1.0,https://arxiv.org/abs/2411.02807
+2310.18903,Visibility graph analysis of crude oil futures markets: Insights from the COVID-19 pandemic and Russia-Ukraine conflict,2024-06-12,"[""q-fin.ST"", ""q-fin.GN""]",0.72,0.06,related,0.94,https://arxiv.org/abs/2310.18903
+1908.02646,AlphaStock: A Buying-Winners-and-Selling-Losers Investment Strategy using Interpretable Deep Reinforcement Attention Networks,2019-07-24,"[""q-fin.TR"", ""cs.LG"", ""q-fin.ST""]",0.72,0.03,neither,1.0,https://arxiv.org/abs/1908.02646
+2509.26403,Interactions Between Multiple Environmental Markets: Addressing Contamination Bias in Overlapping Policies,2025-09-30,"[""econ.GN"", ""q-fin.EC""]",0.71,0.03,neither,1.0,https://arxiv.org/abs/2509.26403
+2509.19042,Predicting Credit Spreads and Ratings with Machine Learning: The Role of Non-Financial Data,2025-09-23,"[""econ.GN"", ""q-fin.EC""]",0.71,0.02,neither,1.0,https://arxiv.org/abs/2509.19042
+2411.10728,Air Pollution and Under-5 Child Mortality: Evidence from China's Coal Power Plant Phase-out Policy,2025-02-26,"[""econ.GN"", ""q-fin.EC""]",0.71,0.02,neither,1.0,https://arxiv.org/abs/2411.10728
+2408.12915,Education Opportunities for Rural Areas: Evidence from China's Higher Education Expansion,2024-08-23,"[""econ.GN"", ""q-fin.EC""]",0.71,0.02,neither,1.0,https://arxiv.org/abs/2408.12915
+2306.02764,Optimal Market Making in the Chinese Stock Market: A Stochastic Control and Scenario Analysis,2023-06-05,"[""q-fin.PM""]",0.71,0.04,neither,1.0,https://arxiv.org/abs/2306.02764
+2112.07273,Urban Housing Prices and Migration's Fertility Intentions: Based on the 2018 China Migrants' Dynamic Survey,2021-12-14,"[""econ.GN"", ""q-fin.EC""]",0.71,0.02,neither,1.0,https://arxiv.org/abs/2112.07273
+1801.00588,Improving Stock Market Prediction via Heterogeneous Information Fusion,2018-01-02,"[""cs.SI"", ""physics.soc-ph"", ""q-fin.ST""]",0.71,0.03,neither,1.0,https://arxiv.org/abs/1801.00588
+1707.05552,Wax and wane of the cross-sectional momentum and contrarian effects: Evidence from the Chinese stock markets,2017-07-18,"[""q-fin.ST"", ""q-fin.TR""]",0.71,0.02,neither,1.0,https://arxiv.org/abs/1707.05552
+1707.06635,Impact of the Global Crisis on SME Internal vs. External Financing in China,2017-07-01,"[""q-fin.GN"", ""stat.AP""]",0.71,0.02,neither,1.0,https://arxiv.org/abs/1707.06635
+2410.00063,Uniform price auctions with pre-announced revenue targets: Evidence from China's SEOs,2024-09-29,"[""econ.GN"", ""q-fin.EC""]",0.7,0.02,neither,1.0,https://arxiv.org/abs/2410.00063
+2305.01558,Carbon Emission Reduction Effect of RMB Appreciation: Empirical Evidence from 283 Prefecture-Level Cities of China,2023-04-28,"[""econ.GN"", ""q-fin.EC""]",0.7,0.02,neither,1.0,https://arxiv.org/abs/2305.01558
+2110.12394,Housing property rights and social integration of migrant population: based on the 2017 china migrants' dynamic survey,2021-10-24,"[""econ.GN"", ""q-fin.EC""]",0.7,0.02,neither,1.0,https://arxiv.org/abs/2110.12394
+2005.03010,Quantifying the Economic Impact of COVID-19 in Mainland China Using Human Mobility Data,2020-05-06,"[""econ.GN"", ""physics.soc-ph"", ""q-fin.EC""]",0.7,0.03,neither,1.0,https://arxiv.org/abs/2005.03010
+1104.3616,Strategies used as spectroscopy of financial markets reveal new stylized facts,2011-04-19,"[""q-fin.ST"", ""physics.soc-ph""]",0.7,0.04,neither,1.0,https://arxiv.org/abs/1104.3616
+2411.06110,Can ESG Investment and the Implementation of the New Environmental Protection Law Enhance Public Subjective Well-being?,2024-11-09,"[""econ.GN"", ""q-fin.EC""]",0.69,0.02,neither,1.0,https://arxiv.org/abs/2411.06110
+2408.13706,Import competition and domestic vertical integration: Theory and Evidence from Chinese firms,2024-08-25,"[""econ.GN"", ""q-fin.EC""]",0.69,0.02,neither,1.0,https://arxiv.org/abs/2408.13706
+2407.17523,How does the national new area impact the local economy? -- An empirical analysis from Zhoushan,2024-07-22,"[""econ.GN"", ""q-fin.EC""]",0.69,0.02,neither,1.0,https://arxiv.org/abs/2407.17523
+2307.02455,Policy Expectation Counts? The Impact of China's Delayed Retirement Announcement on Urban Households Savings Rates,2023-07-06,"[""econ.GN"", ""q-fin.EC""]",0.69,0.02,neither,1.0,https://arxiv.org/abs/2307.02455
+2207.08282,Job Prospects and Labour Mobility in China,2022-09-07,"[""econ.GN"", ""q-fin.EC""]",0.69,0.02,neither,1.0,https://arxiv.org/abs/2207.08282
+2012.14503,"Growth, development, and structural change at the firm-level: The example of the PR China",2020-12-28,"[""econ.GN"", ""q-fin.EC"", ""stat.OT""]",0.69,0.02,neither,1.0,https://arxiv.org/abs/2012.14503
+2011.00572,Asset Allocation via Machine Learning and Applications to Equity Portfolio Management,2020-11-22,"[""q-fin.MF"", ""q-fin.PM""]",0.69,0.03,neither,1.0,https://arxiv.org/abs/2011.00572
+2007.13549,The Wage Premium of Communist Party Membership: Evidence from China,2020-07-23,"[""econ.GN"", ""q-fin.EC""]",0.69,0.02,neither,1.0,https://arxiv.org/abs/2007.13549
+2502.12163,Beyond surveys: A High-Precision Wealth Inequality Mapping of China's Rural Households Derived from Satellite and Street View Imageries,2025-02-11,"[""econ.GN"", ""cs.CY"", ""q-fin.EC""]",0.68,0.02,neither,1.0,https://arxiv.org/abs/2502.12163
+2401.06134,Synergy or Rivalry? Glimpses of Regional Modernization and Public Service Equalization: A Case Study from China,2023-11-21,"[""econ.GN"", ""q-fin.EC"", ""stat.AP""]",0.68,0.02,neither,1.0,https://arxiv.org/abs/2401.06134
+2105.10459,Research on Regional Urban Economic Development by Nightlight-time Remote Sensing,2020-11-24,"[""econ.GN"", ""eess.IV"", ""q-fin.EC""]",0.68,0.02,neither,1.0,https://arxiv.org/abs/2105.10459
+1611.04090,Time-varying return predictability in the Chinese stock market,2016-11-13,"[""q-fin.ST""]",0.68,0.03,neither,1.0,https://arxiv.org/abs/1611.04090
+2503.16569,Research on the Influence Mechanism and Effect of Digital Village Construction on Urban-Rural Common prosperity Evidence From China,2025-03-20,"[""econ.GN"", ""q-fin.EC""]",0.67,0.03,neither,1.0,https://arxiv.org/abs/2503.16569
+2410.19304,The Impact of Industry Agglomeration on Land Use Efficiency: Insights from China's Yangtze River Delta,2024-10-25,"[""econ.GN"", ""q-fin.EC""]",0.67,0.02,neither,1.0,https://arxiv.org/abs/2410.19304
+2410.04918,Economic growth of cities: Does resource allocation matter?,2024-10-07,"[""econ.GN"", ""q-fin.EC"", ""stat.AP""]",0.67,0.02,neither,1.0,https://arxiv.org/abs/2410.04918
+2310.04242,A New Weighted Food CPI from Scanner Big Data in China,2023-10-12,"[""econ.GN"", ""q-fin.EC""]",0.67,0.03,neither,1.0,https://arxiv.org/abs/2310.04242
+2211.16641,Predicting China's CPI by Scanner Big Data,2023-10-06,"[""econ.GN"", ""cs.CE"", ""cs.CY"", ""q-fin.EC""]",0.67,0.03,neither,1.0,https://arxiv.org/abs/2211.16641
+2511.02608,How FinTech affects financial sustainability: Evidence from Chinese commercial banks using a three-stage network DEA-Malmquist model,2025-11-04,"[""q-fin.GN""]",0.66,0.02,neither,1.0,https://arxiv.org/abs/2511.02608
+2507.03057,Human-AI Technology Integration and Green ESG Performance: Evidence from Chinese Retail Enterprises,2025-07-03,"[""econ.GN"", ""q-fin.EC""]",0.66,0.02,neither,1.0,https://arxiv.org/abs/2507.03057
+2502.13461,"Tensor dynamic conditional correlation model: A new way to pursuit ""Holy Grail of investing""",2025-02-19,"[""q-fin.PM"", ""econ.EM"", ""stat.ME""]",0.66,0.03,neither,1.0,https://arxiv.org/abs/2502.13461
+2410.16299,Financial Performance and Economic Implications of COFCO's Strategic Acquisition of Mengniu,2024-10-07,"[""q-fin.GN"", ""q-fin.PM""]",0.66,0.03,neither,1.0,https://arxiv.org/abs/2410.16299
+2107.11593,Inferring Economic Condition Uncertainty from Electricity Big Data,2023-05-30,"[""econ.GN"", ""q-fin.EC"", ""stat.AP""]",0.66,0.03,neither,1.0,https://arxiv.org/abs/2107.11593
+2005.01882,Levels of structural change: An analysis of China's development push 1998-2014,2020-09-30,"[""econ.GN"", ""q-fin.EC""]",0.66,0.02,neither,1.0,https://arxiv.org/abs/2005.01882
+1505.05089,CEI: a new indicator measuring City Commercial Credit Risk initiated in China,2015-05-17,"[""q-fin.RM"", ""q-fin.ST""]",0.66,0.03,neither,1.0,https://arxiv.org/abs/1505.05089
+1004.5547,Memory effect and multifractality of cross-correlations in financial markets,2010-04-30,"[""q-fin.ST""]",0.66,0.03,neither,1.0,https://arxiv.org/abs/1004.5547
+2504.21060,Construct to Commitment: The Effect of Narratives on Economic Growth,2025-10-01,"[""econ.GN"", ""cs.GT"", ""cs.SI"", ""econ.EM"", ""econ.TH"", ""math.OC"", ""physics.soc-ph"", ""q-fin.EC""]",0.65,0.05,neither,1.0,https://arxiv.org/abs/2504.21060
+2311.01206,How Does China's Household Portfolio Selection Vary with Financial Inclusion?,2023-11-02,"[""econ.GN"", ""q-fin.EC""]",0.65,0.02,neither,1.0,https://arxiv.org/abs/2311.01206
+2505.11558,AI-Driven Digital Transformation and Firm Performance in Chinese Industrial Enterprises: Mediating Role of Green Digital Innovation and Moderating Effects of Human-AI Collaboration,2025-05-16,"[""econ.GN"", ""q-fin.EC""]",0.64,0.02,neither,1.0,https://arxiv.org/abs/2505.11558
+2504.15316,The Influence of Establishing Belt and Road Node Cities on the Development of Digital Inclusive Finance Across Chinese Provinces,2025-04-20,"[""econ.GN"", ""q-fin.EC"", ""q-fin.GN""]",0.64,0.02,neither,1.0,https://arxiv.org/abs/2504.15316
+2309.11979,Stock Market Sentiment Classification and Backtesting via Fine-tuned BERT,2023-09-21,"[""q-fin.CP"", ""cs.CL"", ""cs.LG""]",0.64,0.03,neither,1.0,https://arxiv.org/abs/2309.11979
+2109.08099,An Economic Analysis on the Potential and Steady Growth of China: a Practice Based on the Dualistic System Economics in China,2021-10-04,"[""econ.GN"", ""q-fin.EC""]",0.64,0.03,neither,1.0,https://arxiv.org/abs/2109.08099
+2501.01298,Inequality of opportunity under current China's license plate policy,2025-01-07,"[""econ.GN"", ""q-fin.EC""]",0.63,0.02,neither,1.0,https://arxiv.org/abs/2501.01298
+2409.00039,Spatial-temporal evolution characteristics and driving factors of carbon emission prediction in China-research on ARIMA-BP neural network algorithm,2024-11-27,"[""econ.GN"", ""q-fin.EC"", ""stat.AP""]",0.63,0.02,neither,1.0,https://arxiv.org/abs/2409.00039
+2411.00500,The Impact of Farmers' Borrowing Behavior on Agricultural Production Technical Efficiency,2024-11-01,"[""econ.GN"", ""q-fin.EC""]",0.63,0.02,neither,1.0,https://arxiv.org/abs/2411.00500
+2311.10987,Research on the Dynamic Evolution and Influencing Factors of Energy Resilience in China,2023-11-18,"[""econ.GN"", ""q-fin.EC""]",0.63,0.02,neither,1.0,https://arxiv.org/abs/2311.10987
+2111.15327,China's Easily Overlooked Monetary Transmission Mechanism: Monetary Reservoir,2022-03-13,"[""econ.GN"", ""q-fin.EC""]",0.63,0.02,neither,1.0,https://arxiv.org/abs/2111.15327
+2111.15356,Improved Method of Stock Trading under Reinforcement Learning Based on DRQN and Sentiment Indicators ARBR,2021-11-19,"[""q-fin.ST""]",0.63,0.03,neither,1.0,https://arxiv.org/abs/2111.15356
+1911.00715,Do Chinese Internet Users Exist Heterogeneity in Search Behavior?,2019-11-02,"[""cs.CY"", ""q-fin.ST""]",0.63,0.04,neither,1.0,https://arxiv.org/abs/1911.00715
+1801.00597,Exploiting Investors Social Network for Stock Prediction in China's Market,2018-01-02,"[""cs.CE"", ""q-fin.GN""]",0.63,0.03,neither,1.0,https://arxiv.org/abs/1801.00597
+2506.20292,"Exiting National Anti-Poverty Campaign, Social Support, and Improved Mental Health",2025-06-26,"[""econ.GN"", ""q-fin.EC""]",0.62,0.03,neither,1.0,https://arxiv.org/abs/2506.20292
+2409.08282,LSR-IGRU: Stock Trend Prediction Based on Long Short-Term Relationships and Improved GRU,2025-05-11,"[""q-fin.ST"", ""cs.CE"", ""cs.LG""]",0.62,0.03,neither,1.0,https://arxiv.org/abs/2409.08282
+2310.07427,Quantum-Enhanced Forecasting: Leveraging Quantum Gramian Angular Field and CNNs for Stock Return Predictions,2023-12-11,"[""cs.LG"", ""q-fin.CP""]",0.62,0.04,neither,1.0,https://arxiv.org/abs/2310.07427
+2112.00562,Extremal Analysis of Flooding Risk and Management,2021-12-01,"[""q-fin.RM""]",0.62,0.03,neither,1.0,https://arxiv.org/abs/2112.00562
+2006.01185,Do Private Household Transfers to the Elderly Respond to Public Pension Benefits? Evidence from Rural China,2020-06-05,"[""econ.GN"", ""q-fin.EC""]",0.62,0.02,neither,1.0,https://arxiv.org/abs/2006.01185
+2001.02804,Institutions and China's comparative development,2020-01-09,"[""econ.GN"", ""q-fin.EC""]",0.62,0.03,neither,1.0,https://arxiv.org/abs/2001.02804
+1709.04059,Random walks and market efficiency in Chinese and Indian equity markets,2017-09-12,"[""q-fin.CP"", ""q-fin.ST""]",0.62,0.02,neither,1.0,https://arxiv.org/abs/1709.04059
+2502.17967,Agent Trading Arena: A Study on Numerical Understanding in LLM-Based Agents,2025-09-02,"[""cs.LG"", ""cs.AI"", ""cs.CL"", ""cs.MA"", ""q-fin.ST""]",0.61,0.05,neither,0.98,https://arxiv.org/abs/2502.17967
+2506.04656,Classification of Extremal Dependence in Financial Markets via Bootstrap Inference,2025-06-05,"[""math.ST"", ""q-fin.ST"", ""stat.TH""]",0.61,0.03,neither,1.0,https://arxiv.org/abs/2506.04656
+2502.15807,"Carbon financial system construction under the background of dual-carbon targets: current situation, problems and suggestions",2025-02-19,"[""econ.GN"", ""physics.soc-ph"", ""q-fin.EC""]",0.61,0.06,neither,0.91,https://arxiv.org/abs/2502.15807
+2405.11730,Degree of Irrationality: Sentiment and Implied Volatility Surface,2024-05-20,"[""cs.LG"", ""q-fin.GN""]",0.61,0.03,neither,0.7,https://arxiv.org/abs/2405.11730
+2202.03806,Cuierzhuang Phenomenon: A model of rural industrialization in north China,2022-02-10,"[""econ.GN"", ""q-fin.EC""]",0.61,0.03,neither,1.0,https://arxiv.org/abs/2202.03806
+2105.00517,The Black Market for Beijing License Plates,2021-05-02,"[""econ.GN"", ""q-fin.EC""]",0.61,0.03,neither,1.0,https://arxiv.org/abs/2105.00517
+2010.10132,Are Crises Predictable? A Review of the Early Warning Systems in Currency and Stock Markets,2020-10-20,"[""q-fin.MF""]",0.61,0.03,neither,1.0,https://arxiv.org/abs/2010.10132
+2508.21625,"Evaluating Ethnic Income Gap in China: The Case of Han, Mongol, and Manchu in Liaoning and Inner Mongolia",2025-08-29,"[""econ.GN"", ""q-fin.EC""]",0.6,0.02,neither,1.0,https://arxiv.org/abs/2508.21625
+2303.07158,Uniform Pessimistic Risk and its Optimal Portfolio,2024-05-17,"[""q-fin.PM"", ""cs.LG"", ""stat.CO"", ""stat.ML""]",0.6,0.03,neither,1.0,https://arxiv.org/abs/2303.07158
+2302.14602,On the Estimation of Cross-Firm Productivity Spillovers with an Application to FDI,2023-02-26,"[""econ.GN"", ""q-fin.EC""]",0.6,0.02,neither,1.0,https://arxiv.org/abs/2302.14602
+2112.07268,Finding the Instrumental Variables of Household Registration: A discussion of the impact of China's household registration system on the citizenship of the migrant population,2021-12-15,"[""econ.GN"", ""q-fin.EC""]",0.6,0.02,neither,1.0,https://arxiv.org/abs/2112.07268
+2104.00935,The Persistent Effect of Famine on Present-Day China: Evidence from the Billionaires,2021-04-13,"[""econ.GN"", ""q-fin.EC""]",0.6,0.03,neither,1.0,https://arxiv.org/abs/2104.00935
+2411.01621,Can education correct appearance discrimination in the labor market?,2024-11-03,"[""econ.GN"", ""q-fin.EC""]",0.59,0.02,neither,1.0,https://arxiv.org/abs/2411.01621
+2305.10885,Super-efficiency of Listed Banks in China and Determinants Analysis (2006-2021),2024-08-29,"[""q-fin.GN"", ""econ.GN"", ""q-fin.EC"", ""q-fin.RM"", ""stat.AP""]",0.59,0.02,neither,1.0,https://arxiv.org/abs/2305.10885
+2407.17293,Fintech and MSEs Innovation: an Empirical Analysis,2024-07-24,"[""econ.GN"", ""q-fin.EC""]",0.59,0.02,neither,1.0,https://arxiv.org/abs/2407.17293
+2310.07326,Empirical Analysis of the Impact of Legal Tender Digital Currency on Monetary Policy -Based on China's Data,2023-10-11,"[""econ.GN"", ""q-fin.EC""]",0.59,0.02,neither,1.0,https://arxiv.org/abs/2310.07326
+2302.11423,The inverse Cox-Ingersoll-Ross process for parsimonious financial price modeling,2023-06-19,"[""q-fin.MF"", ""q-fin.PR""]",0.59,0.04,neither,1.0,https://arxiv.org/abs/2302.11423
+2211.08871,The impact of access to credit on energy efficiency,2022-11-16,"[""econ.GN"", ""q-fin.EC""]",0.59,0.03,neither,1.0,https://arxiv.org/abs/2211.08871
+2204.00785,Rural Pension System and Farmers' Participation in Residents' Social Insurance,2022-04-02,"[""econ.GN"", ""q-fin.EC""]",0.59,0.02,neither,1.0,https://arxiv.org/abs/2204.00785
+2203.17101,Estimating the Effects of Educational System Consolidation: The Case of China's Rural School Closure Initiative,2022-03-31,"[""econ.GN"", ""q-fin.EC""]",0.59,0.03,neither,1.0,https://arxiv.org/abs/2203.17101
+2104.04729,Option to survive or surrender: carbon asset management and optimization in thermal power enterprises from China,2021-04-10,"[""econ.GN"", ""q-fin.EC""]",0.59,0.05,neither,0.97,https://arxiv.org/abs/2104.04729
+1603.01341,Hong Kong -- Shanghai Connect / Hong Kong -- Beijing Disconnect (?): Scaling the Great Wall of Chinese Securities Trading Costs,2019-09-17,"[""q-fin.TR""]",0.59,0.03,neither,1.0,https://arxiv.org/abs/1603.01341
+1901.03356,When does privatization spur entrepreneurial performance? The moderating effect of institutional quality in an emerging market,2019-01-10,"[""econ.GN"", ""q-fin.EC""]",0.59,0.02,neither,1.0,https://arxiv.org/abs/1901.03356
+2405.15486,"Digital finance, Bargaining Power and Gender Wage Gap",2024-05-24,"[""econ.GN"", ""q-fin.EC""]",0.58,0.02,neither,1.0,https://arxiv.org/abs/2405.15486
+2105.14318,Estimating air quality co-benefits of energy transition using machine learning,2021-05-29,"[""econ.GN"", ""cs.LG"", ""q-fin.EC""]",0.58,0.03,neither,1.0,https://arxiv.org/abs/2105.14318
+2012.03744,Every Corporation Owns Its Image: Corporate Credit Ratings via Convolutional Neural Networks,2020-12-03,"[""q-fin.RM"", ""cs.LG""]",0.58,0.03,neither,1.0,https://arxiv.org/abs/2012.03744
+1906.09694,Business Taxonomy Construction Using Concept-Level Hierarchical Clustering,2019-06-24,"[""cs.CL"", ""q-fin.PM""]",0.58,0.03,neither,1.0,https://arxiv.org/abs/1906.09694
+1611.06666,Quantifying immediate price impact of trades based on the $k$-shell decomposition of stock trading networks,2016-12-05,"[""q-fin.TR"", ""q-fin.ST""]",0.58,0.03,neither,1.0,https://arxiv.org/abs/1611.06666
+1002.3432,Adaptive financial networks with static and dynamic thresholds,2010-02-18,"[""q-fin.ST"", ""physics.soc-ph""]",0.58,0.02,neither,1.0,https://arxiv.org/abs/1002.3432
+2509.10802,Why Bonds Fail Differently? Explainable Multimodal Learning for Multi-Class Default Prediction,2025-09-13,"[""q-fin.RM"", ""cs.CL"", ""cs.LG"", ""q-fin.CP""]",0.57,0.03,neither,1.0,https://arxiv.org/abs/2509.10802
+2502.19305,Corporate Fraud Detection in Rich-yet-Noisy Financial Graph,2025-05-29,"[""cs.LG"", ""cs.AI"", ""q-fin.RM"", ""q-fin.ST""]",0.57,0.03,neither,1.0,https://arxiv.org/abs/2502.19305
+2504.13290,Eco-efficiency as a Catalyst for Citizen Co-production: Evidence from Chinese Cities,2025-04-17,"[""econ.GN"", ""q-fin.EC""]",0.57,0.02,neither,1.0,https://arxiv.org/abs/2504.13290
+2503.19617,The Nonlinear Impact of Minimum Wage on Labor Employment in China,2025-03-25,"[""econ.GN"", ""q-fin.EC""]",0.57,0.02,neither,1.0,https://arxiv.org/abs/2503.19617
+2412.20176,The impact of China's economic growth on poverty alleviation: From absolute to relative poverty,2024-12-28,"[""econ.GN"", ""q-fin.EC""]",0.57,0.02,neither,1.0,https://arxiv.org/abs/2412.20176
+2306.14222,Unveiling the Potential of Sentiment: Can Large Language Models Predict Chinese Stock Price Movements?,2024-05-04,"[""cs.CL"", ""cs.AI"", ""q-fin.ST""]",0.57,0.03,neither,1.0,https://arxiv.org/abs/2306.14222
+2404.18009,Exit Spillovers of Foreign-invested Enterprises in Shenzhen's Electronics Manufacturing Industry,2024-04-27,"[""econ.GN"", ""q-fin.EC"", ""stat.AP""]",0.57,0.02,neither,1.0,https://arxiv.org/abs/2404.18009
+2108.10982,Financing Entrepreneurship and Innovation in China,2021-08-24,"[""econ.GN"", ""q-fin.EC""]",0.57,0.03,neither,1.0,https://arxiv.org/abs/2108.10982
+1803.08160,An Economic Bubble Model and Its First Passage Time,2018-03-21,"[""q-fin.MF""]",0.57,0.03,neither,1.0,https://arxiv.org/abs/1803.08160
+2507.18227,"Beyond Patents: R&D, Capital, and the Productivity Puzzle in Early-Stage High-Tech Firms",2025-07-24,"[""econ.GN"", ""q-fin.EC""]",0.56,0.02,neither,1.0,https://arxiv.org/abs/2507.18227
+2301.10675,Pain or Anxiety? The Health Consequences of Rising Robot Adoption in China,2023-01-25,"[""econ.GN"", ""q-fin.EC""]",0.56,0.03,neither,1.0,https://arxiv.org/abs/2301.10675
+2207.07990,The Roads One Must Walk Down: Commute and Depression for Beijing's Residents,2022-07-16,"[""econ.GN"", ""physics.soc-ph"", ""q-bio.QM"", ""q-fin.EC""]",0.56,0.02,neither,1.0,https://arxiv.org/abs/2207.07990
+2101.10942,Absolute Value Constraint: The Reason for Invalid Performance Evaluation Results of Neural Network Models for Stock Price Prediction,2021-03-19,"[""q-fin.ST"", ""cs.LG""]",0.56,0.03,neither,1.0,https://arxiv.org/abs/2101.10942
+2103.08131,What are the key components of an entrepreneurial ecosystem in a developing economy? A longitudinal empirical study on technology business incubators in China,2021-03-15,"[""econ.GN"", ""q-fin.EC""]",0.56,0.02,neither,1.0,https://arxiv.org/abs/2103.08131
+1804.05667,Evolution of the Chinese Guarantee Network under Financial Crisis and Stimulus Program,2020-06-02,"[""q-fin.RM"", ""cs.CE""]",0.56,0.02,neither,1.0,https://arxiv.org/abs/1804.05667
+1907.10306,Testing new property of elliptical model for stock returns distribution,2019-07-24,"[""stat.AP"", ""q-fin.ST""]",0.56,0.03,neither,1.0,https://arxiv.org/abs/1907.10306
+2501.17072,Articulating the role of nuclear energy in the circular economy of China: A machine learning approach,2025-01-28,"[""econ.GN"", ""q-fin.EC""]",0.55,0.02,neither,1.0,https://arxiv.org/abs/2501.17072
+2408.11600,A Novel δ-SBM-OPA Approach for Policy-Driven Analysis of Carbon Emission Efficiency under Uncertainty in the Chinese Industrial Sector,2024-12-18,"[""econ.GN"", ""q-fin.EC""]",0.55,0.02,neither,1.0,https://arxiv.org/abs/2408.11600
+2208.11577,Panacea or Placebo? Exploring Causal Effects of Nonlocal Vehicle Driving Restriction Policies on Traffic Congestion Using Difference-in-differences Approach,2023-01-15,"[""econ.GN"", ""q-fin.EC""]",0.55,0.03,neither,1.0,https://arxiv.org/abs/2208.11577
+2212.14687,Multi-step-ahead Stock Price Prediction Using Recurrent Fuzzy Neural Network and Variational Mode Decomposition,2022-12-24,"[""q-fin.ST"", ""cs.CE"", ""cs.LG""]",0.55,0.03,neither,0.98,https://arxiv.org/abs/2212.14687
+2101.00327,The 2020 Global Stock Market Crash: Endogenous or Exogenous?,2021-01-01,"[""q-fin.RM"", ""econ.GN"", ""q-fin.EC"", ""q-fin.GN""]",0.55,0.03,neither,1.0,https://arxiv.org/abs/2101.00327
+2006.02900,Short-Run Health Consequences of Retirement and Pension Benefits: Evidence from China,2020-06-02,"[""econ.GN"", ""q-fin.EC""]",0.55,0.02,neither,1.0,https://arxiv.org/abs/2006.02900
+1810.02952,Social capital at venture capital firms and their financial performance: Evidence from China,2018-10-06,"[""econ.GN"", ""q-fin.EC""]",0.55,0.02,neither,1.0,https://arxiv.org/abs/1810.02952
+2409.04326,Digital Platform Consolidation and Offline Expansion: Strategic Convergence and Market Welfare in China's Second-hand Real Estate Market,2025-04-21,"[""econ.GN"", ""q-fin.EC""]",0.54,0.02,neither,1.0,https://arxiv.org/abs/2409.04326
+2411.09869,Natural resources balance sheets accounting: theoretical framework and practice in the Shaanxi province of China,2024-11-15,"[""econ.GN"", ""q-fin.EC""]",0.54,0.02,neither,1.0,https://arxiv.org/abs/2411.09869
+2406.15373,Occupation Life Cycle,2024-04-15,"[""cs.CY"", ""cs.AI"", ""econ.GN"", ""q-fin.EC""]",0.54,0.02,neither,1.0,https://arxiv.org/abs/2406.15373
+2312.11806,Managing Demographic Transitions: A Comprehensive Analysis of China's Path to Economic Sustainability,2023-12-19,"[""econ.GN"", ""q-fin.EC""]",0.54,0.02,neither,1.0,https://arxiv.org/abs/2312.11806
+2305.04348,A Scoping Review of Internal Migration and Left-behind Children's Wellbeing in China,2023-05-07,"[""econ.GN"", ""q-fin.EC""]",0.54,0.03,neither,1.0,https://arxiv.org/abs/2305.04348
+2302.13430,Accounting for Cross-Location Technological Heterogeneity in the Measurement of Operations Efficiency and Productivity,2023-02-26,"[""econ.GN"", ""q-fin.EC""]",0.54,0.02,neither,1.0,https://arxiv.org/abs/2302.13430
+2003.06019,Disturbing the Peace: Anatomy of the Hostile Takeover of China Vanke Co,2020-07-09,"[""q-fin.GN"", ""q-fin.TR""]",0.54,0.03,neither,1.0,https://arxiv.org/abs/2003.06019
+1910.03421,Estimating and decomposing most productive scale size in parallel DEA networks with shared inputs: A case of China's Five-Year Plans,2019-10-10,"[""econ.GN"", ""q-fin.EC""]",0.54,0.02,neither,1.0,https://arxiv.org/abs/1910.03421
+1909.03808,Systemic Risk Clustering of China Internet Financial Based on t-SNE Machine Learning Algorithm,2019-08-30,"[""q-fin.ST"", ""econ.EM""]",0.54,0.03,neither,1.0,https://arxiv.org/abs/1909.03808
+2512.10971,AI-Trader: Benchmarking Autonomous Agents in Real-Time Financial Markets,2025-12-01,"[""q-fin.CP"", ""cs.CE""]",0.53,0.06,neither,0.98,https://arxiv.org/abs/2512.10971
+2102.12454,Regional and Sectoral Structures and Their Dynamics of Chinese Economy: A Network Perspective from Multi-Regional Input-Output Tables,2021-02-24,"[""physics.soc-ph"", ""econ.GN"", ""q-fin.EC"", ""stat.AP""]",0.53,0.02,neither,1.0,https://arxiv.org/abs/2102.12454
+2512.06506,"AI as ""Co-founder"": GenAI for Entrepreneurship",2025-12-06,"[""econ.GN"", ""cs.AI"", ""q-fin.EC"", ""stat.AP""]",0.52,0.02,neither,1.0,https://arxiv.org/abs/2512.06506
+2501.12144,The Underlying Stimulators of Chinese Government Spending on Pension and Welfare: A Co-Integrated Socio-Economic Model,2025-10-27,"[""econ.GN"", ""q-fin.EC""]",0.52,0.02,neither,1.0,https://arxiv.org/abs/2501.12144
+2007.05884,Do Pension Benefits Accelerate Cognitive Decline in Late Adulthood? Evidence from Rural China,2022-12-07,"[""econ.GN"", ""q-fin.EC"", ""q-fin.GN""]",0.52,0.03,neither,1.0,https://arxiv.org/abs/2007.05884
+2106.04421,How does economic policy uncertainty comove with stock markets: New evidence from symmetric thermal optimal path method,2022-05-29,"[""q-fin.GN""]",0.52,0.03,neither,1.0,https://arxiv.org/abs/2106.04421
+2201.07159,Examining the Relations between Household Saving Rate of Rural Areas and Migration,2022-01-13,"[""econ.GN"", ""q-fin.EC""]",0.52,0.02,neither,1.0,https://arxiv.org/abs/2201.07159
+2004.07612,Information transfer between stock market sectors: A comparison between the USA and China,2020-04-16,"[""q-fin.ST""]",0.52,0.03,neither,1.0,https://arxiv.org/abs/2004.07612
+1811.08949,The transmission of liquidity shocks via China's segmented money market: evidence from recent market events,2018-11-21,"[""econ.GN"", ""q-fin.EC""]",0.52,0.03,neither,1.0,https://arxiv.org/abs/1811.08949
+2509.11562,Human or Robot? Evidence from Last-Mile Delivery Service,2025-09-15,"[""econ.GN"", ""q-fin.EC""]",0.51,0.02,neither,1.0,https://arxiv.org/abs/2509.11562
+2503.15445,A Study on the Impact of Environmental Liability Insurance on Industrial Carbon Emissions,2025-03-19,"[""econ.GN"", ""q-fin.EC"", ""q-fin.GN""]",0.51,0.02,neither,1.0,https://arxiv.org/abs/2503.15445
+2407.07632,The role of green ammonia in meeting challenges towards a sustainable development in China,2024-07-10,"[""econ.GN"", ""q-fin.EC""]",0.51,0.03,neither,1.0,https://arxiv.org/abs/2407.07632
+2310.14881,Topological Portfolio Selection and Optimization,2023-10-23,"[""q-fin.PM"", ""physics.app-ph""]",0.51,0.03,neither,1.0,https://arxiv.org/abs/2310.14881
+2602.00082,Design and Empirical Study of a Large Language Model-Based Multi-Agent Investment System for Chinese Public REITs,2026-01-22,"[""q-fin.ST"", ""cs.AI"", ""q-fin.TR""]",0.5,0.04,neither,1.0,https://arxiv.org/abs/2602.00082
+2506.16355,Social Media Can Reduce Misinformation When Public Scrutiny is High,2025-06-19,"[""econ.GN"", ""q-fin.EC""]",0.5,0.03,neither,1.0,https://arxiv.org/abs/2506.16355
+2402.11579,"Assessment of low-carbon tourism development from multi-aspect analysis: A case study of the Yellow River Basin, China",2024-02-18,"[""econ.GN"", ""q-fin.EC""]",0.5,0.02,neither,1.0,https://arxiv.org/abs/2402.11579
+2303.02230,Building Floorspace in China: A Dataset and Learning Pipeline,2023-06-06,"[""cs.CV"", ""cs.AI"", ""econ.GN"", ""q-fin.EC""]",0.5,0.03,neither,1.0,https://arxiv.org/abs/2303.02230
+2211.11968,Birth Order and Son Preference to Determine the Children of Shandong Province So Tall,2022-11-28,"[""econ.GN"", ""q-fin.EC""]",0.5,0.03,neither,1.0,https://arxiv.org/abs/2211.11968
+2110.08723,Gender identity and relative income within household: Evidence from China,2021-10-17,"[""econ.GN"", ""q-fin.EC""]",0.5,0.02,neither,1.0,https://arxiv.org/abs/2110.08723

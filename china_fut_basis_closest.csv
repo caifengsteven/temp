@@ -1,0 +1,25 @@
+arxiv_id,title,published,categories,china_market,basis_focus,label,confidence,url
+2501.03171,High-frequency lead-lag relationships in the Chinese stock index futures market: tick-by-tick dynamics of calendar spreads,2025-01-06,"[""q-fin.CP"", ""q-fin.ST"", ""stat.AP""]",0.98,0.32,china_futures_basis,0.98,https://arxiv.org/abs/2501.03171
+1809.05961,Optimal Dynamic Basis Trading,2019-05-25,"[""q-fin.PM""]",0.04,0.99,related,1.0,https://arxiv.org/abs/1809.05961
+1610.09403,Understanding the Non-Convergence of Agricultural Futures via Stochastic Storage Costs and Timing Options,2017-04-11,"[""q-fin.TR"", ""q-fin.PR""]",0.06,0.96,related,0.97,https://arxiv.org/abs/1610.09403
+1910.04943,Optimal Trading of a Basket of Futures Contracts,2019-10-11,"[""q-fin.PM""]",0.04,0.96,related,0.97,https://arxiv.org/abs/1910.04943
+2605.05089,Dynamic Collateral Control for Permissionless Spot Perpetual Basis Trading,2026-05-06,"[""q-fin.TR""]",0.02,0.97,related,0.62,https://arxiv.org/abs/2605.05089
+2501.09404,Agent-Based Simulation of a Perpetual Futures Market,2025-01-16,"[""q-fin.TR""]",0.03,0.91,related,0.91,https://arxiv.org/abs/2501.09404
+2202.09845,"On the Dynamics of Solid, Liquid and Digital Gold Futures",2022-02-20,"[""q-fin.RM""]",0.02,0.9,related,0.97,https://arxiv.org/abs/2202.09845
+2504.01756,Renewable Diesel Boom: The Impact of Soybean Crush Plants on Local Soybean Basis,2025-04-02,"[""econ.GN"", ""q-fin.EC""]",0.02,0.83,neither,0.83,https://arxiv.org/abs/2504.01756
+2201.06930,Decomposing LIBOR in Transition: Evidence from the Futures Markets,2022-03-17,"[""q-fin.GN"", ""q-fin.ST""]",0.01,0.84,related,0.5,https://arxiv.org/abs/2201.06930
+1404.5381,The Futures Premium and Rice Market Efficiency in Prewar Japan,2017-09-30,"[""q-fin.ST"", ""q-fin.GN""]",0.02,0.8,neither,0.28,https://arxiv.org/abs/1404.5381
+2508.11979,Virtual Trading in Multi-Settlement Electricity Markets,2025-08-16,"[""math.OC"", ""cs.SY"", ""econ.GN"", ""eess.SY"", ""q-fin.EC""]",0.01,0.78,neither,0.73,https://arxiv.org/abs/2508.11979
+2405.12982,The puzzle of Carbon Allowance spread,2024-02-07,"[""q-fin.ST""]",0.01,0.74,neither,0.37,https://arxiv.org/abs/2405.12982
+1812.06175,Can Deep Learning Predict Risky Retail Investors? A Case Study in Financial Risk Behavior Forecasting,2019-11-17,"[""q-fin.RM"", ""cs.LG"", ""stat.AP""]",0.11,0.62,neither,0.96,https://arxiv.org/abs/1812.06175
+1501.00273,On the spot-futures no-arbitrage relations in commodity markets,2018-02-24,"[""q-fin.MF"", ""q-fin.PR""]",0.03,0.63,related,0.74,https://arxiv.org/abs/1501.00273
+1905.07546,Hedging crop yields against weather uncertainties -- a weather derivative perspective,2019-08-01,"[""q-fin.MF"", ""q-fin.PR""]",0.04,0.62,related,0.28,https://arxiv.org/abs/1905.07546
+2610.00005,A Multi-Venue Solana/DeFi Microstructure Data Corpus: The RED-2400 Family v2,2026-07-09,"[""q-fin.TR"", ""q-fin.CP"", ""q-fin.ST""]",0.01,0.64,related,0.49,https://arxiv.org/abs/2610.00005
+2605.10400,Resolution-Aware Perpetual Futures on Binary Prediction Markets: Failure Modes and Mechanical Stress Tests Using Polymarket Data,2026-05-11,"[""q-fin.TR"", ""q-fin.GN"", ""q-fin.RM""]",0.01,0.64,related,0.4,https://arxiv.org/abs/2605.10400
+2503.00603,Understanding the Commodity Futures Term Structure Through Signatures,2025-03-01,"[""q-fin.MF"", ""math.PR"", ""q-fin.ST""]",0.04,0.58,related,0.43,https://arxiv.org/abs/2503.00603
+2606.25811,Hierarchical Graph Learning for Calendar Spread Strategies in Commodity Futures Markets,2026-06-24,"[""q-fin.TR"", ""cs.CE"", ""cs.LG"", ""q-fin.PM"", ""q-fin.PR""]",0.02,0.56,related,0.64,https://arxiv.org/abs/2606.25811
+2308.00383,Exploiting the dynamics of commodity futures curves,2023-08-01,"[""q-fin.GN""]",0.05,0.51,related,0.56,https://arxiv.org/abs/2308.00383
+2103.02016,Trading Signals In VIX Futures,2021-11-23,"[""q-fin.CP"", ""q-fin.TR"", ""stat.ML""]",0.02,0.54,neither,0.38,https://arxiv.org/abs/2103.02016
+2101.00251,Forward indifference valuation and hedging of basis risk under partial information,2021-01-01,"[""q-fin.MF"", ""q-fin.PR""]",0.02,0.53,neither,0.56,https://arxiv.org/abs/2101.00251
+2202.01737,Time-zero Efficiency of European Power Derivatives Markets,2022-02-03,"[""q-fin.RM""]",0.01,0.54,neither,0.35,https://arxiv.org/abs/2202.01737
+2310.11771,Perpetual Futures Pricing,2024-09-04,"[""q-fin.PR"", ""q-fin.MF""]",0.04,0.5,related,0.38,https://arxiv.org/abs/2310.11771
